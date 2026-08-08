@@ -960,6 +960,8 @@ const UI={
 const ic=(n,cls)=>`<svg class="${cls||'uic'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${UI[n]||''}</svg>`;
 const goldStar='<svg class="gs" viewBox="0 0 24 24" fill="#EAA51E" stroke="none"><path d="M12 2l3 6.5 7 .8-5 4.7 1.4 7L12 17.8 5.6 21l1.4-7-5-4.7 7-.8z"/></svg>';
 const catName=id=>(CATS.find(c=>c.id===id)||{}).name||'';
+/* تهريب HTML لمنع حقن السكربتات (XSS) من بيانات المستخدم */
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const catIcon=id=>(CATS.find(c=>c.id===id)||{}).ic||'\u{1F3F7}';
 
 const SHOW_DEMO=true; /* خليها true عشان الأقسام تبان مليانة وتشجّع الناس تسجّل — اقلبها false لما يبقى عندك محتوى حقيقي كفاية */
@@ -1158,9 +1160,9 @@ function listBig(b,i){
   return `<div class="lcard big">
     ${banner}
     <div class="lc-info">
-      <h4 onclick="openDet(${i})">${b.name}</h4>
-      ${b.owner?`<div class="lc-owner">${b.owner}</div>`:''}
-      <div class="lc-meta2"><span>\u2B50 ${rcountOf(b)?ratingOf(b).toFixed(1):'جديد'}</span><span>\u{1F441} ${viewsOf(b)}</span><span>\u{1F4CD} ${b.area||areaOf(b)}</span></div>
+      <h4 onclick="openDet(${i})">${esc(b.name)}</h4>
+      ${b.owner?`<div class="lc-owner">${esc(b.owner)}</div>`:''}
+      <div class="lc-meta2"><span>\u2B50 ${rcountOf(b)?ratingOf(b).toFixed(1):'جديد'}</span><span>\u{1F441} ${viewsOf(b)}</span><span>\u{1F4CD} ${esc(b.area||areaOf(b))}</span></div>
       <div class="lc-actions">${lcActionsHTML(b)}</div>
     </div>
   </div>`;
@@ -1168,16 +1170,16 @@ function listBig(b,i){
 function listCompact(b,i){
   const av=(b.photos&&b.photos.length)
     ?`<div class="lc-av" style="background-image:url('${b.photos[0]}')" onclick="openDet(${i})"></div>`
-    :`<div class="lc-av lite" style="color:${catSolid(b.cat)}" onclick="openDet(${i})">${(b.name||'؟').trim().charAt(0)}</div>`;
+    :`<div class="lc-av lite" style="color:${catSolid(b.cat)}" onclick="openDet(${i})">${esc((b.name||'؟').trim().charAt(0))}</div>`;
   return `<div class="lcard">
     <div class="lc-top">
-      <div class="lc-title">${b.plan!=='free'?`<span class="badge2">${b.plan==='prem'?'\u2605 بريميوم':'مميّز'}</span><br>`:''}<h4 onclick="openDet(${i})">${b.name}</h4>${b.owner?`<div class="lc-owner">${b.owner}</div>`:''}</div>
+      <div class="lc-title">${b.plan!=='free'?`<span class="badge2">${b.plan==='prem'?'\u2605 بريميوم':'مميّز'}</span><br>`:''}<h4 onclick="openDet(${i})">${esc(b.name)}</h4>${b.owner?`<div class="lc-owner">${esc(b.owner)}</div>`:''}</div>
       ${av}
     </div>
     <div class="lc-actions">${lcActionsHTML(b)}</div>
     <div class="lc-rows">
       <div>${rateLabel(b)}</div>
-      <div><span class="ri">${ic('pin')}</span>${b.addr||areaOf(b)}</div>
+      <div><span class="ri">${ic('pin')}</span>${esc(b.addr||areaOf(b))}</div>
       <div><span class="ri">${ic('eye')}</span>${viewsOf(b)} مشاهدة</div>
       <div><span class="ri">${ic('clock')}</span>نُشر منذ ${daysOf(b)} يوم</div>
     </div>
@@ -1232,7 +1234,7 @@ function admRenderBiz(){
   if(admBizFilter!=='all')list=list.filter(b=>b.status===admBizFilter);
   if(admBizQ)list=list.filter(b=>((b.name||'')+' '+(b.phone||'')).toLowerCase().includes(admBizQ));
   const tools=`<div class="adm-tools"><input class="adm-search" placeholder="ابحث بالاسم أو التليفون..." oninput="admBizSearch(this.value)" value="${admBizQ}"><select class="adm-sel" onchange="admSetBizFilter(this.value)"><option value="all"${admBizFilter==='all'?' selected':''}>الكل</option><option value="pending"${admBizFilter==='pending'?' selected':''}>قيد المراجعة</option><option value="approved"${admBizFilter==='approved'?' selected':''}>معتمد</option><option value="rejected"${admBizFilter==='rejected'?' selected':''}>مرفوض</option></select></div>`;
-  const rows=list.length?list.map(b=>`<div class="ad-row"><div><b>${b.name}</b><small>${catName(b.category_id)} · ${b.phone||'—'}</small>${stBadge(b.status)}</div><div class="ad-btns">${b.status!=='approved'?`<button class="ok" onclick="admBizStatus('${b.id}','approved')">اعتماد</button>`:''}${b.status!=='rejected'?`<button class="no" onclick="admBizStatus('${b.id}','rejected')">رفض</button>`:''}<select class="adm-plan" onchange="admSetPlan('${b.id}',this.value)"><option value="free"${b.plan==='free'?' selected':''}>مجاني</option><option value="feat"${b.plan==='feat'?' selected':''}>مميّز</option><option value="prem"${b.plan==='prem'?' selected':''}>بريميوم</option></select><button class="del" onclick="admDelBiz('${b.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش نتائج</div>';
+  const rows=list.length?list.map(b=>`<div class="ad-row"><div><b>${esc(b.name)}</b><small>${catName(b.category_id)} · ${esc(b.phone||'—')}</small>${stBadge(b.status)}</div><div class="ad-btns">${b.status!=='approved'?`<button class="ok" onclick="admBizStatus('${b.id}','approved')">اعتماد</button>`:''}${b.status!=='rejected'?`<button class="no" onclick="admBizStatus('${b.id}','rejected')">رفض</button>`:''}<select class="adm-plan" onchange="admSetPlan('${b.id}',this.value)"><option value="free"${b.plan==='free'?' selected':''}>مجاني</option><option value="feat"${b.plan==='feat'?' selected':''}>مميّز</option><option value="prem"${b.plan==='prem'?' selected':''}>بريميوم</option></select><button class="del" onclick="admDelBiz('${b.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش نتائج</div>';
   admBody().innerHTML=tools+rows;
 }
 async function admBizStatus(id,st){try{await supa.from('businesses').update({status:st}).eq('id',id);await adminBiz();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
@@ -1248,7 +1250,7 @@ function admSetAdsFilter(f){admAdsFilter=f;admRenderAds();}
 function admRenderAds(){
   let list=ADM.ads;if(admAdsFilter!=='all')list=list.filter(a=>a.status===admAdsFilter);
   const tools=`<div class="adm-tools"><select class="adm-sel" onchange="admSetAdsFilter(this.value)"><option value="all"${admAdsFilter==='all'?' selected':''}>كل الإعلانات</option><option value="pending"${admAdsFilter==='pending'?' selected':''}>قيد المراجعة</option><option value="approved"${admAdsFilter==='approved'?' selected':''}>معتمد</option></select></div>`;
-  const rows=list.length?list.map(a=>`<div class="ad-row"><div><b>${a.title}</b><small>${a.price||'—'} · ${a.category||''}</small>${stBadge(a.status)}</div><div class="ad-btns">${a.status!=='approved'?`<button class="ok" onclick="admAdStatus('${a.id}','approved')">اعتماد</button>`:''}<button class="del" onclick="admDelAd('${a.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش إعلانات</div>';
+  const rows=list.length?list.map(a=>`<div class="ad-row"><div><b>${esc(a.title)}</b><small>${esc(a.price||'—')} · ${esc(a.category||'')}</small>${stBadge(a.status)}</div><div class="ad-btns">${a.status!=='approved'?`<button class="ok" onclick="admAdStatus('${a.id}','approved')">اعتماد</button>`:''}<button class="del" onclick="admDelAd('${a.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش إعلانات</div>';
   admBody().innerHTML=tools+rows;
 }
 async function admAdStatus(id,st){try{await supa.from('ads').update({status:st}).eq('id',id);await adminAds();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
@@ -1257,7 +1259,7 @@ async function admDelAd(id){if(!confirm('تحذف الإعلان ده؟'))return
 async function adminOffers(){
   const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
   try{const {data}=await supa.from('offers').select('id,title,discount,active,businesses(name)').order('created_at',{ascending:false}).limit(300);ADM.offers=data||[];
-    b.innerHTML=ADM.offers.length?ADM.offers.map(o=>`<div class="ad-row"><div><b>${o.title}</b><small>${o.discount||''} · ${(o.businesses&&o.businesses.name)||''}</small>${o.active?stBadge('approved'):'<span class="adm-b rej">موقوف</span>'}</div><div class="ad-btns"><button class="del" onclick="admDelOffer('${o.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش عروض</div>';
+    b.innerHTML=ADM.offers.length?ADM.offers.map(o=>`<div class="ad-row"><div><b>${esc(o.title)}</b><small>${esc(o.discount||'')} · ${esc((o.businesses&&o.businesses.name)||'')}</small>${o.active?stBadge('approved'):'<span class="adm-b rej">موقوف</span>'}</div><div class="ad-btns"><button class="del" onclick="admDelOffer('${o.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش عروض</div>';
   }catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
 async function admDelOffer(id){if(!confirm('تحذف العرض ده؟'))return;try{const {error}=await supa.from('offers').delete().eq('id',id);if(error)throw error;adminOffers();loadData();}catch(e){alert('تعذّر الحذف: '+(e.message||e));}}
@@ -1265,7 +1267,7 @@ async function admDelOffer(id){if(!confirm('تحذف العرض ده؟'))return;
 async function adminReports(){
   const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
   try{const {data}=await supa.from('reports').select('*').order('created_at',{ascending:false}).limit(100);ADM.reports=data||[];
-    b.innerHTML=ADM.reports.length?ADM.reports.map(r=>`<div class="ad-row"><div><b>${r.target_type==='business'?'بلاغ على محل':r.target_type==='ad'?'بلاغ على إعلان':'بلاغ'}</b><small>${r.reason||'—'}${r.created_at?' · '+timeAgo(r.created_at):''}</small></div><div class="ad-btns">${r.id?`<button class="del" onclick="admDelReport('${r.id}')">تجاهل</button>`:''}</div></div>`).join(''):'<div class="empty2">مفيش بلاغات</div>';
+    b.innerHTML=ADM.reports.length?ADM.reports.map(r=>`<div class="ad-row"><div><b>${r.target_type==='business'?'بلاغ على محل':r.target_type==='ad'?'بلاغ على إعلان':'بلاغ'}</b><small>${esc(r.reason||'—')}${r.created_at?' · '+timeAgo(r.created_at):''}</small></div><div class="ad-btns">${r.id?`<button class="del" onclick="admDelReport('${r.id}')">تجاهل</button>`:''}</div></div>`).join(''):'<div class="empty2">مفيش بلاغات</div>';
   }catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
 async function admDelReport(id){try{await supa.from('reports').delete().eq('id',id);adminReports();}catch(e){alert('خطأ: '+(e.message||e));}}
@@ -1273,7 +1275,7 @@ async function admDelReport(id){try{await supa.from('reports').delete().eq('id',
 async function adminUsers(){
   const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
   try{const {data}=await supa.from('profiles').select('id,name,is_admin').order('name').limit(300);ADM.users=data||[];
-    b.innerHTML=ADM.users.length?ADM.users.map(u=>`<div class="ad-row"><div><b>${u.name||'مستخدم'}</b><small>${u.is_admin?'مشرف':'مستخدم عادي'}</small>${u.is_admin?'<span class="adm-b ok">أدمن</span>':''}</div><div class="ad-btns"><button class="${u.is_admin?'no':'ok'}" onclick="admToggleAdmin('${u.id}',${u.is_admin?'true':'false'})">${u.is_admin?'إلغاء الأدمن':'ترقية لأدمن'}</button></div></div>`).join(''):'<div class="empty2">مفيش مستخدمين</div>';
+    b.innerHTML=ADM.users.length?ADM.users.map(u=>`<div class="ad-row"><div><b>${esc(u.name||'مستخدم')}</b><small>${u.is_admin?'مشرف':'مستخدم عادي'}</small>${u.is_admin?'<span class="adm-b ok">أدمن</span>':''}</div><div class="ad-btns"><button class="${u.is_admin?'no':'ok'}" onclick="admToggleAdmin('${u.id}',${u.is_admin?'true':'false'})">${u.is_admin?'إلغاء الأدمن':'ترقية لأدمن'}</button></div></div>`).join(''):'<div class="empty2">مفيش مستخدمين</div>';
   }catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
 async function admToggleAdmin(id,cur){try{const {error}=await supa.from('profiles').update({is_admin:!cur}).eq('id',id);if(error)throw error;adminUsers();}catch(e){alert('تعذّر التغيير (محتاج صلاحية في القاعدة): '+(e.message||e));}}
@@ -1289,17 +1291,17 @@ function cardHTML(b,i){
     :`<div class="thumb noimg" onclick="openDet(${i})">${badge}<span class="noimg-in">${ic('camera')}<span>لا توجد صورة</span></span></div>`;
   return `<div class="card ${isFeat?'feat':''}">
     ${thumb}
-    <div class="card-body"><h4 onclick="openDet(${i})" style="cursor:pointer">${b.name}</h4>
+    <div class="card-body"><h4 onclick="openDet(${i})" style="cursor:pointer">${esc(b.name)}</h4>
     <div class="cat-line"><span class="cdot" style="background:${catSolid(b.cat)}"></span>${catName(b.cat)}</div>
     <div class="rate-mini">${rateLabel(b)} \u00B7 \u{1F441} ${viewsOf(b)}</div>
-    <div class="desc">${b.desc||''}</div>${actions}</div></div>`;
+    <div class="desc">${esc(b.desc||'')}</div>${actions}</div></div>`;
 }
 const rank=p=>p==='prem'?0:p==='feat'?1:2;
 function renderOffers(){
   const list=OFFERS_LIVE;
   document.getElementById('offers').innerHTML=list.length?list.map(o=>`
-    <div class="offer"><div class="disc"><b>${o.disc||'عرض'}</b><span>خصم</span></div>
-    <div class="oinfo"><h4>${o.shop||''}</h4><p>${o.txt}</p><small>${o.ends||''}</small></div></div>`).join('')
+    <div class="offer"><div class="disc"><b>${esc(o.disc||'عرض')}</b><span>خصم</span></div>
+    <div class="oinfo"><h4>${esc(o.shop||'')}</h4><p>${esc(o.txt)}</p><small>${esc(o.ends||'')}</small></div></div>`).join('')
     :'<div class="empty2">لسه مفيش عروض. أصحاب المحلات يقدروا يضيفوا عروضهم من تبويب «متجري».</div>';
 }
 function renderMarketCats(){
@@ -1333,9 +1335,9 @@ function renderMarket(){
     return `<div class="mk row" onclick="openMk(${i})">
       <div class="mk-thumb"${cover?` style="background-image:url('${cover}')"`:''}>${cover?'':`<span class="mk-ph">${mkIc(mkCatId(m.cat))}</span>`}${cond}${cnt>1?`<span class="mk-cnt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>${cnt}</span>`:''}</div>
       <div class="mk-info">
-        <h4>${m.t}</h4>
-        <div class="price">${priceLabel(m)}</div>
-        <div class="meta"><svg class="mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${m.loc}</span><span class="dotsep">·</span><span>${timeAgo(m.created)}</span></div>
+        <h4>${esc(m.t)}</h4>
+        <div class="price">${esc(priceLabel(m))}</div>
+        <div class="meta"><svg class="mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${esc(m.loc)}</span><span class="dotsep">·</span><span>${timeAgo(m.created)}</span></div>
       </div></div>`;
   }).join('');
 }
@@ -1347,13 +1349,13 @@ function openMk(i){
     :`<div class="mkg-main noimg2"><span>${mkIc(mkCatId(m.cat))}</span></div>`;
   document.getElementById('mk-d-price').textContent=priceLabel(m);
   document.getElementById('mk-d-title').textContent=m.t;
-  let badges=`<span class="mk-tag">${m.cat||mkCatName(mkCatId(m.cat))}</span>`;
+  let badges=`<span class="mk-tag">${esc(m.cat||mkCatName(mkCatId(m.cat)))}</span>`;
   if(m.cond==='new')badges+=`<span class="mk-tag alt">جديد</span>`;else if(m.cond==='used')badges+=`<span class="mk-tag alt">مستعمل</span>`;
   if(m.nego)badges+=`<span class="mk-tag alt">قابل للتفاوض</span>`;
   document.getElementById('mk-d-badges').innerHTML=badges;
-  document.getElementById('mk-d-metaline').innerHTML=`<span>${ic('pin')} ${m.loc}</span><span>${ic('clock')} ${timeAgo(m.created)}</span><span>${ic('eye')} ${(m.views||0)} مشاهدة</span>`;
+  document.getElementById('mk-d-metaline').innerHTML=`<span>${ic('pin')} ${esc(m.loc)}</span><span>${ic('clock')} ${timeAgo(m.created)}</span><span>${ic('eye')} ${(m.views||0)} مشاهدة</span>`;
   document.getElementById('mk-d-desc').textContent=m.desc||'لا يوجد وصف إضافي.';
-  document.getElementById('mk-d-seller').innerHTML=m.sellerName?`<div class="mk-sell"><div class="mk-av">${(m.sellerName.trim()[0]||'؟')}</div><div><b>${m.sellerName}</b><span>صاحب الإعلان</span></div></div>`:'';
+  document.getElementById('mk-d-seller').innerHTML=m.sellerName?`<div class="mk-sell"><div class="mk-av">${esc(m.sellerName.trim()[0]||'؟')}</div><div><b>${esc(m.sellerName)}</b><span>صاحب الإعلان</span></div></div>`:'';
   const idx=MARKET.indexOf(m);
   const canEdit=USER&&m.ownerId&&m.ownerId===USER.id;
   document.getElementById('mk-d-owner').innerHTML=canEdit?`<div class="mk-owner-btns"><button class="editbtn" onclick="closeMk();openPost(${idx})">${ic('edit')} تعديل الإعلان</button><button class="delbtn" onclick="delAd('${m.id}')">حذف</button></div>`:'';
@@ -1403,19 +1405,19 @@ function openDet(i){
   if(b.photos&&b.photos.length){vis.className='gallery';vis.style.background='';vis.style.height='';vis.innerHTML=b.photos.map(p=>`<img src="${p}" alt="">`).join('');}
   else{vis.className='d-noimg';vis.style.background='';vis.style.color='';vis.innerHTML=`<span class="noimg-in">${ic('camera')}<span>لا توجد صورة للمحل</span></span>`;}
   const fs=document.getElementById('d-feats-sec');
-  if(b.features&&b.features.length){fs.style.display='block';document.getElementById('d-feats').innerHTML=b.features.map(f=>`<span>\u2713 ${f}</span>`).join('');}
+  if(b.features&&b.features.length){fs.style.display='block';document.getElementById('d-feats').innerHTML=b.features.map(f=>`<span>\u2713 ${esc(f)}</span>`).join('');}
   else fs.style.display='none';
   const ss=document.getElementById('d-svc-sec');
-  if(b.services&&b.services.length){ss.style.display='block';document.getElementById('d-svc').innerHTML=b.services.map(s=>`<div class="pr"><span>${s.n}</span><b>${s.p}</b></div>`).join('');}
+  if(b.services&&b.services.length){ss.style.display='block';document.getElementById('d-svc').innerHTML=b.services.map(s=>`<div class="pr"><span>${esc(s.n)}</span><b>${esc(s.p)}</b></div>`).join('');}
   else ss.style.display='none';
   const secW=document.getElementById('d-sections-sec');
   if(b.sections&&b.sections.length){
     secW.style.display='block';
     document.getElementById('d-sections').innerHTML=b.sections.map(sec=>`
-      <div class="shop-sec"><div class="sh">\u{1F4C2} ${sec.name}</div>
+      <div class="shop-sec"><div class="sh">\u{1F4C2} ${esc(sec.name)}</div>
       <div class="prod-row">${(sec.products||[]).map(pr=>`
         <div class="prod"><div class="pimg"${pr.img?` style="background-image:url('${pr.img}')"`:''}>${pr.img?'':'\u{1F6CD}'}</div>
-        <div class="pb"><h5>${pr.name}</h5><div class="pp">${pr.price||''}</div></div></div>`).join('')}</div></div>`).join('');
+        <div class="pb"><h5>${esc(pr.name)}</h5><div class="pp">${esc(pr.price||'')}</div></div></div>`).join('')}</div></div>`).join('');
   } else secW.style.display='none';
   const isFeat=b.plan!=='free';
   const canEdit=USER&&b.ownerId&&b.ownerId===USER.id;
@@ -1589,9 +1591,27 @@ function pickBrand(ev,which){
   r.onload=()=>{brandImgs[which]=r.result;const c=document.getElementById(which+'-card');c.classList.add('set');c.style.backgroundImage=`url('${r.result}')`;};
   r.readAsDataURL(f);
 }
+/* ضغط الصورة قبل الرفع: تصغير لأقصى بُعد 1280px وإعادة ترميز JPEG بجودة 0.8 */
+function compressImg(dataUrl,maxDim,quality){
+  return new Promise(res=>{
+    try{
+      const img=new Image();
+      img.onload=()=>{
+        let{width:w,height:h}=img;
+        if(w>maxDim||h>maxDim){const r=Math.min(maxDim/w,maxDim/h);w=Math.round(w*r);h=Math.round(h*r);}
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
+        res(c.toDataURL('image/jpeg',quality||0.8));
+      };
+      img.onerror=()=>res(dataUrl);
+      img.src=dataUrl;
+    }catch(e){res(dataUrl);}
+  });
+}
 async function putImg(bucket,bizId,dataOrUrl,name){
   if(!dataOrUrl)return null;
   if(!dataOrUrl.startsWith('data:'))return dataOrUrl;
+  if(/^data:image\//.test(dataOrUrl)){try{dataOrUrl=await compressImg(dataOrUrl,1280,0.8);}catch(e){}}
   const blob=await(await fetch(dataOrUrl)).blob();
   const ext=((blob.type.split('/')[1])||'jpg').replace('jpeg','jpg');
   const path=`${bizId}/${name}-${Date.now()}.${ext}`;
@@ -1757,7 +1777,7 @@ if(supa){
 }
 function renderAcct(){
   const b=document.getElementById('acctBtn');
-  if(USER){b.classList.add('in');b.innerHTML=`<span class="av">${(USER.name.trim()[0]||'؟')}</span>${USER.name.split(' ')[0]}`;
+  if(USER){b.classList.add('in');b.innerHTML=`<span class="av">${esc(USER.name.trim()[0]||'؟')}</span>${esc(USER.name.split(' ')[0])}`;
     document.getElementById('mu-name').textContent=USER.name;}
   else{b.classList.remove('in');b.textContent='دخول';}
   const ab=document.getElementById('admin-btn');if(ab)ab.style.display=(USER&&USER.isAdmin)?'block':'none';
@@ -1821,6 +1841,14 @@ async function savePost(){
   const nego=document.getElementById('p-nego').checked;
   if(!t){alert('اكتب عنوان الإعلان');return;}
   if(!supa||!USER){alert('لازم تسجّل دخول');openAuth('signup');return;}
+  const isNew=!(editPostIndex!=null&&MARKET[editPostIndex]&&MARKET[editPostIndex].id);
+  if(isNew){
+    try{
+      const since=new Date(Date.now()-864e5).toISOString();
+      const {count}=await supa.from('ads').select('*',{count:'exact',head:true}).eq('owner_id',USER.id).gte('created_at',since);
+      if((count||0)>=10){alert('وصلت للحد الأقصى للإعلانات في اليوم (10). حاول بكرة.');return;}
+    }catch(e){}
+  }
   const price=free?'مجاناً':v('p-price');
   const cat=v('p-cat')||'متنوع',area=v('p-area')||'إدفو',desc=v('p-desc'),phone=v('p-phone');
   const btn=document.getElementById('post-save'),old=btn.textContent;btn.disabled=true;btn.textContent='بيتحفظ...';
@@ -1916,10 +1944,10 @@ async function loadMyStore(){
     const b=biz[0];myBizId=b.id;
     const stat=b.status==='approved'?'<span class="st ok">معتمد ✓</span>':b.status==='pending'?'<span class="st pend">قيد المراجعة</span>':'<span class="st rej">مرفوض</span>';
     const {data:offers}=await supa.from('offers').select('*').eq('business_id',b.id).order('created_at',{ascending:false});
-    const offHtml=(offers&&offers.length)?offers.map(o=>`<div class="offer"><div class="disc"><b>${o.discount||'عرض'}</b><span>خصم</span></div><div class="oinfo"><h4>${o.title}</h4><small>${o.ends_note||''}</small></div><button class="off-del" onclick="delOffer('${o.id}')">حذف</button></div>`).join(''):'<div class="empty2">لسه مفيش عروض. أضف أول عرض من فوق.</div>';
+    const offHtml=(offers&&offers.length)?offers.map(o=>`<div class="offer"><div class="disc"><b>${esc(o.discount||'عرض')}</b><span>خصم</span></div><div class="oinfo"><h4>${esc(o.title)}</h4><small>${esc(o.ends_note||'')}</small></div><button class="off-del" onclick="delOffer('${o.id}')">حذف</button></div>`).join(''):'<div class="empty2">لسه مفيش عروض. أضف أول عرض من فوق.</div>';
     body.innerHTML=`
       <div class="ms-card">
-        <h3>${b.name}</h3>
+        <h3>${esc(b.name)}</h3>
         <div class="ms-meta">${catName(b.category_id)} \u00B7 باقة ${planName(b.plan)} \u00B7 ${stat}</div>
         <button class="editbtn" onclick="editMyBiz('${b.id}')">${ic('edit')} تعديل بيانات المحل</button>
       </div>
