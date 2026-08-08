@@ -479,6 +479,46 @@
 
   @media(max-width:560px){.hero h2{font-size:1.5rem}.brand h1{font-size:1.2rem}.cat-grid{gap:8px}.cat-tile .cl{font-size:.66rem}}
 
+  /* أيقونات أقسام الدليل — مربعات ملوّنة (زي السوق) */
+  .cat-tile{background:none!important;border:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:6px 2px!important}
+  .cat-tile:hover{transform:translateY(-2px)}
+  .cat-sq{width:56px;height:56px;border-radius:18px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.22);transition:.15s}
+  .cat-sq svg{width:29px;height:29px}
+  .cat-tile:active .cat-sq{transform:scale(.93)}
+
+  /* بانر التسجيل */
+  .cta{display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap;background:linear-gradient(120deg,#0f2036,#123a5e)!important;border:1px solid var(--bd);border-radius:18px;padding:16px 18px;margin:12px 0 10px;box-shadow:0 10px 26px rgba(0,0,0,.32);position:relative;overflow:hidden}
+  .cta::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 92% -30%,rgba(212,175,55,.22),transparent 60%);pointer-events:none}
+  .cta-txt{display:flex;flex-direction:column;gap:3px;min-width:0;z-index:1}
+  .cta-txt b{font-family:'Amiri',serif;font-size:1.14rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.3}
+  .cta-txt span{color:var(--txd);font-size:.85rem;line-height:1.5}
+  .cta-btn{flex:0 0 auto;background:var(--gg);color:var(--ink);font-weight:800;font-size:.9rem;padding:11px 18px;border-radius:12px;box-shadow:0 8px 20px rgba(212,175,55,.3);white-space:nowrap;z-index:1}
+  .cta-btn:active{transform:scale(.97)}
+  @media(max-width:560px){.cta{padding:14px}.cta-btn{width:100%}}
+
+  /* لوحة الأدمن */
+  .adm-seg{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  .adm-seg::-webkit-scrollbar{display:none}
+  .adm-seg button{flex:0 0 auto;white-space:nowrap}
+  #admin-body{max-height:62vh;overflow-y:auto;margin-top:14px}
+  .adm-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .adm-stat{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:14px;padding:14px 15px}
+  .adm-stat b{display:block;font-family:'Amiri',serif;font-size:1.8rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05}
+  .adm-stat span{color:var(--txd);font-size:.8rem}
+  .adm-stat.warn b{background:linear-gradient(135deg,#F4A825,#FFD166);-webkit-background-clip:text;background-clip:text}
+  .adm-stat.good b{background:linear-gradient(135deg,#26D07C,#0E9F68);-webkit-background-clip:text;background-clip:text}
+  .adm-stat.bad b{background:linear-gradient(135deg,#FF6F7D,#E23744);-webkit-background-clip:text;background-clip:text}
+  .adm-cta{margin-top:14px;width:100%;background:var(--gg);color:var(--ink);font-weight:800;padding:12px;border-radius:12px}
+  .adm-tools{display:flex;gap:8px;margin-bottom:12px}
+  .adm-search{flex:1;background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:11px;padding:9px 12px;font-family:inherit;font-size:.88rem;outline:none}
+  .adm-sel,.adm-plan{background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:11px;padding:9px 10px;font-family:inherit;font-size:.85rem;outline:none;cursor:pointer}
+  .ad-btns{flex-wrap:wrap;gap:6px;justify-content:flex-end}
+  .adm-b{display:inline-block;font-size:.66rem;font-weight:700;padding:2px 9px;border-radius:999px;margin-top:5px}
+  .adm-b.ok{background:rgba(18,161,92,.18);color:#43d68a;border:1px solid rgba(18,161,92,.4)}
+  .adm-b.pend{background:rgba(244,168,37,.16);color:#f4c453;border:1px solid rgba(244,168,37,.4)}
+  .adm-b.rej{background:rgba(226,55,68,.16);color:#ff8a94;border:1px solid rgba(226,55,68,.4)}
+  .ad-btns .del{background:rgba(226,55,68,.14)!important;border:1px solid rgba(226,55,68,.45)!important;color:#ff8a94!important}
+
   /* ===== سوق إدفو (OpenSooq style) ===== */
   .mk-cats{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .mk-cats::-webkit-scrollbar{display:none}
@@ -592,7 +632,13 @@
 
 <main>
   <section class="view active" id="v-home">
-    <div class="promo"><span>سجّل محلك في دليل إدفو ووصّل لكل أهل المدينة — الإدراج الأساسي مجاني</span></div>
+    <div class="cta" id="ctaBanner">
+      <div class="cta-txt">
+        <b>عندك محل أو خدمة في إدفو؟</b>
+        <span>سجّل مجاناً وأضف نشاطك ووصّل لكل أهل المدينة في دقايق.</span>
+      </div>
+      <button class="cta-btn" onclick="openAdd()">سجّل وأضف متجرك مجاناً</button>
+    </div>
     <div class="section-h"><h3>أقسام الدليل</h3><span class="tag" id="dir-count">0</span><div class="rule"></div></div>
     <div class="cat-grid" id="cat-grid"></div>
     <div class="section-h"><h3>إعلانات مقترحة</h3><div class="rule"></div></div>
@@ -832,13 +878,16 @@
 </div>
 
 <div class="overlay" id="adminOverlay">
-  <div class="modal" style="max-width:640px">
-    <div class="modal-head"><h3>🛠️ لوحة الأدمن</h3><button class="x" onclick="closeAdmin()">&times;</button></div>
+  <div class="modal" style="max-width:720px">
+    <div class="modal-head"><h3>🛠️ لوحة تحكّم الأدمن</h3><button class="x" onclick="closeAdmin()">&times;</button></div>
     <div class="modal-body">
-      <div class="seg" id="admin-seg">
-        <button class="on" data-atab="pending" onclick="adminTab('pending')">قيد المراجعة</button>
-        <button data-atab="plans" onclick="adminTab('plans')">الباقات</button>
+      <div class="seg adm-seg" id="admin-seg">
+        <button class="on" data-atab="dash" onclick="adminTab('dash')">لوحة</button>
+        <button data-atab="biz" onclick="adminTab('biz')">المحلات</button>
+        <button data-atab="ads" onclick="adminTab('ads')">الإعلانات</button>
+        <button data-atab="offers" onclick="adminTab('offers')">العروض</button>
         <button data-atab="reports" onclick="adminTab('reports')">البلاغات</button>
+        <button data-atab="users" onclick="adminTab('users')">المستخدمين</button>
       </div>
       <div id="admin-body"></div>
     </div>
@@ -908,7 +957,8 @@ const goldStar='<svg class="gs" viewBox="0 0 24 24" fill="#EAA51E" stroke="none"
 const catName=id=>(CATS.find(c=>c.id===id)||{}).name||'';
 const catIcon=id=>(CATS.find(c=>c.id===id)||{}).ic||'\u{1F3F7}';
 
-let BIZ=[
+const SHOW_DEMO=true; /* خليها true عشان الأقسام تبان مليانة وتشجّع الناس تسجّل — اقلبها false لما يبقى عندك محتوى حقيقي كفاية */
+const SEED_BIZ=[
   {name:'واحة بادية — مطعم وهايبر',cat:'food',plan:'prem',phone:'0100000000',wa:'0100000000',addr:'إدفو، أسوان',desc:'تجربة طعام أصيلة وأجود اللحوم، وقسم هايبر ماركت.',hours:'يومياً 9ص – 1ص',features:['توصيل','انتظار سيارات','دفع فيزا'],sections:[{name:'لحوم طازة',products:[{name:'لحم بتلو كيلو',price:'380 ج'},{name:'كفتة مشكلة كيلو',price:'320 ج'}]},{name:'بقالة',products:[{name:'زيت 1 لتر',price:'85 ج'},{name:'سكر كيلو',price:'40 ج'}]}]},
   {name:'سيتي بيتزا',cat:'food',plan:'feat',phone:'01013151540',wa:'01013151540',addr:'كورنيش النيل، إدفو',desc:'كل أنواع البيتزا الطازة والباستا والوجبات السريعة.',hours:'يومياً 12ظ – 12م',features:['توصيل','واي فاي','دفع فيزا'],services:[{n:'بيتزا وسط',p:'90 ج'},{n:'بيتزا كبير',p:'140 ج'},{n:'باستا',p:'75 ج'}],sections:[{name:'بيتزا',products:[{name:'مارجريتا',price:'90 ج'},{name:'مشكل خضار',price:'110 ج'},{name:'سوبر سوبريم',price:'150 ج'}]},{name:'مشروبات',products:[{name:'بيبسي',price:'15 ج'},{name:'عصير برتقال طازة',price:'25 ج'}]}]},
   {name:'مطعم وكافيه الماسة',cat:'food',plan:'feat',phone:'0111111111',wa:'',addr:'شارع 23 يوليو، إدفو',desc:'أكلات مصرية وحلويات وكافيه.',hours:'يومياً 10ص – 12م'},
@@ -923,7 +973,26 @@ let BIZ=[
   {name:'فندق النيل — إدفو',cat:'tour',plan:'prem',phone:'0101010101',wa:'0101010101',addr:'كورنيش النيل، إدفو',desc:'إقامة قريبة من معبد إدفو بإطلالة نيل.',hours:'استقبال 24 ساعة'},
   {name:'رحلات مراكب الأقصر–إدفو',cat:'tour',plan:'free',phone:'0102020202',wa:'',addr:'مرسى إدفو',desc:'رحلات نيلية وفلوكة بين إدفو والأقصر.',hours:'حسب الحجز'},
   {name:'قاعة أفراح الفردوس',cat:'event',plan:'free',phone:'0103030303',wa:'0103030303',addr:'الطريق الرئيسي، إدفو',desc:'قاعة أفراح ومناسبات وكوشة وتصوير.',hours:'حسب الحجز'},
+  {name:'كشري وطعمية البلد',cat:'food',plan:'free',phone:'0100899001',wa:'',addr:'شارع المحطة، إدفو',desc:'كشري وفول وطعمية وفطار بلدي طازة.',hours:'يومياً 6ص – 12م'},
+  {name:'هايبر إدفو ماركت',cat:'market',plan:'feat',phone:'0101122334',wa:'0101122334',addr:'شارع الجمهورية، إدفو',desc:'كل مستلزمات البيت من بقالة ومجمدات ومنظفات بأسعار الجملة.',hours:'يومياً 8ص – 1ص',features:['توصيل','دفع فيزا']},
+  {name:'بقالة أبو أحمد',cat:'market',plan:'free',phone:'0102233445',wa:'',addr:'حي المحطة، إدفو',desc:'بقالة تموينية وخضار وفاكهة طازة يومياً.',hours:'يومياً 7ص – 12م'},
+  {name:'صيدلية الشفاء',cat:'pharm',plan:'free',phone:'0105566778',wa:'',addr:'شارع 23 يوليو، إدفو',desc:'أدوية ومكملات ومستحضرات تجميل.',hours:'يومياً 9ص – 12م'},
+  {name:'د. منى محمود — أطفال',cat:'clinic',plan:'feat',phone:'0106677889',wa:'0106677889',addr:'برج الأطباء، إدفو',desc:'كشف وتطعيمات ومتابعة نمو، حجز بالمعاد.',hours:'سبت–خميس 5م – 9م',services:[{n:'كشف',p:'150 ج'},{n:'استشارة',p:'100 ج'}]},
+  {name:'معمل النيل للتحاليل',cat:'lab',plan:'free',phone:'0107788990',wa:'',addr:'أمام المستشفى، إدفو',desc:'تحاليل دم وهرمونات ونتائج سريعة.',hours:'يومياً 7ص – 8م'},
+  {name:'بوتيك الأميرة — حريمي',cat:'cloth',plan:'feat',phone:'0108899001',wa:'0108899001',addr:'السوق التجاري، إدفو',desc:'أحدث موديلات الفساتين والعبايات والإكسسوار.',hours:'يومياً 11ص – 11م'},
+  {name:'محل الفخامة — أحذية وشنط',cat:'cloth',plan:'free',phone:'0109900112',wa:'',addr:'شارع السوق، إدفو',desc:'أحذية رجالي وحريمي وشنط ماركات.',hours:'يومياً 10ص – 11م'},
+  {name:'سنتر الاتصالات — شحن وخطوط',cat:'phone',plan:'free',phone:'0100011223',wa:'0100011223',addr:'شارع الجمهورية، إدفو',desc:'خطوط وباقات وشحن وإكسسوارات موبايل.',hours:'يومياً 10ص – 11م'},
+  {name:'سباك محترف — عم سيد',cat:'home',plan:'free',phone:'0100122334',wa:'0100122334',addr:'خدمة داخل إدفو',desc:'تسليك وتركيب سباكة وأدوات صحية.',hours:'حسب الطلب'},
+  {name:'ورشة الإتقان — نجار موبيليا',cat:'home',plan:'feat',phone:'0100233445',wa:'0100233445',addr:'المنطقة الصناعية، إدفو',desc:'تفصيل غرف نوم ومطابخ وتشطيبات خشب.',hours:'سبت–خميس 9ص – 8م'},
+  {name:'معرض السيراميك والأدوات الصحية',cat:'build',plan:'feat',phone:'0100344556',wa:'0100344556',addr:'مدخل إدفو الشرقي',desc:'سيراميك وبورسلين وأطقم حمامات وتوصيل.',hours:'سبت–خميس 8ص – 7م'},
+  {name:'سنتر النخبة التعليمي',cat:'edu',plan:'free',phone:'0100455667',wa:'0100455667',addr:'شارع المدارس، إدفو',desc:'مراجعات نهائية وثانوية عامة لكل المواد.',hours:'يومياً 3م – 10م'},
+  {name:'حضانة براعم إدفو',cat:'edu',plan:'free',phone:'0100566778',wa:'',addr:'الحي السكني، إدفو',desc:'حضانة أطفال بمنهج تعليمي وأنشطة.',hours:'سبت–خميس 8ص – 3م'},
+  {name:'مكتب النيل للنقل والرحلات',cat:'trans',plan:'feat',phone:'0103344556',wa:'0103344556',addr:'موقف إدفو، أسوان',desc:'حجز رحلات وميكروباصات وسيارات أجرة داخل وخارج إدفو.',hours:'يومياً 6ص – 11م'},
+  {name:'ونش ونقل عفش — إدفو',cat:'trans',plan:'free',phone:'0104455667',wa:'0104455667',addr:'خدمة داخل وخارج إدفو',desc:'نقل عفش وبضائع بأسطول سيارات وأوناش.',hours:'24 ساعة'},
+  {name:'استوديو ألوان — تصوير أفراح',cat:'event',plan:'feat',phone:'0100677889',wa:'0100677889',addr:'كورنيش النيل، إدفو',desc:'تصوير فوتو وفيديو للأفراح والمناسبات بأحدث الكاميرات.',hours:'حسب الحجز'},
+  {name:'لمسات — تنسيق وكوشة',cat:'event',plan:'free',phone:'0100788990',wa:'',addr:'إدفو، أسوان',desc:'تنسيق قاعات وكوش وورد طبيعي وصناعي.',hours:'حسب الحجز'},
 ];
+let BIZ=SHOW_DEMO?SEED_BIZ.slice():[];
 
 const OFFERS=[
   {disc:'25%',shop:'سيتي بيتزا',txt:'خصم 25% على كل البيتزا يوم الثلاثاء',ends:'ينتهي آخر الشهر',ic:'\u{1F355}'},
@@ -932,14 +1001,33 @@ const OFFERS=[
   {disc:'10%',shop:'د. أحمد — أسنان',txt:'كشف مجاني مع أول جلسة تركيبات',ends:'بالحجز المسبق',ic:'\u{1F9B7}'},
 ];
 
-let MARKET=[
+const SEED_MARKET=[
   {t:'تويوتا كورولا 2016',price:'385,000 ج',cat:'عربيات',loc:'إدفو',cond:'used',desc:'عربية بحالة ممتازة، فبريكة بالكامل، ترخيص ساري.'},
   {t:'آيفون 13 — 128 جيجا',price:'19,500 ج',cat:'موبايلات',loc:'إدفو',cond:'used',desc:'بطارية 91%، معاه العلبة والشاحن، خدش بسيط.'},
   {t:'شقة 120م تشطيب كامل',price:'750,000 ج',cat:'عقارات',loc:'كورنيش النيل',cond:'',desc:'الدور التالت، 3 غرف وصالة، تشطيب سوبر لوكس.'},
   {t:'غرفة نوم مودرن',price:'22,000 ج',cat:'أثاث ومفروشات',loc:'إدفو',cond:'new',desc:'سرير 2م + دولاب 6 ضلفة + تسريحة، خشب زان.'},
   {t:'لاب توب Dell i5',price:'12,000 ج',cat:'إلكترونيات وأجهزة',loc:'إدفو',cond:'used',desc:'رامات 8، هارد SSD 256، شغال بكفاءة عالية.'},
   {t:'عجل بلدي للبيع',price:'32,000 ج',cat:'مواشي وحيوانات',loc:'نجع الشيخ',cond:'',desc:'عجل بلدي وزن تقريبي 300 كيلو، صحته ممتازة.'},
+  {t:'موتوسيكل هوندا 2021',price:'42,000',cat:'عربيات',loc:'إدفو',cond:'used',desc:'ماركة أصلية، مرخص، حالة ممتازة.'},
+  {t:'محل تجاري 30م للإيجار',price:'3,500',cat:'عقارات',loc:'شارع السوق',cond:'',desc:'موقع حيوي على الشارع الرئيسي، مناسب لأي نشاط.'},
+  {t:'سامسونج A54 جديد متبرشم',price:'11,900',cat:'موبايلات',loc:'إدفو',cond:'new',desc:'بالضمان، 128 جيجا، 8 رام.'},
+  {t:'تلفزيون سامسونج 43 بوصة سمارت',price:'9,800',cat:'إلكترونيات وأجهزة',loc:'إدفو',cond:'new',desc:'4K سمارت، ضمان الوكيل.'},
+  {t:'كنبة ركنة مودرن',price:'8,500',cat:'أثاث ومفروشات',loc:'إدفو',cond:'used',desc:'حالة كويسة جداً، قماش قطيفة.'},
+  {t:'فستان سواريه — لبسة واحدة',price:'900',cat:'ملابس وموضة',loc:'إدفو',cond:'used',desc:'مقاس M، اتلبس مرة واحدة بس.'},
+  {t:'جلابيات صعيدي قطن — جملة',price:'250',cat:'ملابس وموضة',loc:'إدفو',cond:'new',desc:'قطن 100%، كل المقاسات متوفرة.'},
+  {t:'غسالة توشيبا 7 كيلو',price:'6,200',cat:'أدوات منزلية',loc:'إدفو',cond:'used',desc:'أوتوماتيك، شغالة بكفاءة عالية.'},
+  {t:'بوتاجاز 4 شعلة',price:'3,100',cat:'أدوات منزلية',loc:'إدفو',cond:'used',desc:'يونيفرسال، فرن شغال ممتاز.'},
+  {t:'جاموسة حلابة بواليدها',price:'45,000',cat:'مواشي وحيوانات',loc:'نجع الطويل',cond:'',desc:'حلابة غزيرة، صحتها ممتازة.'},
+  {t:'ماتور ري 5 حصان ديزل',price:'7,500',cat:'زراعة ومعدات',loc:'إدفو',cond:'used',desc:'حالة ممتازة وجاهز للشغل.'},
+  {t:'أرض زراعية فدان ونص',price:'320,000',cat:'زراعة ومعدات',loc:'ريف إدفو',cond:'',desc:'أرض خصبة على الترعة، مستندات سليمة.'},
+  {t:'مطلوب كاشير لسوبر ماركت',price:'',cat:'وظائف',loc:'إدفو',cond:'',desc:'خبرة سنة على الأقل، دوام كامل ومرتب مجزي.'},
+  {t:'مطلوب معلم بيتزا',price:'',cat:'وظائف',loc:'كورنيش النيل',cond:'',desc:'خبرة في المطاعم، السكن متوفر.'},
+  {t:'صيانة تكييفات وتركيب',price:'',cat:'خدمات',loc:'إدفو',cond:'',desc:'تنظيف وشحن فريون وتركيب بضمان.'},
+  {t:'مدرس رياضيات ولغات',price:'',cat:'خدمات',loc:'إدفو',cond:'',desc:'ابتدائي وإعدادي، حصص خصوصي ومجموعات.'},
+  {t:'دراجة أطفال 16 بوصة',price:'650',cat:'متنوع',loc:'إدفو',cond:'used',desc:'حالة كويسة، معاها عجل مساعد.'},
+  {t:'عدة عرسان كاملة للتبرع',price:'مجاناً',cat:'متنوع',loc:'إدفو',cond:'',desc:'للتبرع لوجه الله لأسرة محتاجة.'},
 ];
+let MARKET=SHOW_DEMO?SEED_MARKET.slice():[];
 
 /* ===== أقسام السوق (بنظام السوق المفتوح) ===== */
 const MK_CATS=[
@@ -1009,7 +1097,7 @@ const rateLabel=b=>rcountOf(b)?`${goldStar} <b>${ratingOf(b).toFixed(1)}</b> (${
 /* ===== الشاشة الرئيسية: شبكة الأقسام + إعلانات مقترحة ===== */
 function renderHome(){
   document.getElementById('cat-grid').innerHTML=CATS.map(c=>
-    `<div class="cat-tile" onclick="openCat('${c.id}')"><div class="cat-ic" style="color:${catSolid(c.id)}">${catSvg(c.id)}</div><span class="cl">${c.name}</span></div>`).join('');
+    `<div class="cat-tile" onclick="openCat('${c.id}')"><div class="cat-sq" style="background:${catSolid(c.id)}22;color:${catSolid(c.id)}">${catSvg(c.id)}</div><span class="cl">${c.name}</span></div>`).join('');
   document.getElementById('dir-count').textContent=BIZ.length+' نشاط';
   document.getElementById('s-count').textContent=BIZ.length;
   document.getElementById('s-cats').textContent=new Set(BIZ.map(b=>b.cat)).size;
@@ -1102,48 +1190,88 @@ function reportBiz(id){
 }
 
 /* ===== لوحة الأدمن ===== */
-function openAdmin(){document.getElementById('acctMenu').classList.remove('open');document.getElementById('adminOverlay').classList.add('open');adminTab('pending');}
-function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
-function adminTab(t){
-  document.querySelectorAll('#admin-seg button').forEach(b=>b.classList.toggle('on',b.dataset.atab===t));
-  if(t==='pending')adminPending();else if(t==='plans')adminPlans();else adminReports();
-}
+let admCur='dash',admBizFilter='all',admBizQ='',admAdsFilter='all';
+const ADM={biz:[],ads:[],offers:[],reports:[],users:[]};
+const admBody=()=>document.getElementById('admin-body');
 const planName=p=>p==='prem'?'بريميوم':p==='feat'?'مميّز':'مجاني';
-async function adminPending(){
-  const body=document.getElementById('admin-body');body.innerHTML='<div class="empty2">بيحمّل...</div>';
+const stBadge=s=>{const m={pending:['قيد المراجعة','pend'],approved:['معتمد','ok'],rejected:['مرفوض','rej']};const x=m[s]||[s||'—','pend'];return `<span class="adm-b ${x[1]}">${x[0]}</span>`;};
+function openAdmin(){document.getElementById('acctMenu').classList.remove('open');document.getElementById('adminOverlay').classList.add('open');adminTab('dash');}
+function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
+function adminTab(t){admCur=t;document.querySelectorAll('#admin-seg button').forEach(b=>b.classList.toggle('on',b.dataset.atab===t));({dash:adminDash,biz:adminBiz,ads:adminAds,offers:adminOffers,reports:adminReports,users:adminUsers}[t]||adminDash)();}
+
+async function adminDash(){
+  const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
+  const cnt=async(tbl,f)=>{try{let q=supa.from(tbl).select('*',{count:'exact',head:true});if(f)q=f(q);const r=await q;return r.count||0;}catch(e){return 0;}};
   try{
-    const {data:biz}=await supa.from('businesses').select('id,name,category_id,phone,status').eq('status','pending').order('created_at',{ascending:false});
-    const {data:ads}=await supa.from('ads').select('id,title,price,status').eq('status','pending').order('created_at',{ascending:false});
-    let h='<h4 class="ad-h">محلات قيد المراجعة</h4>';
-    h+=(biz&&biz.length)?biz.map(b=>`<div class="ad-row"><div><b>${b.name}</b><small>${catName(b.category_id)} · ${b.phone}</small></div><div class="ad-btns"><button class="ok" onclick="adminApprove('businesses','${b.id}')">اعتماد</button><button class="no" onclick="adminReject('businesses','${b.id}')">رفض</button></div></div>`).join(''):'<div class="empty2">مفيش محلات منتظرة</div>';
-    h+='<h4 class="ad-h">إعلانات قيد المراجعة</h4>';
-    h+=(ads&&ads.length)?ads.map(a=>`<div class="ad-row"><div><b>${a.title}</b><small>${a.price||''}</small></div><div class="ad-btns"><button class="ok" onclick="adminApprove('ads','${a.id}')">اعتماد</button><button class="no" onclick="adminReject('ads','${a.id}')">رفض</button></div></div>`).join(''):'<div class="empty2">مفيش إعلانات منتظرة</div>';
-    body.innerHTML=h;
-  }catch(e){body.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
+    const [bt,bp,ba,at,ap,of,rp,us]=await Promise.all([
+      cnt('businesses'),cnt('businesses',q=>q.eq('status','pending')),cnt('businesses',q=>q.eq('status','approved')),
+      cnt('ads'),cnt('ads',q=>q.eq('status','pending')),cnt('offers'),cnt('reports'),cnt('profiles')]);
+    const card=(n,l,cls)=>`<div class="adm-stat ${cls||''}"><b>${n}</b><span>${l}</span></div>`;
+    b.innerHTML=`<div class="adm-stats">
+      ${card(bt,'إجمالي المحلات')}${card(bp,'محلات قيد المراجعة','warn')}${card(ba,'محلات معتمدة','good')}
+      ${card(at,'إجمالي الإعلانات')}${card(ap,'إعلانات قيد المراجعة','warn')}${card(of,'العروض')}
+      ${card(rp,'البلاغات',rp?'bad':'')}${card(us,'المستخدمين')}</div>
+      ${(bp||ap)?`<button class="adm-cta" onclick="adminTab('biz')">راجع الطلبات المنتظرة (${bp+ap})</button>`:''}`;
+  }catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
-async function adminApprove(tbl,id){try{await supa.from(tbl).update({status:'approved'}).eq('id',id);adminPending();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
-async function adminReject(tbl,id){try{await supa.from(tbl).update({status:'rejected'}).eq('id',id);adminPending();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
-async function adminPlans(){
-  const body=document.getElementById('admin-body');body.innerHTML='<div class="empty2">بيحمّل...</div>';
-  try{
-    const {data:biz}=await supa.from('businesses').select('id,name,plan').eq('status','approved').order('name');
-    body.innerHTML=(biz&&biz.length)?biz.map(b=>`<div class="ad-row"><div><b>${b.name}</b><small>الباقة الحالية: ${planName(b.plan)}</small></div><div class="ad-btns"><button onclick="adminSetPlan('${b.id}','free')">مجاني</button><button class="ok" onclick="adminSetPlan('${b.id}','feat')">مميّز شهر</button><button class="ok2" onclick="adminSetPlan('${b.id}','prem')">بريميوم شهر</button></div></div>`).join(''):'<div class="empty2">مفيش محلات معتمدة</div>';
-  }catch(e){body.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
+
+async function adminBiz(){
+  const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
+  try{const {data}=await supa.from('businesses').select('id,name,category_id,phone,status,plan').order('created_at',{ascending:false}).limit(300);ADM.biz=data||[];admRenderBiz();}
+  catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
-async function adminSetPlan(id,plan){
-  try{
-    await supa.from('businesses').update({plan}).eq('id',id);
-    if(plan!=='free'){const ends=new Date(Date.now()+30*864e5).toISOString();await supa.from('subscriptions').insert({business_id:id,plan,ends_at:ends});}
-    adminPlans();loadData();
-  }catch(e){alert('خطأ: '+(e.message||e));}
+function admSetBizFilter(f){admBizFilter=f;admRenderBiz();}
+function admBizSearch(v){admBizQ=(v||'').trim().toLowerCase();admRenderBiz();}
+function admRenderBiz(){
+  let list=ADM.biz;
+  if(admBizFilter!=='all')list=list.filter(b=>b.status===admBizFilter);
+  if(admBizQ)list=list.filter(b=>((b.name||'')+' '+(b.phone||'')).toLowerCase().includes(admBizQ));
+  const tools=`<div class="adm-tools"><input class="adm-search" placeholder="ابحث بالاسم أو التليفون..." oninput="admBizSearch(this.value)" value="${admBizQ}"><select class="adm-sel" onchange="admSetBizFilter(this.value)"><option value="all"${admBizFilter==='all'?' selected':''}>الكل</option><option value="pending"${admBizFilter==='pending'?' selected':''}>قيد المراجعة</option><option value="approved"${admBizFilter==='approved'?' selected':''}>معتمد</option><option value="rejected"${admBizFilter==='rejected'?' selected':''}>مرفوض</option></select></div>`;
+  const rows=list.length?list.map(b=>`<div class="ad-row"><div><b>${b.name}</b><small>${catName(b.category_id)} · ${b.phone||'—'}</small>${stBadge(b.status)}</div><div class="ad-btns">${b.status!=='approved'?`<button class="ok" onclick="admBizStatus('${b.id}','approved')">اعتماد</button>`:''}${b.status!=='rejected'?`<button class="no" onclick="admBizStatus('${b.id}','rejected')">رفض</button>`:''}<select class="adm-plan" onchange="admSetPlan('${b.id}',this.value)"><option value="free"${b.plan==='free'?' selected':''}>مجاني</option><option value="feat"${b.plan==='feat'?' selected':''}>مميّز</option><option value="prem"${b.plan==='prem'?' selected':''}>بريميوم</option></select><button class="del" onclick="admDelBiz('${b.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش نتائج</div>';
+  admBody().innerHTML=tools+rows;
 }
+async function admBizStatus(id,st){try{await supa.from('businesses').update({status:st}).eq('id',id);await adminBiz();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
+async function admSetPlan(id,plan){try{await supa.from('businesses').update({plan}).eq('id',id);if(plan!=='free'){const ends=new Date(Date.now()+30*864e5).toISOString();try{await supa.from('subscriptions').insert({business_id:id,plan,ends_at:ends});}catch(_){}}await adminBiz();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
+async function admDelBiz(id){if(!confirm('تحذف المحل ده نهائياً؟'))return;try{const {error}=await supa.from('businesses').delete().eq('id',id);if(error)throw error;await adminBiz();loadData();}catch(e){alert('تعذّر الحذف (محتاج صلاحية أدمن في القاعدة): '+(e.message||e));}}
+
+async function adminAds(){
+  const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
+  try{const {data}=await supa.from('ads').select('id,title,price,category,status').order('created_at',{ascending:false}).limit(300);ADM.ads=data||[];admRenderAds();}
+  catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
+}
+function admSetAdsFilter(f){admAdsFilter=f;admRenderAds();}
+function admRenderAds(){
+  let list=ADM.ads;if(admAdsFilter!=='all')list=list.filter(a=>a.status===admAdsFilter);
+  const tools=`<div class="adm-tools"><select class="adm-sel" onchange="admSetAdsFilter(this.value)"><option value="all"${admAdsFilter==='all'?' selected':''}>كل الإعلانات</option><option value="pending"${admAdsFilter==='pending'?' selected':''}>قيد المراجعة</option><option value="approved"${admAdsFilter==='approved'?' selected':''}>معتمد</option></select></div>`;
+  const rows=list.length?list.map(a=>`<div class="ad-row"><div><b>${a.title}</b><small>${a.price||'—'} · ${a.category||''}</small>${stBadge(a.status)}</div><div class="ad-btns">${a.status!=='approved'?`<button class="ok" onclick="admAdStatus('${a.id}','approved')">اعتماد</button>`:''}<button class="del" onclick="admDelAd('${a.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش إعلانات</div>';
+  admBody().innerHTML=tools+rows;
+}
+async function admAdStatus(id,st){try{await supa.from('ads').update({status:st}).eq('id',id);await adminAds();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
+async function admDelAd(id){if(!confirm('تحذف الإعلان ده؟'))return;try{const {error}=await supa.from('ads').delete().eq('id',id);if(error)throw error;await adminAds();loadData();}catch(e){alert('تعذّر الحذف: '+(e.message||e));}}
+
+async function adminOffers(){
+  const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
+  try{const {data}=await supa.from('offers').select('id,title,discount,active,businesses(name)').order('created_at',{ascending:false}).limit(300);ADM.offers=data||[];
+    b.innerHTML=ADM.offers.length?ADM.offers.map(o=>`<div class="ad-row"><div><b>${o.title}</b><small>${o.discount||''} · ${(o.businesses&&o.businesses.name)||''}</small>${o.active?stBadge('approved'):'<span class="adm-b rej">موقوف</span>'}</div><div class="ad-btns"><button class="del" onclick="admDelOffer('${o.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش عروض</div>';
+  }catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
+}
+async function admDelOffer(id){if(!confirm('تحذف العرض ده؟'))return;try{const {error}=await supa.from('offers').delete().eq('id',id);if(error)throw error;adminOffers();loadData();}catch(e){alert('تعذّر الحذف: '+(e.message||e));}}
+
 async function adminReports(){
-  const body=document.getElementById('admin-body');body.innerHTML='<div class="empty2">بيحمّل...</div>';
-  try{
-    const {data}=await supa.from('reports').select('*').order('created_at',{ascending:false}).limit(50);
-    body.innerHTML=(data&&data.length)?data.map(r=>`<div class="ad-row"><div><b>${r.target_type==='business'?'بلاغ على محل':'بلاغ على إعلان'}</b><small>${r.reason||''}</small></div></div>`).join(''):'<div class="empty2">مفيش بلاغات</div>';
-  }catch(e){body.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
+  const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
+  try{const {data}=await supa.from('reports').select('*').order('created_at',{ascending:false}).limit(100);ADM.reports=data||[];
+    b.innerHTML=ADM.reports.length?ADM.reports.map(r=>`<div class="ad-row"><div><b>${r.target_type==='business'?'بلاغ على محل':r.target_type==='ad'?'بلاغ على إعلان':'بلاغ'}</b><small>${r.reason||'—'}${r.created_at?' · '+timeAgo(r.created_at):''}</small></div><div class="ad-btns">${r.id?`<button class="del" onclick="admDelReport('${r.id}')">تجاهل</button>`:''}</div></div>`).join(''):'<div class="empty2">مفيش بلاغات</div>';
+  }catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
+async function admDelReport(id){try{await supa.from('reports').delete().eq('id',id);adminReports();}catch(e){alert('خطأ: '+(e.message||e));}}
+
+async function adminUsers(){
+  const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
+  try{const {data}=await supa.from('profiles').select('id,name,is_admin').order('name').limit(300);ADM.users=data||[];
+    b.innerHTML=ADM.users.length?ADM.users.map(u=>`<div class="ad-row"><div><b>${u.name||'مستخدم'}</b><small>${u.is_admin?'مشرف':'مستخدم عادي'}</small>${u.is_admin?'<span class="adm-b ok">أدمن</span>':''}</div><div class="ad-btns"><button class="${u.is_admin?'no':'ok'}" onclick="admToggleAdmin('${u.id}',${u.is_admin?'true':'false'})">${u.is_admin?'إلغاء الأدمن':'ترقية لأدمن'}</button></div></div>`).join(''):'<div class="empty2">مفيش مستخدمين</div>';
+  }catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
+}
+async function admToggleAdmin(id,cur){try{const {error}=await supa.from('profiles').update({is_admin:!cur}).eq('id',id);if(error)throw error;adminUsers();}catch(e){alert('تعذّر التغيير (محتاج صلاحية في القاعدة): '+(e.message||e));}}
 
 function cardHTML(b,i){
   const isFeat=b.plan!=='free';
@@ -1629,6 +1757,7 @@ function renderAcct(){
   else{b.classList.remove('in');b.textContent='دخول';}
   const ab=document.getElementById('admin-btn');if(ab)ab.style.display=(USER&&USER.isAdmin)?'block':'none';
   const sb=document.getElementById('store-btn');if(sb)sb.style.display=USER?'block':'none';
+  const cta=document.getElementById('ctaBanner');if(cta)cta.style.display=USER?'none':'flex';
 }
 function acctClick(){
   if(USER)document.getElementById('acctMenu').classList.toggle('open');
@@ -1735,11 +1864,13 @@ async function loadData(){
       'id,name,category_id,plan,phone,whatsapp,address,area,description,hours,lat,lng,features,logo_url,status,views_count,owner_id,profiles(name),business_photos(url,sort),services(name,price),business_sections(id,name,sort,products(name,price,img_url,sort)),ratings(stars)'
     ).order('created_at',{ascending:false});
     if(error)throw error;
-    if(data&&data.length)BIZ=data.map(mapBiz);
+    const realBiz=(data&&data.length)?data.map(mapBiz):[];
+    BIZ=SHOW_DEMO?realBiz.concat(SEED_BIZ):(realBiz.length?realBiz:SEED_BIZ.slice());
     let ads=[];
     try{const r=await supa.from('ads').select('*, profiles(name)').order('created_at',{ascending:false});if(r.error)throw r.error;ads=r.data||[];}
     catch(e){const r2=await supa.from('ads').select('*').order('created_at',{ascending:false});ads=r2.data||[];}
-    if(ads&&ads.length)MARKET=ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||''}));
+    const realAds=(ads&&ads.length)?ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||''})):[];
+    MARKET=SHOW_DEMO?realAds.concat(SEED_MARKET):(realAds.length?realAds:SEED_MARKET.slice());
     try{
       const {data:offers}=await supa.from('offers').select('id,title,discount,ends_note,business_id,businesses(name)').eq('active',true).order('created_at',{ascending:false});
       OFFERS_LIVE=(offers||[]).map(o=>({id:o.id,disc:o.discount||'',shop:(o.businesses&&o.businesses.name)||'',txt:o.title,ends:o.ends_note||''}));
