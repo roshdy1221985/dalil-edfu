@@ -1009,7 +1009,8 @@ function renderHome(){
   document.getElementById('dir-count').textContent=BIZ.length+' نشاط';
   document.getElementById('s-count').textContent=BIZ.length;
   document.getElementById('s-cats').textContent=new Set(BIZ.map(b=>b.cat)).size;
-  const feats=BIZ.map((b,i)=>({b,i})).filter(({b})=>b.plan!=='free').sort((a,b)=>rank(a.b.plan)-rank(b.b.plan));
+  let feats=BIZ.map((b,i)=>({b,i})).filter(({b})=>b.plan!=='free').sort((a,b)=>rank(a.b.plan)-rank(b.b.plan));
+  if(!feats.length)feats=BIZ.map((b,i)=>({b,i})).sort((a,b)=>viewsOf(b.b)-viewsOf(a.b)).slice(0,8);
   document.getElementById('featured').innerHTML=feats.map(({b,i})=>cardHTML(b,i)).join('');
 }
 
@@ -1725,11 +1726,11 @@ async function loadData(){
       'id,name,category_id,plan,phone,whatsapp,address,area,description,hours,lat,lng,features,logo_url,status,views_count,owner_id,profiles(name),business_photos(url,sort),services(name,price),business_sections(id,name,sort,products(name,price,img_url,sort)),ratings(stars)'
     ).order('created_at',{ascending:false});
     if(error)throw error;
-    BIZ=(data||[]).map(mapBiz);
+    if(data&&data.length)BIZ=data.map(mapBiz);
     let ads=[];
     try{const r=await supa.from('ads').select('*, profiles(name)').order('created_at',{ascending:false});if(r.error)throw r.error;ads=r.data||[];}
     catch(e){const r2=await supa.from('ads').select('*').order('created_at',{ascending:false});ads=r2.data||[];}
-    MARKET=(ads||[]).map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||''}));
+    if(ads&&ads.length)MARKET=ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||''}));
     try{
       const {data:offers}=await supa.from('offers').select('id,title,discount,ends_note,business_id,businesses(name)').eq('active',true).order('created_at',{ascending:false});
       OFFERS_LIVE=(offers||[]).map(o=>({id:o.id,disc:o.discount||'',shop:(o.businesses&&o.businesses.name)||'',txt:o.title,ends:o.ends_note||''}));
