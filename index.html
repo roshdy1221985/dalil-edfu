@@ -12,6 +12,11 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>دليل إدفو — كل خدمات المدينة في مكان واحد</title>
+<meta name="description" content="دليل مدينة إدفو: محلات وخدمات وعروض، وسوق للبيع والشراء، وأرقام مهمة — كله في تطبيق واحد.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="دليل إدفو">
+<meta property="og:description" content="كل محلات وخدمات وعروض وسوق مدينة إدفو في مكان واحد.">
+<meta property="og:image" content="icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=Cairo:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
@@ -1881,6 +1886,11 @@ async function loadData(){
 
 renderHome();renderOffers();renderMarketCats();renderMarket();renderEmg();renderNews();
 loadData();
+/* اختصارات أندرويد / روابط مباشرة (?tab=market أو ?action=add) */
+try{const _q=new URLSearchParams(location.search);
+  const _t=_q.get('tab');if(_t&&document.getElementById('v-'+_t))go(_t);
+  if(_q.get('action')==='add')setTimeout(()=>{USER?openAdd():openAuth('signup');},400);
+}catch(_e){}
 
 /* ===== متجري (لوحة صاحب المحل) ===== */
 function openMyStore(){
