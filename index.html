@@ -480,35 +480,39 @@
   @media(max-width:560px){.hero h2{font-size:1.5rem}.brand h1{font-size:1.2rem}.cat-grid{gap:8px}.cat-tile .cl{font-size:.66rem}}
 
   /* ===== سوق إدفو (OpenSooq style) ===== */
-  .mk-cats{display:flex;gap:9px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
-  .mk-cats::-webkit-scrollbar{height:5px}
-  .mk-cats::-webkit-scrollbar-thumb{background:var(--bd);border-radius:9px}
-  .mkcat{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:70px;padding:11px 8px;border-radius:15px;background:rgba(0,0,0,.28);border:1px solid var(--bd);color:var(--txd);transition:.15s}
-  .mkcat .mkcat-ic{width:26px;height:26px}
-  .mkcat .mkcat-ic svg{width:26px;height:26px}
-  .mkcat .mkcat-l{font-size:.68rem;font-weight:600;white-space:nowrap;line-height:1}
-  .mkcat.on{background:rgba(212,175,55,.16);border-color:#d4af37;color:#fbf5b7;box-shadow:0 6px 18px rgba(212,175,55,.18)}
-  .mkcat.on .mkcat-ic{color:#fbf5b7!important}
-  .mk-filter{display:flex;gap:8px;margin:2px 0 10px}
+  .mk-cats{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .mk-cats::-webkit-scrollbar{display:none}
+  .mkcat{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;padding:0;transition:.15s}
+  .mkcat .mkcat-sq{width:60px;height:60px;border-radius:20px;display:flex;align-items:center;justify-content:center;transition:.18s;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .mkcat .mkcat-sq svg{width:30px;height:30px}
+  .mkcat .mkcat-l{font-size:.7rem;font-weight:600;white-space:nowrap;line-height:1;color:var(--txd)}
+  .mkcat.on .mkcat-sq{box-shadow:0 6px 18px rgba(212,175,55,.28);transform:translateY(-1px)}
+  .mkcat:active .mkcat-sq{transform:scale(.93)}
+  .mk-filter{display:flex;gap:8px;margin:2px 0 12px}
   .mk-srch{flex:1;display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.32);border:1px solid var(--bd);border-radius:12px;padding:9px 12px;color:var(--txd)}
   .mk-srch svg{width:17px;height:17px;flex:0 0 17px;opacity:.7}
   .mk-srch input{border:none;outline:none;background:none;flex:1;font-family:inherit;font-size:.92rem;color:var(--tx)}
   #mk-sort{background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:12px;padding:9px 12px;font-family:inherit;font-size:.9rem;outline:none;cursor:pointer}
-  .mk-active{margin-bottom:8px;min-height:0}
+  .mk-active{margin-bottom:10px;min-height:0}
   .mk-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.14);border:1px solid var(--bd);color:#fbf5b7;border-radius:999px;padding:6px 13px;font-size:.8rem;font-weight:600}
   .mk-chip button{background:none;color:inherit;font-size:1.15rem;line-height:1;padding:0}
 
-  .mk{position:relative;cursor:pointer;transition:transform .15s,box-shadow .15s}
-  .mk:active{transform:scale(.985)}
-  .mk .mkimg{position:relative;overflow:hidden}
-  .mk .mk-ph svg{width:42px;height:42px;opacity:.45;color:var(--txd)}
-  .mk-b{position:absolute;top:8px;right:8px;font-size:.64rem;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}
+  /* كارت الإعلان — صف أفقي (ستايل السوق المفتوح) */
+  .mk.row{display:flex;gap:12px;align-items:stretch;padding:10px;border-radius:16px;cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .mk.row:active{transform:scale(.99)}
+  .mk-thumb{position:relative;width:118px;height:118px;flex:0 0 118px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.3);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
+  .mk-thumb .mk-ph svg{width:44px;height:44px;opacity:.4;color:var(--txd)}
+  .mk-b{position:absolute;top:7px;right:7px;font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}
   .mk-b.new{background:#12A15C}
-  .mk-b.used{background:rgba(10,17,32,.82);border:1px solid var(--bd);color:#fbf5b7}
-  .mk .price{font-family:'Amiri',serif;font-weight:700;font-size:1.06rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent!important;margin-bottom:3px;line-height:1.2}
-  .mk h4{font-size:.94rem;line-height:1.3;margin:0 0 5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em}
-  .mk .meta{display:flex;align-items:center;gap:4px;font-size:.72rem}
-  .mk .meta svg.mm{width:13px;height:13px;flex:0 0 13px;opacity:.7}
+  .mk-b.used{background:rgba(10,17,32,.85);border:1px solid var(--bd);color:#fbf5b7}
+  .mk-cnt{position:absolute;bottom:7px;left:7px;display:inline-flex;align-items:center;gap:3px;background:rgba(10,17,32,.78);color:#fff;font-size:.64rem;font-weight:700;padding:2px 7px;border-radius:999px}
+  .mk-cnt svg{width:11px;height:11px}
+  .mk-info{flex:1;min-width:0;display:flex;flex-direction:column;padding:2px 0}
+  .mk-info h4{font-size:.96rem;line-height:1.35;margin:0 0 6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--tx)!important}
+  .mk-info .price{font-family:'Amiri',serif;font-weight:700;font-size:1.15rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent!important;line-height:1.2;margin-bottom:4px}
+  .mk-info .meta{display:flex;align-items:center;gap:5px;font-size:.74rem;color:var(--txd);margin-top:auto}
+  .mk-info .meta .mm{width:13px;height:13px;flex:0 0 13px;opacity:.75}
+  .mk-info .meta .dotsep{opacity:.6}
 
   /* معرض صور التفاصيل */
   .mk-gallery{margin-bottom:14px}
@@ -624,7 +628,7 @@
       </select>
     </div>
     <div class="mk-active" id="mk-active"></div>
-    <div class="grid" id="market" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))"></div>
+    <div id="market" style="display:flex;flex-direction:column;gap:10px"></div>
     <div class="empty2" id="mk-empty" style="display:none">مفيش إعلانات في القسم ده لسه — كن أول واحد يضيف إعلان!</div>
   </section>
 
@@ -1167,8 +1171,12 @@ function renderOffers(){
 }
 function renderMarketCats(){
   const el=document.getElementById('mk-cats'); if(!el)return;
-  const btn=(id,name,col)=>`<button class="mkcat ${mkCat===id?'on':''}" onclick="mkSetCat('${id}')"><span class="mkcat-ic" style="${col?`color:${col}`:''}">${mkIc(id)}</span><span class="mkcat-l">${name}</span></button>`;
-  el.innerHTML=btn('all','الكل','')+MK_CATS.map(c=>btn(c.id,c.name,c.col)).join('');
+  const btn=(id,name,col)=>{
+    const on=mkCat===id;
+    const sq=on?`background:${col};color:#fff`:`background:${col}22;color:${col}`;
+    return `<button class="mkcat ${on?'on':''}" onclick="mkSetCat('${id}')"><span class="mkcat-sq" style="${sq}">${mkIc(id)}</span><span class="mkcat-l"${on?` style="color:${col}"`:''}>${name}</span></button>`;
+  };
+  el.innerHTML=btn('all','الكل','#d4af37')+MK_CATS.map(c=>btn(c.id,c.name,c.col)).join('');
 }
 function mkSetCat(id){mkCat=id;renderMarketCats();renderMarket();}
 function mkSearch(val){mkQuery=(val||'').trim();renderMarket();}
@@ -1187,13 +1195,14 @@ function renderMarket(){
   if(empty)empty.style.display='none';
   grid.innerHTML=list.map(({m,i})=>{
     const cover=m.img||(m.images&&m.images[0])||'';
+    const cnt=(m.images&&m.images.length)||0;
     const cond=m.cond==='new'?'<span class="mk-b new">جديد</span>':(m.cond==='used'?'<span class="mk-b used">مستعمل</span>':'');
-    return `<div class="mk" onclick="openMk(${i})">
-      <div class="mkimg"${cover?` style="background-image:url('${cover}');background-size:cover;background-position:center"`:''}>${cover?'':`<span class="mk-ph">${mkIc(mkCatId(m.cat))}</span>`}${cond}</div>
-      <div class="mkb">
-        <div class="price">${priceLabel(m)}</div>
+    return `<div class="mk row" onclick="openMk(${i})">
+      <div class="mk-thumb"${cover?` style="background-image:url('${cover}')"`:''}>${cover?'':`<span class="mk-ph">${mkIc(mkCatId(m.cat))}</span>`}${cond}${cnt>1?`<span class="mk-cnt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>${cnt}</span>`:''}</div>
+      <div class="mk-info">
         <h4>${m.t}</h4>
-        <div class="meta"><svg class="mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>${m.loc} \u00B7 ${timeAgo(m.created)}</div>
+        <div class="price">${priceLabel(m)}</div>
+        <div class="meta"><svg class="mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${m.loc}</span><span class="dotsep">·</span><span>${timeAgo(m.created)}</span></div>
       </div></div>`;
   }).join('');
 }
