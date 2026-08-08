@@ -478,6 +478,82 @@
   .mapbtn{background:rgba(212,175,55,.1)!important;color:#e8d59a!important}
 
   @media(max-width:560px){.hero h2{font-size:1.5rem}.brand h1{font-size:1.2rem}.cat-grid{gap:8px}.cat-tile .cl{font-size:.66rem}}
+
+  /* ===== سوق إدفو (OpenSooq style) ===== */
+  .mk-cats{display:flex;gap:9px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+  .mk-cats::-webkit-scrollbar{height:5px}
+  .mk-cats::-webkit-scrollbar-thumb{background:var(--bd);border-radius:9px}
+  .mkcat{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:70px;padding:11px 8px;border-radius:15px;background:rgba(0,0,0,.28);border:1px solid var(--bd);color:var(--txd);transition:.15s}
+  .mkcat .mkcat-ic{width:26px;height:26px}
+  .mkcat .mkcat-ic svg{width:26px;height:26px}
+  .mkcat .mkcat-l{font-size:.68rem;font-weight:600;white-space:nowrap;line-height:1}
+  .mkcat.on{background:rgba(212,175,55,.16);border-color:#d4af37;color:#fbf5b7;box-shadow:0 6px 18px rgba(212,175,55,.18)}
+  .mkcat.on .mkcat-ic{color:#fbf5b7!important}
+  .mk-filter{display:flex;gap:8px;margin:2px 0 10px}
+  .mk-srch{flex:1;display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.32);border:1px solid var(--bd);border-radius:12px;padding:9px 12px;color:var(--txd)}
+  .mk-srch svg{width:17px;height:17px;flex:0 0 17px;opacity:.7}
+  .mk-srch input{border:none;outline:none;background:none;flex:1;font-family:inherit;font-size:.92rem;color:var(--tx)}
+  #mk-sort{background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:12px;padding:9px 12px;font-family:inherit;font-size:.9rem;outline:none;cursor:pointer}
+  .mk-active{margin-bottom:8px;min-height:0}
+  .mk-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,.14);border:1px solid var(--bd);color:#fbf5b7;border-radius:999px;padding:6px 13px;font-size:.8rem;font-weight:600}
+  .mk-chip button{background:none;color:inherit;font-size:1.15rem;line-height:1;padding:0}
+
+  .mk{position:relative;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  .mk:active{transform:scale(.985)}
+  .mk .mkimg{position:relative;overflow:hidden}
+  .mk .mk-ph svg{width:42px;height:42px;opacity:.45;color:var(--txd)}
+  .mk-b{position:absolute;top:8px;right:8px;font-size:.64rem;font-weight:700;padding:3px 9px;border-radius:999px;color:#fff}
+  .mk-b.new{background:#12A15C}
+  .mk-b.used{background:rgba(10,17,32,.82);border:1px solid var(--bd);color:#fbf5b7}
+  .mk .price{font-family:'Amiri',serif;font-weight:700;font-size:1.06rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent!important;margin-bottom:3px;line-height:1.2}
+  .mk h4{font-size:.94rem;line-height:1.3;margin:0 0 5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em}
+  .mk .meta{display:flex;align-items:center;gap:4px;font-size:.72rem}
+  .mk .meta svg.mm{width:13px;height:13px;flex:0 0 13px;opacity:.7}
+
+  /* معرض صور التفاصيل */
+  .mk-gallery{margin-bottom:14px}
+  .mkg-main{height:250px;border-radius:16px;background-size:cover;background-position:center;background-color:rgba(0,0,0,.3);border:1px solid var(--bd)}
+  .mkg-main.noimg2{display:flex;align-items:center;justify-content:center}
+  .mkg-main.noimg2 svg{width:66px;height:66px;opacity:.4;color:var(--txd)}
+  .mkg-thumbs{display:flex;gap:8px;margin-top:8px;overflow-x:auto;padding-bottom:2px}
+  .mkg-th{width:62px;height:62px;flex:0 0 62px;border-radius:10px;background-size:cover;background-position:center;border:2px solid transparent;cursor:pointer;opacity:.65;transition:.15s}
+  .mkg-th.on{border-color:#d4af37;opacity:1}
+
+  .mk-price{font-family:'Amiri',serif;font-weight:700;font-size:1.7rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:4px;line-height:1.2}
+  .mk-d-title{font-size:1.15rem;color:var(--tx)!important;margin-bottom:9px;line-height:1.45;font-family:'Amiri','Tajawal',serif}
+  .mk-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}
+  .mk-tag{background:rgba(212,175,55,.14);border:1px solid var(--bd);color:#fbf5b7;border-radius:999px;padding:4px 12px;font-size:.76rem;font-weight:600}
+  .mk-tag.alt{background:rgba(255,255,255,.06);color:var(--txd);border-color:var(--bd)}
+  .mk-d-metaline{display:flex;gap:15px;flex-wrap:wrap;color:var(--txd);font-size:.82rem;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bd)}
+  .mk-d-metaline span{display:inline-flex;align-items:center;gap:5px}
+  .mk-d-metaline svg{width:15px;height:15px;opacity:.8}
+  .mk-d-sec{margin-bottom:14px}
+  .mk-d-sec h4{font-size:.95rem;color:#d9b64a;margin-bottom:6px;font-family:'Tajawal',sans-serif}
+  .mk-desc{color:#c3cede;font-size:.92rem;line-height:1.75;white-space:pre-wrap}
+  .mk-seller{margin-bottom:14px}
+  .mk-sell{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:14px;padding:12px 14px}
+  .mk-av{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:var(--gg);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;font-family:'Amiri',serif}
+  .mk-sell b{display:block;color:var(--tx);font-size:.95rem}
+  .mk-sell span{color:var(--txd);font-size:.78rem}
+  .mk-owner-btns{display:flex;gap:8px;margin-bottom:12px}
+  .mk-owner-btns .editbtn{flex:1}
+  .delbtn{background:rgba(226,55,68,.14);border:1px solid rgba(226,55,68,.5);color:#ff8a94;border-radius:12px;padding:10px 16px;font-weight:700;font-size:.9rem}
+  #mk-d-actions{display:flex;gap:10px;margin-bottom:14px}
+  #mk-d-actions .act{flex:1}
+  .mk-report{width:100%;background:none;border:1px solid var(--bd);color:var(--txd);border-radius:12px;padding:11px;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:7px}
+
+  /* فورم النشر */
+  .p-opts{display:flex;gap:18px;margin-top:9px}
+  .ck{display:inline-flex;align-items:center;gap:7px;color:var(--txd)!important;font-size:.86rem;cursor:pointer}
+  .ck input{width:auto!important;accent-color:#d4af37;transform:scale(1.15)}
+  .p-cond{display:flex;gap:8px}
+  .cond{flex:1;padding:11px;border:1px solid var(--bd);border-radius:11px;background:rgba(0,0,0,.32);color:var(--txd);font-weight:600;font-size:.9rem;transition:.15s}
+  .cond.on{background:rgba(212,175,55,.16);border-color:#d4af37;color:#fbf5b7}
+  .field input:disabled{opacity:.45}
+  .ph-wrap{position:relative;width:72px;height:72px}
+  .ph-wrap .ph{width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid var(--bd)}
+  .ph-x{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#e23744;color:#fff;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink)}
+  @media(max-width:560px){.mkg-main{height:210px}.mk-price{font-size:1.5rem}}
 </style>
 </head>
 <body>
@@ -538,7 +614,18 @@
     <div class="page-head"><h2>سوق إدفو — بيع واشترِ</h2><p>إعلانات البيع والشراء بين أهل المدينة.</p>
       <button class="postbtn" onclick="reqPostAd()">&#x2795; أضف إعلان</button>
     </div>
+    <div class="mk-cats" id="mk-cats"></div>
+    <div class="mk-filter">
+      <div class="mk-srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="mk-search" placeholder="ابحث في السوق..." oninput="mkSearch(this.value)"></div>
+      <select id="mk-sort" onchange="mkSetSort(this.value)">
+        <option value="new">الأحدث</option>
+        <option value="low">الأرخص</option>
+        <option value="high">الأغلى</option>
+      </select>
+    </div>
+    <div class="mk-active" id="mk-active"></div>
     <div class="grid" id="market" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))"></div>
+    <div class="empty2" id="mk-empty" style="display:none">مفيش إعلانات في القسم ده لسه — كن أول واحد يضيف إعلان!</div>
   </section>
 
   <section class="view" id="v-emg">
@@ -648,6 +735,24 @@
   </div>
 </div>
 
+<div class="page" id="mkPage">
+  <div class="page-bar"><button class="backb" onclick="closeMk()">&#x2192;</button><h2>تفاصيل الإعلان</h2></div>
+  <div class="page-body">
+    <div id="mk-gallery" class="mk-gallery"></div>
+    <div class="d-meta">
+      <div class="mk-price" id="mk-d-price"></div>
+      <h3 id="mk-d-title" class="mk-d-title"></h3>
+      <div class="mk-badges" id="mk-d-badges"></div>
+      <div class="mk-d-metaline" id="mk-d-metaline"></div>
+      <div class="mk-d-sec"><h4>الوصف</h4><p id="mk-d-desc" class="mk-desc"></p></div>
+      <div class="mk-seller" id="mk-d-seller"></div>
+      <div id="mk-d-owner"></div>
+      <div class="d-actions" id="mk-d-actions"></div>
+      <button class="mk-report" onclick="reportAd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> تبليغ عن الإعلان</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="authOverlay">
   <div class="modal">
     <div class="modal-head"><h3 id="auth-title">إنشاء حساب</h3><button class="x" onclick="closeAuth()">&times;</button></div>
@@ -695,12 +800,26 @@
   <div class="modal">
     <div class="modal-head"><h3 id="post-title">أضف إعلان في السوق</h3><button class="x" onclick="closePost()">&times;</button></div>
     <div class="modal-body">
+      <div class="field"><label>القسم</label><select id="p-cat" class="p-sel"></select></div>
       <div class="field"><label>عنوان الإعلان</label><input id="p-title" placeholder="مثال: موبايل سامسونج للبيع"></div>
-      <div class="field"><label>السعر</label><input id="p-price" placeholder="مثال: 5000 ج"></div>
-      <div class="field"><label>القسم</label><input id="p-cat" placeholder="مثال: موبايلات / عربيات / أثاث"></div>
-      <div class="field"><label>صورة (اختياري)</label>
-        <label class="uploadbtn" for="p-photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;vertical-align:-3px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l2-3h8l2 3h3a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> اختر صورة</label>
-        <input id="p-photo" type="file" accept="image/*" style="display:none" onchange="postPhoto(event)">
+      <div class="field"><label>السعر (بالجنيه)</label><input id="p-price" inputmode="numeric" placeholder="مثال: 5000">
+        <div class="p-opts">
+          <label class="ck"><input type="checkbox" id="p-nego"> قابل للتفاوض</label>
+          <label class="ck"><input type="checkbox" id="p-free" onchange="togFree()"> مجاناً</label>
+        </div>
+      </div>
+      <div class="field"><label>الحالة</label>
+        <div class="p-cond" id="p-cond">
+          <button type="button" class="cond on" data-c="used" onclick="setCond('used')">مستعمل</button>
+          <button type="button" class="cond" data-c="new" onclick="setCond('new')">جديد</button>
+        </div>
+      </div>
+      <div class="field"><label>المنطقة</label><input id="p-area" placeholder="مثال: كورنيش النيل" value="إدفو"></div>
+      <div class="field"><label>وصف الإعلان</label><textarea id="p-desc" rows="3" placeholder="اكتب تفاصيل المنتج، حالته، سبب البيع..."></textarea></div>
+      <div class="field"><label>رقم للتواصل</label><input id="p-phone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
+      <div class="field"><label>الصور (حتى 5)</label>
+        <label class="uploadbtn" for="p-photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;vertical-align:-3px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l2-3h8l2 3h3a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> اختر صور</label>
+        <input id="p-photo" type="file" accept="image/*" multiple style="display:none" onchange="postPhotos(event)">
         <div class="photos" id="p-prev"></div>
       </div>
       <button class="save" id="post-save" onclick="savePost()">انشر الإعلان</button>
@@ -809,14 +928,52 @@ const OFFERS=[
   {disc:'10%',shop:'د. أحمد — أسنان',txt:'كشف مجاني مع أول جلسة تركيبات',ends:'بالحجز المسبق',ic:'\u{1F9B7}'},
 ];
 
-const MARKET=[
-  {t:'تويوتا كورولا 2016',price:'385,000 ج',cat:'سيارات',loc:'إدفو',ic:'\u{1F697}'},
-  {t:'آيفون 13 — 128 جيجا',price:'19,500 ج',cat:'موبايلات',loc:'إدفو',ic:'\u{1F4F1}'},
-  {t:'شقة 120م تشطيب كامل',price:'750,000 ج',cat:'عقارات',loc:'كورنيش النيل',ic:'\u{1F3E0}'},
-  {t:'غرفة نوم مودرن',price:'22,000 ج',cat:'أثاث',loc:'إدفو',ic:'\u{1F6CF}'},
-  {t:'لاب توب Dell i5',price:'12,000 ج',cat:'إلكترونيات',loc:'إدفو',ic:'\u{1F4BB}'},
-  {t:'دراجة نارية 2020',price:'28,000 ج',cat:'مركبات',loc:'إدفو',ic:'\u{1F3CD}'},
+let MARKET=[
+  {t:'تويوتا كورولا 2016',price:'385,000 ج',cat:'عربيات',loc:'إدفو',cond:'used',desc:'عربية بحالة ممتازة، فبريكة بالكامل، ترخيص ساري.'},
+  {t:'آيفون 13 — 128 جيجا',price:'19,500 ج',cat:'موبايلات',loc:'إدفو',cond:'used',desc:'بطارية 91%، معاه العلبة والشاحن، خدش بسيط.'},
+  {t:'شقة 120م تشطيب كامل',price:'750,000 ج',cat:'عقارات',loc:'كورنيش النيل',cond:'',desc:'الدور التالت، 3 غرف وصالة، تشطيب سوبر لوكس.'},
+  {t:'غرفة نوم مودرن',price:'22,000 ج',cat:'أثاث ومفروشات',loc:'إدفو',cond:'new',desc:'سرير 2م + دولاب 6 ضلفة + تسريحة، خشب زان.'},
+  {t:'لاب توب Dell i5',price:'12,000 ج',cat:'إلكترونيات وأجهزة',loc:'إدفو',cond:'used',desc:'رامات 8، هارد SSD 256، شغال بكفاءة عالية.'},
+  {t:'عجل بلدي للبيع',price:'32,000 ج',cat:'مواشي وحيوانات',loc:'نجع الشيخ',cond:'',desc:'عجل بلدي وزن تقريبي 300 كيلو، صحته ممتازة.'},
 ];
+
+/* ===== أقسام السوق (بنظام السوق المفتوح) ===== */
+const MK_CATS=[
+  {id:'cars',name:'عربيات',col:'#2E7BE4'},
+  {id:'realestate',name:'عقارات',col:'#0E9F68'},
+  {id:'phones',name:'موبايلات',col:'#7C4DFF'},
+  {id:'electronics',name:'إلكترونيات وأجهزة',col:'#E23744'},
+  {id:'furniture',name:'أثاث ومفروشات',col:'#B4532A'},
+  {id:'fashion',name:'ملابس وموضة',col:'#FF4E8B'},
+  {id:'home',name:'أدوات منزلية',col:'#F59E0B'},
+  {id:'animals',name:'مواشي وحيوانات',col:'#8D6E3A'},
+  {id:'agri',name:'زراعة ومعدات',col:'#12A15C'},
+  {id:'jobs',name:'وظائف',col:'#159E8E'},
+  {id:'services',name:'خدمات',col:'#C724B1'},
+  {id:'misc',name:'متنوع',col:'#6b6252'},
+];
+const MK_ICONS={
+  all:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  cars:'<path d="M3 13l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5"/><path d="M3 13h18v4a1 1 0 0 1-1 1h-1a2 2 0 0 1-4 0H9a2 2 0 0 1-4 0H4a1 1 0 0 1-1-1z"/><circle cx="7.5" cy="16.5" r="1"/><circle cx="16.5" cy="16.5" r="1"/>',
+  realestate:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
+  phones:'<rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/>',
+  electronics:'<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  furniture:'<path d="M4 10V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M2 12a2 2 0 0 1 2 2v3h16v-3a2 2 0 0 1 2-2 2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/><path d="M5 17v2M19 17v2"/>',
+  fashion:'<path d="M20.4 7 16 4l-1.5 2a3 3 0 0 1-5 0L8 4 3.6 7 6 11l2-1v9h8v-9l2 1z"/>',
+  home:'<rect x="6" y="8" width="12" height="12" rx="2"/><path d="M9 8V5h6v3M9 13h6"/>',
+  animals:'<circle cx="6.5" cy="11" r="1.6"/><circle cx="17.5" cy="11" r="1.6"/><circle cx="9.5" cy="6.5" r="1.6"/><circle cx="14.5" cy="6.5" r="1.6"/><path d="M12 12.5c-2.5 0-4.5 2-4.5 4S9 21 12 21s4.5-.5 4.5-2.5-2-4-4.5-4z"/>',
+  agri:'<path d="M12 22V9"/><path d="M12 9c0-3.3 2.2-5.5 5.5-5.5C17.5 6.8 15.3 9 12 9z"/><path d="M12 13c0-3.3-2.2-5.5-5.5-5.5C6.5 10.8 8.7 13 12 13z"/>',
+  jobs:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5.5A2 2 0 0 1 10 3.5h4a2 2 0 0 1 2 2V7"/><path d="M3 12h18"/>',
+  services:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2z"/>',
+  misc:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
+  pinS:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+};
+const mkIc=id=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${MK_ICONS[id]||MK_ICONS.misc}</svg>`;
+const CAT_ALIAS={'سيارات':'cars','مركبات':'cars','دراجات':'cars','عربيات':'cars','موبايلات':'phones','عقارات':'realestate','أثاث':'furniture','إلكترونيات':'electronics','مواشي':'animals','حيوانات':'animals','زراعة':'agri','وظائف':'jobs','خدمات':'services','ملابس':'fashion','متنوع':'misc'};
+const mkCatId=name=>{const c=MK_CATS.find(x=>x.name===name);if(c)return c.id;if(CAT_ALIAS[name])return CAT_ALIAS[name];for(const k in CAT_ALIAS){if((name||'').includes(k))return CAT_ALIAS[k];}return 'misc';};
+const mkCatName=id=>{const c=MK_CATS.find(x=>x.id===id);return c?c.name:'متنوع';};
+const timeAgo=ts=>{if(!ts)return 'حديثاً';const s=(Date.now()-new Date(ts).getTime())/1000;if(s<3600)return 'من '+Math.max(1,Math.floor(s/60))+' دقيقة';if(s<86400)return 'من '+Math.floor(s/3600)+' ساعة';const dd=Math.floor(s/86400);if(dd<30)return 'من '+dd+' يوم';if(dd<365)return 'من '+Math.floor(dd/30)+' شهر';return 'من '+Math.floor(dd/365)+' سنة';};
+const priceLabel=m=>{if(m.free||/مجان/.test(''+(m.price||'')))return 'مجاناً';if(!m.price)return 'السعر عند الاتصال';const dgt=(''+m.price).replace(/[^\d]/g,'');const base=dgt?(+dgt).toLocaleString('en-US')+' ج':m.price;return base+(m.nego?' · قابل للتفاوض':'');};
 
 const EMG_URGENT=[
   {t:'النجدة (الشرطة)',num:'122',ic:'\u{1F693}'},{t:'الإسعاف',num:'123',ic:'\u{1F691}'},
@@ -835,6 +992,7 @@ const NEWS=[
 ];
 
 let activeCat='all',query='',activeArea='all';
+let mkCat='all',mkQuery='',mkSort='new',curMk=null;
 const AREAS=['الكل','مدينة إدفو','نجوع وقرى إدفو'];
 const areaOf=b=>b.area||(/(نجع|عزبة|قرية|قرى|مرسى)/.test(b.addr||'')?'نجوع وقرى إدفو':'مدينة إدفو');
 const viewsOf=b=>b.views!=null?b.views:(28+(b.name.length*7)%140);
@@ -1006,12 +1164,68 @@ function renderOffers(){
     <div class="oinfo"><h4>${o.shop||''}</h4><p>${o.txt}</p><small>${o.ends||''}</small></div></div>`).join('')
     :'<div class="empty2">لسه مفيش عروض. أصحاب المحلات يقدروا يضيفوا عروضهم من تبويب «متجري».</div>';
 }
-function renderMarket(){
-  document.getElementById('market').innerHTML=MARKET.map((m,i)=>`
-    <div class="mk">${(USER&&m.ownerId===USER.id)?`<button class="mk-edit" onclick="openPost(${i})">${ic("edit")} تعديل</button>`:''}<div class="mkimg"${m.img?` style="background-image:url('${m.img}');background-size:cover;background-position:center"`:''}>${m.img?'':m.ic}</div><div class="mkb">
-    <h4>${m.t}</h4><div class="price">${m.price}</div>
-    <div class="meta">${m.cat} \u00B7 ${m.loc}</div></div></div>`).join('');
+function renderMarketCats(){
+  const el=document.getElementById('mk-cats'); if(!el)return;
+  const btn=(id,name,col)=>`<button class="mkcat ${mkCat===id?'on':''}" onclick="mkSetCat('${id}')"><span class="mkcat-ic" style="${col?`color:${col}`:''}">${mkIc(id)}</span><span class="mkcat-l">${name}</span></button>`;
+  el.innerHTML=btn('all','الكل','')+MK_CATS.map(c=>btn(c.id,c.name,c.col)).join('');
 }
+function mkSetCat(id){mkCat=id;renderMarketCats();renderMarket();}
+function mkSearch(val){mkQuery=(val||'').trim();renderMarket();}
+function mkSetSort(val){mkSort=val;renderMarket();}
+function mkClear(){mkCat='all';mkQuery='';const s=document.getElementById('mk-search');if(s)s.value='';renderMarketCats();renderMarket();}
+function renderMarket(){
+  const grid=document.getElementById('market'); if(!grid)return;
+  let list=MARKET.map((m,i)=>({m,i}));
+  if(mkCat!=='all')list=list.filter(({m})=>mkCatId(m.cat)===mkCat);
+  if(mkQuery){const q=mkQuery.toLowerCase();list=list.filter(({m})=>((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase().includes(q));}
+  if(mkSort==='low'||mkSort==='high'){const num=m=>{const d=(''+(m.price||'')).replace(/[^\d]/g,'');if(!d)return mkSort==='low'?Infinity:-1;return +d;};list=list.slice().sort((a,b)=>mkSort==='low'?num(a.m)-num(b.m):num(b.m)-num(a.m));}
+  const act=document.getElementById('mk-active');
+  if(act)act.innerHTML=(mkCat!=='all'||mkQuery)?`<span class="mk-chip">${mkCat!=='all'?mkCatName(mkCat):'نتائج البحث'} · ${list.length} إعلان <button onclick="mkClear()">&times;</button></span>`:'';
+  const empty=document.getElementById('mk-empty');
+  if(!list.length){grid.innerHTML='';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  grid.innerHTML=list.map(({m,i})=>{
+    const cover=m.img||(m.images&&m.images[0])||'';
+    const cond=m.cond==='new'?'<span class="mk-b new">جديد</span>':(m.cond==='used'?'<span class="mk-b used">مستعمل</span>':'');
+    return `<div class="mk" onclick="openMk(${i})">
+      <div class="mkimg"${cover?` style="background-image:url('${cover}');background-size:cover;background-position:center"`:''}>${cover?'':`<span class="mk-ph">${mkIc(mkCatId(m.cat))}</span>`}${cond}</div>
+      <div class="mkb">
+        <div class="price">${priceLabel(m)}</div>
+        <h4>${m.t}</h4>
+        <div class="meta"><svg class="mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>${m.loc} \u00B7 ${timeAgo(m.created)}</div>
+      </div></div>`;
+  }).join('');
+}
+function openMk(i){
+  const m=MARKET[i]; if(!m)return; curMk=m;
+  const imgs=(m.images&&m.images.length)?m.images:(m.img?[m.img]:[]);
+  document.getElementById('mk-gallery').innerHTML=imgs.length
+    ?`<div class="mkg-main" style="background-image:url('${imgs[0]}')"></div>`+(imgs.length>1?`<div class="mkg-thumbs">${imgs.map((u,gi)=>`<div class="mkg-th${gi===0?' on':''}" style="background-image:url('${u}')" onclick="mkPick(${i},${gi})"></div>`).join('')}</div>`:'')
+    :`<div class="mkg-main noimg2"><span>${mkIc(mkCatId(m.cat))}</span></div>`;
+  document.getElementById('mk-d-price').textContent=priceLabel(m);
+  document.getElementById('mk-d-title').textContent=m.t;
+  let badges=`<span class="mk-tag">${m.cat||mkCatName(mkCatId(m.cat))}</span>`;
+  if(m.cond==='new')badges+=`<span class="mk-tag alt">جديد</span>`;else if(m.cond==='used')badges+=`<span class="mk-tag alt">مستعمل</span>`;
+  if(m.nego)badges+=`<span class="mk-tag alt">قابل للتفاوض</span>`;
+  document.getElementById('mk-d-badges').innerHTML=badges;
+  document.getElementById('mk-d-metaline').innerHTML=`<span>${ic('pin')} ${m.loc}</span><span>${ic('clock')} ${timeAgo(m.created)}</span><span>${ic('eye')} ${(m.views||0)} مشاهدة</span>`;
+  document.getElementById('mk-d-desc').textContent=m.desc||'لا يوجد وصف إضافي.';
+  document.getElementById('mk-d-seller').innerHTML=m.sellerName?`<div class="mk-sell"><div class="mk-av">${(m.sellerName.trim()[0]||'؟')}</div><div><b>${m.sellerName}</b><span>صاحب الإعلان</span></div></div>`:'';
+  const idx=MARKET.indexOf(m);
+  const canEdit=USER&&m.ownerId&&m.ownerId===USER.id;
+  document.getElementById('mk-d-owner').innerHTML=canEdit?`<div class="mk-owner-btns"><button class="editbtn" onclick="closeMk();openPost(${idx})">${ic('edit')} تعديل الإعلان</button><button class="delbtn" onclick="delAd('${m.id}')">حذف</button></div>`:'';
+  const phone=m.phone||'';
+  document.getElementById('mk-d-actions').innerHTML=phone
+    ?`<a class="act call" href="tel:${phone}">${ic('call')} اتصال</a><a class="act wa" href="https://wa.me/2${(''+phone).replace(/^0/,'')}" target="_blank">${ic('wa')} واتساب</a>`
+    :`<div class="empty2" style="width:100%">لم يُضِف صاحب الإعلان رقم تواصل</div>`;
+  if(supa&&m.id&&!m._viewed){m._viewed=true;m.views=(m.views||0)+1;supa.rpc('inc_ad_views',{aid:m.id});}
+  document.getElementById('mkPage').classList.add('open');
+  document.getElementById('mkPage').scrollTop=0;
+}
+function mkPick(i,gi){const m=MARKET[i];const imgs=(m.images&&m.images.length)?m.images:(m.img?[m.img]:[]);const main=document.querySelector('#mk-gallery .mkg-main');if(main)main.style.backgroundImage=`url('${imgs[gi]}')`;document.querySelectorAll('#mk-gallery .mkg-th').forEach((t,ti)=>t.classList.toggle('on',ti===gi));}
+function closeMk(){document.getElementById('mkPage').classList.remove('open');}
+function reportAd(){if(!curMk)return;if(supa&&curMk.id)supa.from('reports').insert({target_type:'ad',target_id:curMk.id,reporter_id:USER?USER.id:null,reason:'بلاغ من مستخدم'});alert('تم استلام بلاغك، هيتم مراجعة الإعلان. شكراً لك.');}
+async function delAd(id){if(!confirm('متأكد إنك عايز تحذف الإعلان نهائياً؟'))return;try{const {error}=await supa.from('ads').delete().eq('id',id);if(error)throw error;}catch(e){alert('تعذر الحذف: '+(e.message||e));return;}closeMk();await loadData();go('market');}
 function renderEmg(){
   const e=(x,u)=>`<a class="ecard ${u?'urgent':''}" href="${x.num!=='—'?'tel:'+x.num:'#'}"><div class="eic">${ic('call')}</div><div><h4>${x.t}</h4><div class="num">${x.num}</div></div></a>`;
   document.getElementById('emg-urgent').innerHTML=EMG_URGENT.map(x=>e(x,true)).join('');
@@ -1418,35 +1632,66 @@ document.querySelectorAll('#otp input').forEach((inp,idx,arr)=>{
 });
 
 /* ===== نشر إعلان في السوق ===== */
-let postPhotoData=null,editPostIndex=null;
+let postPhotos_arr=[],postCond='used',editPostIndex=null;
 function reqPostAd(){ if(!USER){pendingAction='postAd';openAuth('signup');return;} openPost(); }
+function setCond(c){postCond=c;setCondUI();}
+function setCondUI(){document.querySelectorAll('#p-cond .cond').forEach(b=>b.classList.toggle('on',b.dataset.c===postCond));}
+function togFree(){const free=document.getElementById('p-free').checked;const pi=document.getElementById('p-price');pi.disabled=free;if(free)pi.value='';}
+function renderPostPhotos(){
+  const el=document.getElementById('p-prev');
+  el.innerHTML=postPhotos_arr.map((u,i)=>`<div class="ph-wrap"><img class="ph" src="${u}"><button type="button" class="ph-x" onclick="rmPhoto(${i})">&times;</button></div>`).join('');
+}
+function rmPhoto(i){postPhotos_arr.splice(i,1);renderPostPhotos();}
+function postPhotos(ev){
+  const files=Array.from(ev.target.files||[]);if(!files.length)return;
+  const room=5-postPhotos_arr.length;
+  files.slice(0,room).forEach(f=>{const r=new FileReader();r.onload=()=>{postPhotos_arr.push(r.result);renderPostPhotos();};r.readAsDataURL(f);});
+  if(files.length>room)alert('الحد الأقصى 5 صور');
+  ev.target.value='';
+}
 function openPost(editIdx){
   editPostIndex=(typeof editIdx==='number')?editIdx:null;
+  const sel=document.getElementById('p-cat');
+  sel.innerHTML=MK_CATS.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
   const m=editPostIndex!=null?MARKET[editPostIndex]:null;
-  postPhotoData=m?m.img||null:null;
-  document.getElementById('p-prev').innerHTML=postPhotoData?`<img class="ph" src="${postPhotoData}">`:'';
-  setV('p-title',m?m.t:'');setV('p-price',m?m.price:'');setV('p-cat',m?m.cat:'');
+  const isFree=/مجان/.test(''+(m&&m.price||''));
+  setV('p-title',m?m.t:'');
+  setV('p-price',isFree?'':(m?(''+(m.price||'')).replace(/[^\d]/g,''):''));
+  setV('p-area',m?(m.loc||'إدفو'):'إدفو');
+  setV('p-desc',m?(m.desc||''):'');
+  setV('p-phone',m?(m.phone||''):(USER&&USER.phone?USER.phone:''));
+  if(m&&m.cat&&MK_CATS.some(c=>c.name===m.cat))sel.value=m.cat;
+  document.getElementById('p-free').checked=isFree;
+  document.getElementById('p-nego').checked=m?!!m.nego:false;
+  postCond=m&&m.cond?m.cond:'used';setCondUI();togFree();
+  postPhotos_arr=m?((m.images&&m.images.length)?m.images.slice():(m.img?[m.img]:[])):[];
+  renderPostPhotos();
   document.getElementById('post-title').textContent=m?'تعديل الإعلان':'أضف إعلان في السوق';
   document.getElementById('post-save').textContent=m?'حفظ التعديلات':'انشر الإعلان';
   document.getElementById('postOverlay').classList.add('open');
 }
-function closePost(){document.getElementById('postOverlay').classList.remove('open');editPostIndex=null;}
-function postPhoto(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{postPhotoData=r.result;document.getElementById('p-prev').innerHTML=`<img class="ph" src="${postPhotoData}">`;};r.readAsDataURL(f);}
+function closePost(){document.getElementById('postOverlay').classList.remove('open');editPostIndex=null;postPhotos_arr=[];}
 async function savePost(){
-  const t=v('p-title'),p=v('p-price');
-  if(!t||!p){alert('اكتب عنوان الإعلان والسعر');return;}
+  const t=v('p-title');
+  const free=document.getElementById('p-free').checked;
+  const nego=document.getElementById('p-nego').checked;
+  if(!t){alert('اكتب عنوان الإعلان');return;}
   if(!supa||!USER){alert('لازم تسجّل دخول');openAuth('signup');return;}
+  const price=free?'مجاناً':v('p-price');
+  const cat=v('p-cat')||'متنوع',area=v('p-area')||'إدفو',desc=v('p-desc'),phone=v('p-phone');
   const btn=document.getElementById('post-save'),old=btn.textContent;btn.disabled=true;btn.textContent='بيتحفظ...';
   try{
-    let img=postPhotoData;
+    let adId=null;
+    const payload={title:t,price,category:cat,area,description:desc,phone,condition:postCond,negotiable:nego};
     if(editPostIndex!=null&&MARKET[editPostIndex]&&MARKET[editPostIndex].id){
-      const id=MARKET[editPostIndex].id;
-      if(img&&img.startsWith('data:'))img=await putImg('ad-images',id,img,'ad');
-      const {error}=await supa.from('ads').update({title:t,price:p,category:v('p-cat')||'متنوع',img_url:img}).eq('id',id);if(error)throw error;
+      adId=MARKET[editPostIndex].id;
+      const {error}=await supa.from('ads').update(payload).eq('id',adId);if(error)throw error;
     }else{
-      const {data,error}=await supa.from('ads').insert({owner_id:USER.id,title:t,price:p,category:v('p-cat')||'متنوع',area:'إدفو'}).select('id').single();if(error)throw error;
-      if(img&&img.startsWith('data:')){const url=await putImg('ad-images',data.id,img,'ad');await supa.from('ads').update({img_url:url}).eq('id',data.id);}
+      const {data,error}=await supa.from('ads').insert(Object.assign({owner_id:USER.id},payload)).select('id').single();if(error)throw error;adId=data.id;
     }
+    const urls=[];
+    for(let i=0;i<postPhotos_arr.length;i++){let u=postPhotos_arr[i];if(u&&u.startsWith('data:'))u=await putImg('ad-images',adId,u,'ad'+i);if(u)urls.push(u);}
+    await supa.from('ads').update({images:urls,img_url:urls[0]||null}).eq('id',adId);
     closePost();await loadData();go('market');
     alert(editPostIndex!=null?'تم حفظ التعديلات ✓':'تم إرسال الإعلان ✓ هيظهر بعد المراجعة');
   }catch(e){console.error(e);alert('حصل خطأ: '+(e.message||e));}
@@ -1481,17 +1726,19 @@ async function loadData(){
     ).order('created_at',{ascending:false});
     if(error)throw error;
     BIZ=(data||[]).map(mapBiz);
-    const {data:ads}=await supa.from('ads').select('*').order('created_at',{ascending:false});
-    MARKET=(ads||[]).map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',ic:'\u{1F4E6}',img:a.img_url,ownerId:a.owner_id}));
+    let ads=[];
+    try{const r=await supa.from('ads').select('*, profiles(name)').order('created_at',{ascending:false});if(r.error)throw r.error;ads=r.data||[];}
+    catch(e){const r2=await supa.from('ads').select('*').order('created_at',{ascending:false});ads=r2.data||[];}
+    MARKET=(ads||[]).map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||''}));
     try{
       const {data:offers}=await supa.from('offers').select('id,title,discount,ends_note,business_id,businesses(name)').eq('active',true).order('created_at',{ascending:false});
       OFFERS_LIVE=(offers||[]).map(o=>({id:o.id,disc:o.discount||'',shop:(o.businesses&&o.businesses.name)||'',txt:o.title,ends:o.ends_note||''}));
     }catch(e){OFFERS_LIVE=[];}
-    renderHome();renderMarket();renderOffers();if(current==='cat')renderCatList();
+    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();
   }catch(e){console.error('loadData',e);}
 }
 
-renderHome();renderOffers();renderMarket();renderEmg();renderNews();
+renderHome();renderOffers();renderMarketCats();renderMarket();renderEmg();renderNews();
 loadData();
 
 /* ===== متجري (لوحة صاحب المحل) ===== */
