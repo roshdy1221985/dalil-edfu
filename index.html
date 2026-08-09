@@ -648,6 +648,50 @@
   .ph-wrap .ph{width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid var(--bd)}
   .ph-x{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#e23744;color:#fff;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink)}
   @media(max-width:560px){.mkg-main{height:210px}.mk-price{font-size:1.5rem}}
+  /* ===== الوضع الفاتح (Light) ===== */
+  body.light{--pnl:#ffffff;--bd:rgba(14,42,72,.12);--tx:#17293f;--txd:#5f708a;--txm:#8695a8}
+  body.light{background:radial-gradient(1000px 500px at 88% -12%,rgba(212,175,55,.14),transparent 60%),radial-gradient(900px 500px at 6% 108%,rgba(46,123,228,.08),transparent 55%),linear-gradient(160deg,#f7f3ea,#eef4f1 70%)!important}
+  body.light::before{opacity:.4;background-image:radial-gradient(circle at 1px 1px,rgba(14,42,72,.05) 1px,transparent 0)}
+  body.light .card,body.light .offer,body.light .mk,body.light .ecard,body.light .news,body.light .lcard,body.light .menu,body.light .secblk,body.light .imgcard,body.light .prod{background:#fff!important;border:1px solid rgba(14,42,72,.1)!important;box-shadow:0 10px 30px rgba(14,42,72,.1), inset 0 1px 0 rgba(255,255,255,.6)!important;color:var(--tx)}
+  body.light .cat-tile{background:none!important;box-shadow:none!important;border:none!important}
+  body.light .card.feat{border:1px solid rgba(212,175,55,.55)!important;box-shadow:0 14px 36px rgba(212,175,55,.16)!important}
+  body.light header{background:linear-gradient(120deg,#fff,#f3f6fb)!important;box-shadow:0 2px 0 rgba(212,175,55,.55),0 6px 20px rgba(14,42,72,.06)!important}
+  body.light .brand span{color:#8a6d1f!important}
+  body.light .hero{background:radial-gradient(700px 320px at 82% -20%,rgba(212,175,55,.16),transparent 60%),linear-gradient(160deg,#fbf7ee,#eef4f1)!important}
+  body.light .hero p{color:#4a5b71!important}body.light .hero h2{color:#17293f!important}
+  body.light .stat b{color:#a6801f!important}
+  body.light nav.tabs{background:rgba(255,255,255,.94)!important;border-top:1px solid rgba(14,42,72,.1)!important}
+  body.light nav.tabs button{color:#8695a8!important}body.light nav.tabs button.active{color:#a6801f!important}
+  body.light .desc,body.light .news p,body.light .prod .pb,body.light .lc-rows>div{color:#3f5064!important}
+  body.light .field label{color:#a6801f!important}
+  body.light .search{background:rgba(14,42,72,.05)!important}body.light .search input{color:#17293f!important}
+  body.light .chip{background:rgba(14,42,72,.05)!important;border:1px solid rgba(14,42,72,.12)!important;color:#4a5b71!important}
+  body.light .lc-av.lite{background:rgba(14,42,72,.06)!important}
+  body.light .act.map{background:rgba(14,42,72,.06)!important;color:#17293f!important}
+  body.light .modal{background:#fff!important;border:1px solid rgba(14,42,72,.12)!important}
+  body.light .modal-head{background:linear-gradient(120deg,#fff,#f3f6fb)!important}
+  body.light .modal-head h3{background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent}
+  body.light .x{color:#17293f!important}
+  body.light .field input,body.light .field select,body.light .field textarea,body.light .otp input,body.light .mk-srch,body.light #mk-sort,body.light .mk-range input,body.light .adm-search,body.light .adm-sel,body.light .adm-plan,body.light .p-sel{background:#f4f6fa!important;border:1px solid rgba(14,42,72,.14)!important;color:#17293f!important}
+  body.light .mk-srch{color:#5f708a!important}
+  body.light .plan{background:#f4f6fa!important;border-color:rgba(14,42,72,.14)!important}
+  body.light .plan.sel{background:rgba(212,175,55,.12)!important;border-color:#d4af37!important}
+  body.light .note{background:rgba(212,175,55,.12)!important;border-color:rgba(212,175,55,.4)!important;color:#7a5f14!important}
+  body.light .price-list .pr{background:rgba(14,42,72,.03)!important;color:#17293f!important}
+  body.light .price-list .pr:nth-child(even){background:rgba(14,42,72,.05)!important}
+  body.light .promo,body.light .cta{background:linear-gradient(120deg,#eaf1fb,#f5f0e6)!important;border:1px solid rgba(14,42,72,.1)!important}
+  body.light .seg button,body.light .ad-btns button{background:rgba(14,42,72,.05)!important;border-color:rgba(14,42,72,.14)!important;color:#17293f!important}
+  body.light .ad-row,body.light .fav-row,body.light .notif-item,body.light .mk-sell,body.light .adm-stat{background:#f7f9fc!important;border-color:rgba(14,42,72,.1)!important}
+  body.light .tool-btn{background:#f4f6fa!important;border-color:rgba(14,42,72,.14)!important;color:#3f5064!important}
+  body.light .bell-btn{background:#f4f6fa!important;border-color:rgba(14,42,72,.14)!important;color:#17293f!important}
+  body.light .page,body.light .page-body{background:linear-gradient(160deg,#f7f3ea,#eef4f1 70%)!important}
+  body.light .page-bar{background:linear-gradient(120deg,#fff,#f3f6fb)!important;box-shadow:0 2px 0 rgba(212,175,55,.5)!important}
+  body.light .backb{background:rgba(14,42,72,.06)!important;border-color:rgba(14,42,72,.12)!important;color:#17293f!important}
+  body.light .mkg-main,body.light .mk-thumb{background:#eef2f7}
+  body.light .empty,body.light .empty2,body.light .lim-hint,body.light .mk-desc{color:#5f708a!important}
+  body.light .acct-btn.in{background:rgba(14,42,72,.06)!important;color:#17293f!important}
+  body.light .acc-row b{color:#17293f}
+  body.light .search svg{color:#5f708a}
 </style>
 </head>
 <body>
@@ -904,6 +948,7 @@
 
 <div class="menu" id="acctMenu">
   <div class="mu-name" id="mu-name"></div>
+  <button onclick="toggleTheme()" id="theme-btn">🌙 الوضع الداكن</button>
   <button onclick="openMyAccount()">👤 حسابي</button>
   <button onclick="openMyAds()">📋 إعلاناتي</button>
   <button onclick="openFavs()">❤️ المفضلة</button>
@@ -1143,6 +1188,20 @@ function openMyAds(){
   document.getElementById('userOverlay').classList.add('open');
 }
 function contactUs(){window.open('https://wa.me/201151107993','_blank');}
+/* ===== الوضع الفاتح/الداكن ===== */
+function applyTheme(){
+  let t='dark';try{t=localStorage.getItem('dalil_theme')||'dark';}catch(e){}
+  document.body.classList.toggle('light',t==='light');
+  const b=document.getElementById('theme-btn');
+  if(b)b.textContent=(t==='light')?'🌙 الوضع الداكن':'☀️ الوضع الفاتح';
+}
+function toggleTheme(){
+  const light=!document.body.classList.contains('light');
+  document.body.classList.toggle('light',light);
+  try{localStorage.setItem('dalil_theme',light?'light':'dark');}catch(e){}
+  const b=document.getElementById('theme-btn');if(b)b.textContent=light?'🌙 الوضع الداكن':'☀️ الوضع الفاتح';
+}
+applyTheme();
 /* ===== الإشعارات ===== */
 function notifLastSeen(){try{return +localStorage.getItem('dalil_notif_seen')||0;}catch(e){return 0;}}
 function notifTime(n){return n.created?(typeof n.created==='number'?n.created:new Date(n.created).getTime()):0;}
