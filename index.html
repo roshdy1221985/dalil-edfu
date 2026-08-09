@@ -692,9 +692,13 @@
   body.light .acct-btn.in{background:rgba(14,42,72,.06)!important;color:#17293f!important}
   body.light .acc-row b{color:#17293f}
   body.light .search svg{color:#5f708a}
+  /* بانر عدم الاتصال */
+  #offlineBar{position:fixed;top:0;left:0;right:0;z-index:200;background:#e2643a;color:#fff;text-align:center;font-size:.82rem;font-weight:600;padding:7px 12px;transform:translateY(-100%);transition:.25s;font-family:'Tajawal',sans-serif}
+  #offlineBar.show{transform:translateY(0)}
 </style>
 </head>
 <body class="light">
+<div id="offlineBar">⚠️ مفيش اتصال بالإنترنت — بتشوف نسخة محفوظة</div>
 <div class="aura"></div>
 
 <header>
@@ -952,6 +956,8 @@
   <button onclick="openMyAccount()">👤 حسابي</button>
   <button onclick="openMyAds()">📋 إعلاناتي</button>
   <button onclick="openFavs()">❤️ المفضلة</button>
+  <button id="install-btn" onclick="installApp()" style="display:none">📲 ثبّت التطبيق</button>
+  <button onclick="shareApp()">📤 شارك التطبيق</button>
   <button id="store-btn" onclick="openMyStore()" style="display:none">🏪 متجري</button>
   <button id="admin-btn" onclick="openAdmin()" style="display:none">🛠️ لوحة الأدمن</button>
   <button onclick="window.open('privacy.html','_blank')">🛡️ سياسة الخصوصية</button>
@@ -1188,6 +1194,14 @@ function openMyAds(){
   document.getElementById('userOverlay').classList.add('open');
 }
 function contactUs(){window.open('https://wa.me/201151107993','_blank');}
+/* ===== تثبيت + مشاركة التطبيق + حالة الاتصال ===== */
+let _deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_deferredPrompt=e;const b=document.getElementById('install-btn');if(b)b.style.display='block';});
+window.addEventListener('appinstalled',()=>{_deferredPrompt=null;const b=document.getElementById('install-btn');if(b)b.style.display='none';});
+async function installApp(){const b=document.getElementById('install-btn');if(!_deferredPrompt){alert('التطبيق متثبّت بالفعل، أو افتح قائمة المتصفح واختر «إضافة إلى الشاشة الرئيسية».');return;}_deferredPrompt.prompt();try{await _deferredPrompt.userChoice;}catch(e){}_deferredPrompt=null;if(b)b.style.display='none';}
+function shareApp(){const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');doShare('دليل إدفو — كل محلات وخدمات وسوق مدينة إدفو في مكان واحد 📍',location.origin+location.pathname);}
+function updateOnline(){const bar=document.getElementById('offlineBar');if(!bar)return;bar.classList.toggle('show',!navigator.onLine);}
+window.addEventListener('online',updateOnline);window.addEventListener('offline',updateOnline);updateOnline();
 /* ===== الوضع الفاتح/الداكن ===== */
 function applyTheme(){
   let t='light';try{t=localStorage.getItem('dalil_theme')||'light';}catch(e){}
