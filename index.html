@@ -563,6 +563,11 @@
   .notif-item small{color:var(--txd);font-size:.75rem}
   .search-sec{font-family:'Amiri',serif;font-size:1.05rem;color:#e8d59a;margin:6px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
   .search-sec:not(:first-child){margin-top:22px}
+  /* شارة موثّق */
+  .vrf{width:15px;height:15px;display:inline-block;vertical-align:-2px;margin-right:2px;flex:0 0 auto}
+  h4 .vrf{width:14px;height:14px}
+  .vrf-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(212,175,55,.15);border:1px solid var(--bd);color:#f0e2b0;border-radius:999px;padding:2px 10px;font-size:.76rem;font-weight:700}
+  .vrf-tag .vrf{width:14px;height:14px;margin:0}
 
   /* ===== سوق إدفو (OpenSooq style) ===== */
   .mk-cats{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -1062,6 +1067,9 @@ const CAT_IMG={food:'cat-food.png',market:'cat-market.png',pharm:'cat-pharm.png'
 const MK_IMG={cars:'cat-trans.png',realestate:'cat-build.png',phones:'cat-phone.png',electronics:'cat-phone.png',fashion:'cat-cloth.png',services:'cat-home.png'};
 /* صورة العنصر: صورته الخاصة، وإلا صورة القسم للعناصر التجريبية (اللي من غير id) */
 const bizPic=b=>(b.photos&&b.photos.length)?b.photos[0]:((!b.id&&CAT_IMG[b.cat])?CAT_IMG[b.cat]:'');
+/* شارة موثّق للمتاجر المدفوعة (مميّز/بريميوم) */
+const VERIFIED='<svg class="vrf" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#d4af37"/><path d="m7.8 12 2.6 2.6L16.2 9" fill="none" stroke="#0b1628" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const vrf=b=>(b&&b.plan&&b.plan!=='free')?VERIFIED:'';
 /* التخصصات/الأنواع الفرعية لكل قسم (زي المرجع) */
 const SUBCATS={
   clinic:['باطنة','أطفال','أسنان','جلدية','عظام','نساء وتوليد','أنف وأذن','عيون','قلب','مخ وأعصاب','جراحة','مسالك بولية','رمد','نفسية'],
@@ -1367,7 +1375,7 @@ function listBig(b,i){
   return `<div class="lcard big">
     ${banner}
     <div class="lc-info">
-      <h4 onclick="openDet(${i})">${esc(b.name)}</h4>
+      <h4 onclick="openDet(${i})">${esc(b.name)} ${vrf(b)}</h4>
       ${b.owner?`<div class="lc-owner">${esc(b.owner)}</div>`:''}
       <div class="lc-meta2"><span>\u2B50 ${rcountOf(b)?ratingOf(b).toFixed(1):'جديد'}</span><span>\u{1F441} ${viewsOf(b)}</span><span>\u{1F4CD} ${esc(b.area||areaOf(b))}</span></div>
       <div class="lc-actions">${lcActionsHTML(b)}</div>
@@ -1381,7 +1389,7 @@ function listCompact(b,i){
     :`<div class="lc-av lite" style="color:${catSolid(b.cat)}" onclick="openDet(${i})">${!b.id?'<span class="demo-tag">تجريبي</span>':''}${esc((b.name||'؟').trim().charAt(0))}</div>`;
   return `<div class="lcard">
     <div class="lc-top">
-      <div class="lc-title">${b.plan!=='free'?`<span class="badge2">${b.plan==='prem'?'\u2605 بريميوم':'مميّز'}</span><br>`:''}<h4 onclick="openDet(${i})">${esc(b.name)}</h4>${b.owner?`<div class="lc-owner">${esc(b.owner)}</div>`:''}</div>
+      <div class="lc-title">${b.plan!=='free'?`<span class="badge2">${b.plan==='prem'?'\u2605 بريميوم':'مميّز'}</span><br>`:''}<h4 onclick="openDet(${i})">${esc(b.name)} ${vrf(b)}</h4>${b.owner?`<div class="lc-owner">${esc(b.owner)}</div>`:''}</div>
       ${av}
     </div>
     <div class="lc-actions">${lcActionsHTML(b)}</div>
@@ -1539,7 +1547,7 @@ function cardHTML(b,i){
     :`<div class="thumb noimg" onclick="openDet(${i})">${dtag}${badge}<span class="noimg-in">${ic('camera')}<span>لا توجد صورة</span></span></div>`;
   return `<div class="card ${isFeat?'feat':''}">
     ${thumb}
-    <div class="card-body"><h4 onclick="openDet(${i})" style="cursor:pointer">${esc(b.name)}</h4>
+    <div class="card-body"><h4 onclick="openDet(${i})" style="cursor:pointer">${esc(b.name)} ${vrf(b)}</h4>
     <div class="cat-line"><span class="cdot" style="background:${catSolid(b.cat)}"></span>${catName(b.cat)}${b.sub?' · '+esc(b.sub):''}</div>
     <div class="rate-mini">${rateLabel(b)} \u00B7 \u{1F441} ${viewsOf(b)}</div>
     <div class="desc">${esc(b.desc||'')}</div>${actions}</div></div>`;
@@ -1651,7 +1659,7 @@ function openDet(i){
   const b=BIZ[i];detIdx=i;
   d('d-name',b.name);d('d-name2',b.name);d('d-cat',catName(b.cat));
   d('d-desc',b.desc||'');d('d-addr',b.addr||'—');d('d-phone',b.phone||'—');d('d-hours',b.hours||'—');
-  document.getElementById('d-rating').innerHTML=(!b.id?`<span class="mk-tag demo" style="margin-left:6px">محل تجريبي</span> `:'')+(rcountOf(b)
+  document.getElementById('d-rating').innerHTML=(b.plan&&b.plan!=='free'?`<span class="vrf-tag">${VERIFIED} موثّق</span> `:'')+(!b.id?`<span class="mk-tag demo" style="margin-left:6px">محل تجريبي</span> `:'')+(rcountOf(b)
     ?`${goldStar}<span class="val">${ratingOf(b).toFixed(1)}</span><span>(${rcountOf(b)} تقييم)</span> \u00B7 <span class="vw">${ic('eye')} ${viewsOf(b)} مشاهدة</span>`
     :`<span>\u2728 لسه مفيش تقييم</span> \u00B7 <span class="vw">${ic('eye')} ${viewsOf(b)} مشاهدة</span>`);
   document.getElementById('d-rater').innerHTML=`<div class="lbl">${b.myRated?'\u2713 شكراً لتقييمك':'قيّم المحل:'}</div><div class="rstars">${[1,2,3,4,5].map(n=>`<span data-n="${n}" onmouseover="rHover(${n})" onmouseout="rClear()" onclick="rateShop(${n})">\u2605</span>`).join('')}</div>`;
