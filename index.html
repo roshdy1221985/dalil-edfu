@@ -649,7 +649,7 @@
   .ph-x{position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#e23744;color:#fff;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink)}
   @media(max-width:560px){.mkg-main{height:210px}.mk-price{font-size:1.5rem}}
   /* ===== الوضع الفاتح (Light) ===== */
-  body.light{--pnl:#ffffff;--bd:rgba(14,42,72,.12);--tx:#17293f;--txd:#5f708a;--txm:#8695a8}
+  body.light{--pnl:#ffffff;--bd:rgba(14,42,72,.12);--tx:#17293f;--txd:#5f708a;--txm:#8695a8;--gg:linear-gradient(135deg,#a9791a,#caa02c,#96691a,#c19a2e,#8f6416)}
   body.light{background:radial-gradient(1000px 500px at 88% -12%,rgba(212,175,55,.14),transparent 60%),radial-gradient(900px 500px at 6% 108%,rgba(46,123,228,.08),transparent 55%),linear-gradient(160deg,#f7f3ea,#eef4f1 70%)!important}
   body.light::before{opacity:.4;background-image:radial-gradient(circle at 1px 1px,rgba(14,42,72,.05) 1px,transparent 0)}
   body.light .card,body.light .offer,body.light .mk,body.light .ecard,body.light .news,body.light .lcard,body.light .menu,body.light .secblk,body.light .imgcard,body.light .prod{background:#fff!important;border:1px solid rgba(14,42,72,.1)!important;box-shadow:0 10px 30px rgba(14,42,72,.1), inset 0 1px 0 rgba(255,255,255,.6)!important;color:var(--tx)}
@@ -694,7 +694,7 @@
   body.light .search svg{color:#5f708a}
 </style>
 </head>
-<body>
+<body class="light">
 <div class="aura"></div>
 
 <header>
@@ -1190,7 +1190,7 @@ function openMyAds(){
 function contactUs(){window.open('https://wa.me/201151107993','_blank');}
 /* ===== الوضع الفاتح/الداكن ===== */
 function applyTheme(){
-  let t='dark';try{t=localStorage.getItem('dalil_theme')||'dark';}catch(e){}
+  let t='light';try{t=localStorage.getItem('dalil_theme')||'light';}catch(e){}
   document.body.classList.toggle('light',t==='light');
   const b=document.getElementById('theme-btn');
   if(b)b.textContent=(t==='light')?'🌙 الوضع الداكن':'☀️ الوضع الفاتح';
@@ -1394,6 +1394,7 @@ document.getElementById('q').addEventListener('input',e=>{
 /* ===== شاشة قائمة القسم ===== */
 let current='home';
 function openCat(catId,isSearch){
+  const wasCat=(current==='cat');
   activeCat=catId;activeArea='all';
   document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
   document.getElementById('v-cat').classList.add('active');
@@ -1403,6 +1404,7 @@ function openCat(catId,isSearch){
   document.getElementById('cat-title').textContent=isSearch?'نتائج البحث':(catId==='all'?'كل الأنشطة':catName(catId));
   current='cat';
   renderAreaChips();renderCatList();
+  if(!wasCat)pushView();
   window.scrollTo({top:0});
 }
 function renderAreaChips(){
@@ -1703,7 +1705,10 @@ function renderNews(){
     <div class="news"><div class="nd">${n.d}</div><h4>${n.t}</h4><p>${n.p}</p></div>`).join('');
 }
 
+let _suppressPush=false;
+function pushView(){ if(!_suppressPush){try{history.pushState({app:1},'');}catch(e){}} }
 function go(v){
+  const prev=current;
   current=v;
   document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
   document.getElementById('v-'+v).classList.add('active');
@@ -1711,6 +1716,7 @@ function go(v){
   document.getElementById('hero').style.display=v==='home'?'block':'none';
   document.getElementById('fab').style.display=(v==='home'||v==='cat')?'block':'none';
   if(v==='home')renderHome();
+  if(v!=='home'&&prev!==v)pushView();
   window.scrollTo({top:0});
 }
 
@@ -2249,6 +2255,24 @@ async function loadData(){
 
 renderHome();renderOffers();renderMarketCats();renderMarket();renderEmg();renderNews();
 loadData();loadNotifs();
+/* ===== التحكّم في زرار الرجوع بالموبايل ===== */
+(function(){
+  try{
+    const obs=new MutationObserver(ms=>{
+      for(const m of ms){
+        const el=m.target,had=(m.oldValue||'').split(/\s+/).indexOf('open')>=0;
+        if(!had && el.classList && el.classList.contains('open')) pushView();
+      }
+    });
+    document.querySelectorAll('.overlay,.page').forEach(el=>obs.observe(el,{attributes:true,attributeFilter:['class'],attributeOldValue:true}));
+    window.addEventListener('popstate',()=>{
+      const opens=document.querySelectorAll('.overlay.open,.page.open');
+      if(opens.length){opens[opens.length-1].classList.remove('open');return;}
+      if(typeof current!=='undefined' && current && current!=='home'){_suppressPush=true;go('home');_suppressPush=false;return;}
+      /* في الرئيسية ومفيش حاجة مفتوحة → يخرج طبيعي */
+    });
+  }catch(e){}
+})();
 /* اختصارات أندرويد / روابط مباشرة (?tab=market أو ?action=add) */
 try{const _q=new URLSearchParams(location.search);
   const _t=_q.get('tab');if(_t&&document.getElementById('v-'+_t))go(_t);
