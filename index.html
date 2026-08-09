@@ -999,6 +999,11 @@ const catName=id=>(CATS.find(c=>c.id===id)||{}).name||'';
 /* صور مخصّصة للأقسام: حط اسم ملف الصورة قدام كل قسم علشان يظهر بدل الرسمة.
    مثال: food:'cat-food.png'  (الملفات تتحط في نفس فولدر التطبيق) */
 const CAT_IMG={food:'cat-food.png',market:'cat-market.png',pharm:'cat-pharm.png',clinic:'cat-clinic.png',lab:'cat-lab.png',cloth:'cat-cloth.png',phone:'cat-phone.png',home:'cat-home.png',build:'cat-build.png',trans:'cat-trans.png',event:'cat-event.png',edu:'cat-edu.png',tour:'cat-tour.png'};
+/* صور بديلة لإعلانات السوق التجريبية (مطابقة تقريبية من صور الأقسام) */
+const MK_IMG={cars:'cat-trans.png',realestate:'cat-build.png',phones:'cat-phone.png',electronics:'cat-phone.png',fashion:'cat-cloth.png',services:'cat-home.png'};
+/* صورة العنصر: صورته الخاصة، وإلا صورة القسم للعناصر التجريبية (اللي من غير id) */
+const bizPic=b=>(b.photos&&b.photos.length)?b.photos[0]:((!b.id&&CAT_IMG[b.cat])?CAT_IMG[b.cat]:'');
+const adPic=m=>(m.img||(m.images&&m.images[0]))||((!m.id&&MK_IMG[mkCatId(m.cat)])?MK_IMG[mkCatId(m.cat)]:'');
 /* تهريب HTML لمنع حقن السكربتات (XSS) من بيانات المستخدم */
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -1231,8 +1236,9 @@ function lcActionsHTML(b){
 }
 function planBadge(b){return b.plan==='prem'?'<span class="badge">\u2605 بريميوم</span>':(b.plan==='feat'?'<span class="badge">مميّز</span>':'');}
 function listBig(b,i){
-  const banner=(b.photos&&b.photos.length)
-    ?`<div class="lc-banner" style="background-image:url('${b.photos[0]}')" onclick="openDet(${i})">${planBadge(b)}</div>`
+  const _p=bizPic(b);
+  const banner=_p
+    ?`<div class="lc-banner" style="background-image:url('${_p}')" onclick="openDet(${i})">${planBadge(b)}</div>`
     :`<div class="lc-banner" style="background:${catCol(b.cat)}" onclick="openDet(${i})">${planBadge(b)}<span class="bnr-ic">${catSvg(b.cat)}</span></div>`;
   return `<div class="lcard big">
     ${banner}
@@ -1245,8 +1251,9 @@ function listBig(b,i){
   </div>`;
 }
 function listCompact(b,i){
-  const av=(b.photos&&b.photos.length)
-    ?`<div class="lc-av" style="background-image:url('${b.photos[0]}')" onclick="openDet(${i})"></div>`
+  const _p=bizPic(b);
+  const av=_p
+    ?`<div class="lc-av" style="background-image:url('${_p}')" onclick="openDet(${i})"></div>`
     :`<div class="lc-av lite" style="color:${catSolid(b.cat)}" onclick="openDet(${i})">${esc((b.name||'؟').trim().charAt(0))}</div>`;
   return `<div class="lcard">
     <div class="lc-top">
@@ -1363,8 +1370,9 @@ function cardHTML(b,i){
   let actions=isFeat
     ?`<div class="actions"><a class="act call" href="tel:${b.phone}">${ic('call')} اتصال</a>${b.wa?`<a class="act wa" href="https://wa.me/2${b.wa.replace(/^0/,'')}" target="_blank">${ic('wa')}</a>`:''}<a class="act map" href="https://www.google.com/maps/search/${encodeURIComponent(b.addr)}" target="_blank">${ic('pin')}</a></div>`
     :`<div class="actions"><a class="act call" href="tel:${b.phone}">${ic('call')} اتصال</a></div>`;
-  const thumb=(b.photos&&b.photos.length)
-    ?`<div class="thumb hasimg" style="background-image:url('${b.photos[0]}')" onclick="openDet(${i})">${badge}</div>`
+  const _p=bizPic(b);
+  const thumb=_p
+    ?`<div class="thumb hasimg" style="background-image:url('${_p}')" onclick="openDet(${i})">${badge}</div>`
     :`<div class="thumb noimg" onclick="openDet(${i})">${badge}<span class="noimg-in">${ic('camera')}<span>لا توجد صورة</span></span></div>`;
   return `<div class="card ${isFeat?'feat':''}">
     ${thumb}
@@ -1408,7 +1416,7 @@ function renderMarket(){
   if(!list.length){grid.innerHTML='';if(empty)empty.style.display='block';return;}
   if(empty)empty.style.display='none';
   grid.innerHTML=list.map(({m,i})=>{
-    const cover=m.img||(m.images&&m.images[0])||'';
+    const cover=adPic(m);
     const cnt=(m.images&&m.images.length)||0;
     const cond=m.cond==='new'?'<span class="mk-b new">جديد</span>':(m.cond==='used'?'<span class="mk-b used">مستعمل</span>':'');
     return `<div class="mk row" onclick="openMk(${i})">
@@ -1422,7 +1430,8 @@ function renderMarket(){
 }
 function openMk(i){
   const m=MARKET[i]; if(!m)return; curMk=m;
-  const imgs=(m.images&&m.images.length)?m.images:(m.img?[m.img]:[]);
+  let imgs=(m.images&&m.images.length)?m.images:(m.img?[m.img]:[]);
+  if(!imgs.length){const p=adPic(m);if(p)imgs=[p];}
   document.getElementById('mk-gallery').innerHTML=imgs.length
     ?`<div class="mkg-main" style="background-image:url('${imgs[0]}')"></div>`+(imgs.length>1?`<div class="mkg-thumbs">${imgs.map((u,gi)=>`<div class="mkg-th${gi===0?' on':''}" style="background-image:url('${u}')" onclick="mkPick(${i},${gi})"></div>`).join('')}</div>`:'')
     :`<div class="mkg-main noimg2"><span>${mkIc(mkCatId(m.cat))}</span></div>`;
@@ -1485,6 +1494,7 @@ function openDet(i){
   if(supa&&b.id&&!b._viewed){b._viewed=true;b.views=(b.views||0)+1;supa.rpc('inc_business_views',{bid:b.id});}
   const vis=document.getElementById('d-visual');
   if(b.photos&&b.photos.length){vis.className='gallery';vis.style.background='';vis.style.height='';vis.innerHTML=b.photos.map(p=>`<img src="${p}" alt="">`).join('');}
+  else if(!b.id&&CAT_IMG[b.cat]){vis.className='gallery';vis.style.background='';vis.style.height='';vis.innerHTML=`<img src="${CAT_IMG[b.cat]}" alt="">`;}
   else{vis.className='d-noimg';vis.style.background='';vis.style.color='';vis.innerHTML=`<span class="noimg-in">${ic('camera')}<span>لا توجد صورة للمحل</span></span>`;}
   const fs=document.getElementById('d-feats-sec');
   if(b.features&&b.features.length){fs.style.display='block';document.getElementById('d-feats').innerHTML=b.features.map(f=>`<span>\u2713 ${esc(f)}</span>`).join('');}
