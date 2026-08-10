@@ -1819,7 +1819,7 @@ function openMk(i){
   const canEdit=USER&&m.ownerId&&m.ownerId===USER.id;
   document.getElementById('mk-d-owner').innerHTML=canEdit?`${adExpired(m)?`<button class="republish-btn full" onclick="republishAd('${m.id}')">🔄 أعِد نشر الإعلان (انتهت صلاحيته)</button>`:''}<div class="mk-owner-btns"><button class="editbtn" onclick="closeMk();openPost(${idx})">${ic('edit')} تعديل الإعلان</button><button class="delbtn" onclick="delAd('${m.id}')">حذف</button></div>${m.featured?'':`<button class="promo-btn" onclick="promoteAd()">\u2B50 روّج إعلانك (مميّز)</button>`}`:'';
   const phone=m.phone||'';
-  const canMsg=USER&&m.id&&m.ownerId&&m.ownerId!==USER.id;
+  const canMsg=!(USER&&m.ownerId&&m.ownerId===USER.id);
   let acts='';
   if(canMsg)acts+=`<button class="act msg" onclick="openChatForAd(curMk)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;vertical-align:-3px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> مراسلة البائع</button>`;
   if(phone)acts+=`<a class="act call" href="tel:${phone}" onclick="adClick('call','${m.id}')">${ic('call')} اتصال</a><a class="act wa" href="https://wa.me/2${(''+phone).replace(/^0/,'')}" target="_blank" onclick="adClick('wa','${m.id}')">${ic('wa')} واتساب</a>`;
@@ -1841,8 +1841,8 @@ function reportAd(){if(!curMk)return;if(supa&&curMk.id)supa.from('reports').inse
 /* ===== الدردشة داخل التطبيق ===== */
 let _chatChannel=null,_curConvo=null,_convos=[];
 async function openChatForBiz(b){
-  if(!USER){alert('لازم تسجّل دخول عشان تراسل المحل');openAuth('login');return;}
-  if(!b||!b.id||!b.ownerId){alert('مش ممكن تراسل المحل ده.');return;}
+  if(!USER){alert('سجّل دخول الأول عشان تراسل المحل 🙂');openAuth('login');return;}
+  if(!b||!b.id||!b.ownerId){alert('ده محل تجريبي للعرض بس — الدردشة بتشتغل مع المحلات الحقيقية اللي بيضيفها أصحابها.');return;}
   if(b.ownerId===USER.id){alert('ده محلك إنت 🙂');return;}
   try{
     let conv=null;
@@ -1856,8 +1856,8 @@ async function openChatForBiz(b){
   }catch(e){alert('تعذّر فتح المحادثة (شغّل chat.sql في Supabase): '+(e.message||e));}
 }
 async function openChatForAd(m){
-  if(!USER){alert('لازم تسجّل دخول عشان تراسل صاحب الإعلان');openAuth('login');return;}
-  if(!m||!m.id||!m.ownerId){alert('مش ممكن تراسل صاحب الإعلان ده (إعلان تجريبي).');return;}
+  if(!USER){alert('سجّل دخول الأول عشان تراسل صاحب الإعلان 🙂');openAuth('login');return;}
+  if(!m||!m.id||!m.ownerId){alert('ده إعلان تجريبي للعرض بس — الدردشة بتشتغل مع الإعلانات الحقيقية اللي بيضيفها المستخدمين.');return;}
   if(m.ownerId===USER.id){alert('ده إعلانك إنت 🙂');return;}
   try{
     let conv=null;
@@ -2024,7 +2024,7 @@ function openDet(i){
   if(canEdit&&b.id){dstats.style.display='grid';dstats.innerHTML='<div class="empty2" style="grid-column:1/-1">جارٍ تحميل إحصائيات محلك…</div>';loadBizStats(b.id,'d-stats');}
   else dstats.style.display='none';
   const dmsg=document.getElementById('d-msg');
-  if(dmsg){const canMsgB=USER&&b.id&&b.ownerId&&b.ownerId!==USER.id;dmsg.innerHTML=canMsgB?`<button class="msg-biz-btn" onclick="openChatForBiz(BIZ[${i}])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;vertical-align:-3px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> مراسلة المحل</button>`:'';}
+  if(dmsg){const canMsgB=!(USER&&b.ownerId&&b.ownerId===USER.id);dmsg.innerHTML=canMsgB?`<button class="msg-biz-btn" onclick="openChatForBiz(BIZ[${i}])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;vertical-align:-3px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> مراسلة المحل</button>`:'';}
   document.getElementById('detailPage').classList.add('open');
   document.getElementById('detailPage').scrollTop=0;
 }
