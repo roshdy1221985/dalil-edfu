@@ -737,6 +737,9 @@
   .promo-btn{width:100%;margin-top:10px;background:linear-gradient(135deg,#bf953f,#fcf6ba,#aa771c);color:#3a2600;border:none;border-radius:12px;padding:12px;font-family:inherit;font-weight:800;font-size:.92rem}
   body.light .mk.row.feat{background:linear-gradient(90deg,rgba(212,175,55,.12),transparent 60%)}
   body.light .mk-tag.feat,body.light .adm-b.feat,body.light .feat-b{color:#7a5510!important}
+  .republish-btn{background:#e2643a;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-family:inherit;font-weight:700;font-size:.82rem;flex:0 0 auto}
+  .republish-btn.full{width:100%;padding:12px;border-radius:12px;font-size:.92rem;margin-bottom:10px}
+  .republish-btn:active{transform:scale(.97)}
 </style>
 </head>
 <body class="light">
@@ -1198,6 +1201,33 @@ const SUBCATS={
   edu:['سنتر دروس','مدرس خصوصي','حضانة','تحفيظ قرآن']
 };
 const adPic=m=>(m.img||(m.images&&m.images[0]))||((!m.id&&MK_IMG[mkCatId(m.cat)])?MK_IMG[mkCatId(m.cat)]:'');
+/* صلاحية الإعلان: شهر من آخر نشر/رفع */
+const AD_TTL=30*864e5;
+function adAnchor(m){const t=m.bumped||m.created;return t?(typeof t==='number'?t:new Date(t).getTime()):Date.now();}
+function adExpired(m){if(!m||!m.id)return false;return (Date.now()-adAnchor(m))>AD_TTL;}
+function adDaysLeft(m){return Math.max(0,Math.ceil((AD_TTL-(Date.now()-adAnchor(m)))/864e5));}
+function checkExpiredAds(){
+  if(!USER||!Array.isArray(MARKET))return;
+  let notified=[];try{notified=JSON.parse(localStorage.getItem('notified_expired')||'[]');}catch(e){}
+  let added=false;
+  MARKET.forEach(m=>{
+    if(m.id&&m.ownerId===USER.id&&adExpired(m)&&notified.indexOf(m.id)<0){
+      NOTIFS.unshift({title:'⏰ انتهت صلاحية إعلانك',body:`إعلان "${m.t}" عدّى عليه شهر. افتح «إعلاناتي» وأعِد نشره عشان يظهر تاني.`,created:Date.now()});
+      notified.push(m.id);added=true;
+    }
+  });
+  if(added){try{localStorage.setItem('notified_expired',JSON.stringify(notified));}catch(e){}renderNotifBadge();}
+}
+async function republishAd(id){
+  if(!supa){alert('لازم تسجّل دخول');return;}
+  try{
+    const {error}=await supa.from('ads').update({bumped_at:new Date().toISOString()}).eq('id',id);if(error)throw error;
+    try{let n=JSON.parse(localStorage.getItem('notified_expired')||'[]');localStorage.setItem('notified_expired',JSON.stringify(n.filter(x=>x!==id)));}catch(e){}
+    await loadData();alert('تم إعادة نشر الإعلان ✓ صلاحية جديدة شهر كامل.');
+    if(document.getElementById('userOverlay').classList.contains('open'))openMyAds();
+    if(document.getElementById('mkPage').classList.contains('open'))closeMk();
+  }catch(e){alert('تعذّر إعادة النشر (شغّل ad-promote.sql الأول): '+(e.message||e));}
+}
 /* تهريب HTML لمنع حقن السكربتات (XSS) من بيانات المستخدم */
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -1248,11 +1278,14 @@ function openMyAccount(){
 }
 function openMyAds(){
   if(!USER){openAuth('login');return;}
+  checkExpiredAds();
   const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
   const mine=MARKET.map((m,i)=>({m,i})).filter(({m})=>m.ownerId&&m.ownerId===USER.id);
   document.getElementById('user-title').textContent='إعلاناتي';
   document.getElementById('user-body').innerHTML=mine.length
-    ?mine.map(({m,i})=>`<div class="fav-row" onclick="closeUser();go('market');openMk(${i})"><div><b>${esc(m.t)}</b><small>${esc(priceLabel(m))}</small></div></div>`).join('')
+    ?mine.map(({m,i})=>{const exp=adExpired(m);const st=exp?'<span style="color:#e2643a;font-weight:700">⏰ انتهت الصلاحية</span>':(m.featured?'<span style="color:#a6801f;font-weight:700">⭐ مميّز</span>':'متبقّي '+adDaysLeft(m)+' يوم');
+      return `<div class="fav-row"><div onclick="closeUser();go('market');openMk(${i})" style="flex:1;cursor:pointer"><b>${esc(m.t)}</b><small>${esc(priceLabel(m))} · ${st}</small></div>${exp?`<button class="republish-btn" onclick="event.stopPropagation();republishAd('${m.id}')">أعِد النشر</button>`:''}</div>`;
+    }).join('')
     :'<div class="empty2">لسه مانشرتش إعلانات. افتح «السوق» واضغط «أضف إعلان».</div>';
   document.getElementById('userOverlay').classList.add('open');
 }
@@ -1554,7 +1587,7 @@ function renderCatList(){
   let adHtml='';
   if(query){
     const q=query.toLowerCase();
-    const ads=MARKET.map((m,i)=>({m,i})).filter(({m})=>((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase().includes(q));
+    const ads=MARKET.map((m,i)=>({m,i})).filter(({m})=>!adExpired(m)&&((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase().includes(q));
     if(ads.length){
       if(list.length)html='<div class="search-sec">محلات وخدمات ('+list.length+')</div>'+html;
       adHtml='<div class="search-sec">إعلانات في السوق ('+ads.length+')</div>'+ads.map(({m,i})=>searchAdRow(m,i)).join('');
@@ -1719,6 +1752,7 @@ function mkClear(){mkCat='all';mkQuery='';mkMin='';mkMax='';const s=document.get
 function renderMarket(){
   const grid=document.getElementById('market'); if(!grid)return;
   let list=MARKET.map((m,i)=>({m,i}));
+  list=list.filter(({m})=>!adExpired(m));
   if(mkCat!=='all')list=list.filter(({m})=>mkCatId(m.cat)===mkCat);
   if(mkQuery){const q=mkQuery.toLowerCase();list=list.filter(({m})=>((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase().includes(q));}
   if(mkMin!==''||mkMax!==''){const mn=mkMin!==''?+mkMin:-Infinity,mx=mkMax!==''?+mkMax:Infinity;list=list.filter(({m})=>{const d=(''+(m.price||'')).replace(/[^\d]/g,'');if(!d)return false;const p=+d;return p>=mn&&p<=mx;});}
@@ -1768,7 +1802,7 @@ function openMk(i){
   document.getElementById('mk-d-seller').innerHTML=m.sellerName?`<div class="mk-sell"><div class="mk-av">${esc(m.sellerName.trim()[0]||'؟')}</div><div><b>${esc(m.sellerName)}</b><span>صاحب الإعلان</span></div></div>`:'';
   const idx=MARKET.indexOf(m);
   const canEdit=USER&&m.ownerId&&m.ownerId===USER.id;
-  document.getElementById('mk-d-owner').innerHTML=canEdit?`<div class="mk-owner-btns"><button class="editbtn" onclick="closeMk();openPost(${idx})">${ic('edit')} تعديل الإعلان</button><button class="delbtn" onclick="delAd('${m.id}')">حذف</button></div>${m.featured?'':`<button class="promo-btn" onclick="promoteAd()">\u2B50 روّج إعلانك (مميّز)</button>`}`:'';
+  document.getElementById('mk-d-owner').innerHTML=canEdit?`${adExpired(m)?`<button class="republish-btn full" onclick="republishAd('${m.id}')">🔄 أعِد نشر الإعلان (انتهت صلاحيته)</button>`:''}<div class="mk-owner-btns"><button class="editbtn" onclick="closeMk();openPost(${idx})">${ic('edit')} تعديل الإعلان</button><button class="delbtn" onclick="delAd('${m.id}')">حذف</button></div>${m.featured?'':`<button class="promo-btn" onclick="promoteAd()">\u2B50 روّج إعلانك (مميّز)</button>`}`:'';
   const phone=m.phone||'';
   const canMsg=USER&&m.id&&m.ownerId&&m.ownerId!==USER.id;
   let acts='';
@@ -2425,7 +2459,7 @@ async function loadData(){
       const {data:offers}=await supa.from('offers').select('id,title,discount,ends_note,business_id,businesses(name)').eq('active',true).order('created_at',{ascending:false});
       OFFERS_LIVE=(offers||[]).map(o=>({id:o.id,disc:o.discount||'',shop:(o.businesses&&o.businesses.name)||'',txt:o.title,ends:o.ends_note||''}));
     }catch(e){OFFERS_LIVE=[];}
-    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();applyDeepLink();
+    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();applyDeepLink();checkExpiredAds();
   }catch(e){console.error('loadData',e);}
 }
 
