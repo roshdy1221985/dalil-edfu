@@ -692,9 +692,51 @@
   body.light .acct-btn.in{background:rgba(14,42,72,.06)!important;color:#17293f!important}
   body.light .acc-row b{color:#17293f}
   body.light .search svg{color:#5f708a}
+  /* إصلاح تباين النصوص الذهبية في الوضع الفاتح */
+  body.light .editbtn{color:#8a5f14!important;background:rgba(212,175,55,.15)!important;border-color:rgba(212,175,55,.6)!important}
+  body.light .notif-item b{color:#8a6414!important}
+  body.light .search-sec{color:#8a6414!important}
+  body.light .vrf-tag{color:#7a5510!important;background:rgba(212,175,55,.18)!important}
+  body.light .mk-chip,body.light .mk-tag{color:#7a5510!important;background:rgba(212,175,55,.16)!important}
+  body.light .mk-d-sec h4{color:#8a6414!important}
+  body.light .cond.on{color:#7a5510!important}
+  body.light .mapbtn{color:#7a5510!important;background:rgba(212,175,55,.15)!important}
+  body.light .menu button{color:#17293f!important}
+  body.light .lc-owner,body.light .mk-sell span{color:#5f708a!important}
+  body.light #off-title,body.light #off-disc,body.light #off-ends,body.light .ms-form input,body.light .ms-form textarea{background:#f4f6fa!important;border:1px solid rgba(14,42,72,.14)!important;color:#17293f!important}
+  body.light #off-title::placeholder,body.light #off-disc::placeholder,body.light #off-ends::placeholder{color:#8695a8}
   /* بانر عدم الاتصال */
   #offlineBar{position:fixed;top:0;left:0;right:0;z-index:200;background:#e2643a;color:#fff;text-align:center;font-size:.82rem;font-weight:600;padding:7px 12px;transform:translateY(-100%);transition:.25s;font-family:'Tajawal',sans-serif}
   #offlineBar.show{transform:translateY(0)}
+  /* الدردشة */
+  #chatPage.open{display:flex;flex-direction:column;overflow:hidden}
+  .chat-menu-btn{background:rgba(255,255,255,.06);border:1px solid var(--bd);color:var(--tx);width:36px;height:36px;border-radius:10px;font-size:1.2rem;flex:0 0 auto}
+  .chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+  .msg{max-width:80%;display:flex;flex-direction:column}
+  .msg.me{align-self:flex-start}
+  .msg.them{align-self:flex-end}
+  .bubble{padding:9px 13px;border-radius:15px;font-size:.93rem;line-height:1.55;word-break:break-word}
+  .msg.me .bubble{background:var(--gg);color:var(--ink);font-weight:600;border-bottom-right-radius:4px}
+  .msg.them .bubble{background:rgba(255,255,255,.07);border:1px solid var(--bd);color:var(--tx);border-bottom-left-radius:4px}
+  .msg .mt{font-size:.62rem;color:var(--txd);margin-top:3px;padding:0 4px}
+  .chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--bd);background:var(--pnl2)}
+  .chat-input-row input{flex:1;background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:22px;padding:11px 16px;font-family:inherit;font-size:.92rem;outline:none}
+  .chat-send{background:var(--gg);color:var(--ink);border:none;border-radius:22px;padding:0 20px;font-family:inherit;font-weight:800;font-size:.92rem}
+  .act.msg{background:rgba(212,175,55,.16)!important;border:1px solid rgba(212,175,55,.5)!important;color:#f0e2b0!important}
+  body.light .msg.them .bubble{background:#fff!important;border-color:rgba(14,42,72,.12)!important}
+  body.light .chat-input-row{background:#fff!important}
+  body.light .chat-input-row input{background:#f4f6fa!important;color:#17293f!important}
+  body.light .chat-menu-btn{background:#f4f6fa!important;color:#17293f!important}
+  body.light .act.msg{color:#7a5510!important}
+  /* تمييز الإعلانات */
+  .mk.row.feat{border:1px solid rgba(212,175,55,.55);background:linear-gradient(90deg,rgba(212,175,55,.08),transparent 60%)}
+  .feat-tag{position:absolute;top:6px;right:6px;background:linear-gradient(135deg,#bf953f,#fcf6ba,#aa771c);color:#3a2600;font-size:.6rem;font-weight:800;padding:3px 8px;border-radius:999px;z-index:3;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .mk-tag.feat{background:rgba(212,175,55,.18);border-color:rgba(212,175,55,.55);color:#f0e2b0}
+  .adm-b.feat{background:rgba(212,175,55,.18);border:1px solid rgba(212,175,55,.5);color:#f0e2b0}
+  .feat-b{background:rgba(212,175,55,.16)!important;border:1px solid rgba(212,175,55,.5)!important;color:#f0e2b0!important}
+  .promo-btn{width:100%;margin-top:10px;background:linear-gradient(135deg,#bf953f,#fcf6ba,#aa771c);color:#3a2600;border:none;border-radius:12px;padding:12px;font-family:inherit;font-weight:800;font-size:.92rem}
+  body.light .mk.row.feat{background:linear-gradient(90deg,rgba(212,175,55,.12),transparent 60%)}
+  body.light .mk-tag.feat,body.light .adm-b.feat,body.light .feat-b{color:#7a5510!important}
 </style>
 </head>
 <body class="light">
@@ -955,6 +997,7 @@
   <button onclick="toggleTheme()" id="theme-btn">🌙 الوضع الداكن</button>
   <button onclick="openMyAccount()">👤 حسابي</button>
   <button onclick="openMyAds()">📋 إعلاناتي</button>
+  <button onclick="openMessages()">💬 رسائلي</button>
   <button onclick="openFavs()">❤️ المفضلة</button>
   <button id="install-btn" onclick="installApp()" style="display:none">📲 ثبّت التطبيق</button>
   <button onclick="shareApp()">📤 شارك التطبيق</button>
@@ -977,6 +1020,26 @@
   <div class="modal">
     <div class="modal-head"><h3>🔔 الإشعارات</h3><button class="x" onclick="closeNotifs()">&times;</button></div>
     <div class="modal-body" id="notif-body"></div>
+  </div>
+</div>
+
+<div class="overlay" id="convosOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3>💬 رسائلي</h3><button class="x" onclick="closeConvos()">&times;</button></div>
+    <div class="modal-body" id="convos-body"></div>
+  </div>
+</div>
+
+<div class="page" id="chatPage">
+  <div class="page-bar">
+    <button class="backb" onclick="closeChat()">&#x2192;</button>
+    <div style="flex:1;min-width:0"><h2 id="chat-title" style="font-size:1.05rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></h2><div id="chat-sub" style="font-size:.72rem;color:var(--txd);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div></div>
+    <button class="chat-menu-btn" onclick="chatMenu()" aria-label="خيارات">&#8942;</button>
+  </div>
+  <div class="chat-msgs" id="chat-msgs"></div>
+  <div class="chat-input-row">
+    <input id="chat-input" placeholder="اكتب رسالتك..." onkeydown="if(event.key==='Enter')sendMsg()">
+    <button class="chat-send" onclick="sendMsg()">إرسال</button>
   </div>
 </div>
 
@@ -1316,6 +1379,8 @@ const SEED_MARKET=[
 ];
 let MARKET=SHOW_DEMO?SEED_MARKET.slice():[];
 if(SHOW_DEMO)SEED_MARKET.forEach(m=>{if(!m.phone)m.phone='01000000000';});
+if(SHOW_DEMO&&SEED_MARKET[0])SEED_MARKET[0].featured=true;
+if(SHOW_DEMO&&SEED_MARKET[3])SEED_MARKET[3].featured=true;
 const SEED_NOTIFS=[
   {title:'أهلاً بيك في دليل إدفو 🎉',body:'دلوقتي كل محلات وخدمات وعروض إدفو في مكان واحد. اتفرّج وابدأ!',created:Date.now()-3600e3},
   {title:'أضف محلك أو خدمتك مجاناً',body:'سجّل وأضف نشاطك في دقايق ووصّل لكل أهل المدينة.',created:Date.now()-2*86400e3}
@@ -1572,16 +1637,18 @@ async function admDelBiz(id){if(!confirm('تحذف المحل ده نهائيا�
 
 async function adminAds(){
   const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
-  try{const {data}=await supa.from('ads').select('id,title,price,category,status').order('created_at',{ascending:false}).limit(300);ADM.ads=data||[];admRenderAds();}
+  try{const {data}=await supa.from('ads').select('*').order('created_at',{ascending:false}).limit(300);ADM.ads=data||[];admRenderAds();}
   catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
 function admSetAdsFilter(f){admAdsFilter=f;admRenderAds();}
 function admRenderAds(){
   let list=ADM.ads;if(admAdsFilter!=='all')list=list.filter(a=>a.status===admAdsFilter);
   const tools=`<div class="adm-tools"><select class="adm-sel" onchange="admSetAdsFilter(this.value)"><option value="all"${admAdsFilter==='all'?' selected':''}>كل الإعلانات</option><option value="pending"${admAdsFilter==='pending'?' selected':''}>قيد المراجعة</option><option value="approved"${admAdsFilter==='approved'?' selected':''}>معتمد</option></select></div>`;
-  const rows=list.length?list.map(a=>`<div class="ad-row"><div><b>${esc(a.title)}</b><small>${esc(a.price||'—')} · ${esc(a.category||'')}</small>${stBadge(a.status)}</div><div class="ad-btns">${a.status!=='approved'?`<button class="ok" onclick="admAdStatus('${a.id}','approved')">اعتماد</button>`:''}<button class="del" onclick="admDelAd('${a.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش إعلانات</div>';
+  const rows=list.length?list.map(a=>`<div class="ad-row"><div><b>${esc(a.title)}</b><small>${esc(a.price||'—')} · ${esc(a.category||'')}</small>${stBadge(a.status)}${a.featured?'<span class="adm-b feat">\u2B50 مميّز</span>':''}</div><div class="ad-btns">${a.status!=='approved'?`<button class="ok" onclick="admAdStatus('${a.id}','approved')">اعتماد</button>`:''}<button class="feat-b" onclick="admFeatureAd('${a.id}',${a.featured?'false':'true'})">${a.featured?'إلغاء التمييز':'\u2B50 تمييز'}</button><button onclick="admBumpAd('${a.id}')">رفع</button><button class="del" onclick="admDelAd('${a.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش إعلانات</div>';
   admBody().innerHTML=tools+rows;
 }
+async function admFeatureAd(id,on){try{const {error}=await supa.from('ads').update({featured:on}).eq('id',id);if(error)throw error;await adminAds();loadData();}catch(e){alert('خطأ (شغّل ad-promote.sql الأول): '+(e.message||e));}}
+async function admBumpAd(id){try{const {error}=await supa.from('ads').update({bumped_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await adminAds();loadData();alert('تم رفع الإعلان للأعلى ✓');}catch(e){alert('خطأ (شغّل ad-promote.sql الأول): '+(e.message||e));}}
 async function admAdStatus(id,st){try{await supa.from('ads').update({status:st}).eq('id',id);await adminAds();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
 async function admDelAd(id){if(!confirm('تحذف الإعلان ده؟'))return;try{const {error}=await supa.from('ads').delete().eq('id',id);if(error)throw error;await adminAds();loadData();}catch(e){alert('تعذّر الحذف: '+(e.message||e));}}
 
@@ -1655,7 +1722,14 @@ function renderMarket(){
   if(mkCat!=='all')list=list.filter(({m})=>mkCatId(m.cat)===mkCat);
   if(mkQuery){const q=mkQuery.toLowerCase();list=list.filter(({m})=>((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase().includes(q));}
   if(mkMin!==''||mkMax!==''){const mn=mkMin!==''?+mkMin:-Infinity,mx=mkMax!==''?+mkMax:Infinity;list=list.filter(({m})=>{const d=(''+(m.price||'')).replace(/[^\d]/g,'');if(!d)return false;const p=+d;return p>=mn&&p<=mx;});}
-  if(mkSort==='low'||mkSort==='high'){const num=m=>{const d=(''+(m.price||'')).replace(/[^\d]/g,'');if(!d)return mkSort==='low'?Infinity:-1;return +d;};list=list.slice().sort((a,b)=>mkSort==='low'?num(a.m)-num(b.m):num(b.m)-num(a.m));}
+  const _pnum=m=>{const d=(''+(m.price||'')).replace(/[^\d]/g,'');return d?+d:null;};
+  const _bump=m=>{const t=m.bumped||m.created;return t?new Date(t).getTime():0;};
+  list=list.slice().sort((a,b)=>{
+    const fa=a.m.featured?1:0,fb=b.m.featured?1:0;
+    if(fa!==fb)return fb-fa;
+    if(mkSort==='low'||mkSort==='high'){const pa=_pnum(a.m),pb=_pnum(b.m);const va=pa==null?(mkSort==='low'?Infinity:-1):pa,vb=pb==null?(mkSort==='low'?Infinity:-1):pb;return mkSort==='low'?va-vb:vb-va;}
+    return _bump(b.m)-_bump(a.m);
+  });
   const act=document.getElementById('mk-active');
   if(act)act.innerHTML=(mkCat!=='all'||mkQuery)?`<span class="mk-chip">${mkCat!=='all'?mkCatName(mkCat):'نتائج البحث'} · ${list.length} إعلان <button onclick="mkClear()">&times;</button></span>`:'';
   const empty=document.getElementById('mk-empty');
@@ -1665,8 +1739,8 @@ function renderMarket(){
     const cover=adPic(m);
     const cnt=(m.images&&m.images.length)||0;
     const cond=m.cond==='new'?'<span class="mk-b new">جديد</span>':(m.cond==='used'?'<span class="mk-b used">مستعمل</span>':'');
-    return `<div class="mk row" onclick="openMk(${i})">
-      <div class="mk-thumb"${cover?` style="background-image:url('${cover}')"`:''}>${cover?'':`<span class="mk-ph">${mkIc(mkCatId(m.cat))}</span>`}${!m.id?'<span class="demo-tag">تجريبي</span>':''}${cond}${cnt>1?`<span class="mk-cnt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>${cnt}</span>`:''}</div>
+    return `<div class="mk row${m.featured?' feat':''}" onclick="openMk(${i})">
+      <div class="mk-thumb"${cover?` style="background-image:url('${cover}')"`:''}>${cover?'':`<span class="mk-ph">${mkIc(mkCatId(m.cat))}</span>`}${m.featured?'<span class="feat-tag">\u2B50 مميّز</span>':''}${!m.id?'<span class="demo-tag">تجريبي</span>':''}${cond}${cnt>1?`<span class="mk-cnt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>${cnt}</span>`:''}</div>
       <div class="mk-info">
         <h4>${esc(m.t)}</h4>
         <div class="price">${esc(priceLabel(m))}</div>
@@ -1684,6 +1758,7 @@ function openMk(i){
   document.getElementById('mk-d-price').textContent=priceLabel(m);
   document.getElementById('mk-d-title').textContent=m.t;
   let badges=`<span class="mk-tag">${esc(m.cat||mkCatName(mkCatId(m.cat)))}</span>`;
+  if(m.featured)badges+=`<span class="mk-tag feat">\u2B50 مميّز</span>`;
   if(!m.id)badges+=`<span class="mk-tag demo">إعلان تجريبي</span>`;
   if(m.cond==='new')badges+=`<span class="mk-tag alt">جديد</span>`;else if(m.cond==='used')badges+=`<span class="mk-tag alt">مستعمل</span>`;
   if(m.nego)badges+=`<span class="mk-tag alt">قابل للتفاوض</span>`;
@@ -1693,11 +1768,14 @@ function openMk(i){
   document.getElementById('mk-d-seller').innerHTML=m.sellerName?`<div class="mk-sell"><div class="mk-av">${esc(m.sellerName.trim()[0]||'؟')}</div><div><b>${esc(m.sellerName)}</b><span>صاحب الإعلان</span></div></div>`:'';
   const idx=MARKET.indexOf(m);
   const canEdit=USER&&m.ownerId&&m.ownerId===USER.id;
-  document.getElementById('mk-d-owner').innerHTML=canEdit?`<div class="mk-owner-btns"><button class="editbtn" onclick="closeMk();openPost(${idx})">${ic('edit')} تعديل الإعلان</button><button class="delbtn" onclick="delAd('${m.id}')">حذف</button></div>`:'';
+  document.getElementById('mk-d-owner').innerHTML=canEdit?`<div class="mk-owner-btns"><button class="editbtn" onclick="closeMk();openPost(${idx})">${ic('edit')} تعديل الإعلان</button><button class="delbtn" onclick="delAd('${m.id}')">حذف</button></div>${m.featured?'':`<button class="promo-btn" onclick="promoteAd()">\u2B50 روّج إعلانك (مميّز)</button>`}`:'';
   const phone=m.phone||'';
-  document.getElementById('mk-d-actions').innerHTML=phone
-    ?`<a class="act call" href="tel:${phone}">${ic('call')} اتصال</a><a class="act wa" href="https://wa.me/2${(''+phone).replace(/^0/,'')}" target="_blank">${ic('wa')} واتساب</a>`
-    :`<div class="empty2" style="width:100%">لم يُضِف صاحب الإعلان رقم تواصل</div>`;
+  const canMsg=USER&&m.id&&m.ownerId&&m.ownerId!==USER.id;
+  let acts='';
+  if(canMsg)acts+=`<button class="act msg" onclick="openChatForAd(curMk)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;vertical-align:-3px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> مراسلة البائع</button>`;
+  if(phone)acts+=`<a class="act call" href="tel:${phone}">${ic('call')} اتصال</a><a class="act wa" href="https://wa.me/2${(''+phone).replace(/^0/,'')}" target="_blank">${ic('wa')} واتساب</a>`;
+  if(!acts)acts=`<div class="empty2" style="width:100%">لم يُضِف صاحب الإعلان وسيلة تواصل</div>`;
+  document.getElementById('mk-d-actions').innerHTML=acts;
   if(supa&&m.id&&!m._viewed){m._viewed=true;m.views=(m.views||0)+1;supa.rpc('inc_ad_views',{aid:m.id});}
   document.getElementById('mk-tools').innerHTML=(m.id?`<button class="tool-btn${isFav('ad',m.id)?' on':''}" id="mk-fav" onclick="favMk()">${HEART}<span>${isFav('ad',m.id)?'محفوظ':'حفظ'}</span></button>`:'')+`<button class="tool-btn" onclick="shareMk()">${SHARE_IC}<span>مشاركة</span></button>`;
   document.getElementById('mkPage').classList.add('open');
@@ -1708,6 +1786,90 @@ function favMk(){if(!curMk||!curMk.id)return;const on=toggleFav('ad',curMk.id);c
 function mkPick(i,gi){const m=MARKET[i];const imgs=(m.images&&m.images.length)?m.images:(m.img?[m.img]:[]);const main=document.querySelector('#mk-gallery .mkg-main');if(main)main.style.backgroundImage=`url('${imgs[gi]}')`;document.querySelectorAll('#mk-gallery .mkg-th').forEach((t,ti)=>t.classList.toggle('on',ti===gi));}
 function closeMk(){document.getElementById('mkPage').classList.remove('open');}
 function reportAd(){if(!curMk)return;if(supa&&curMk.id)supa.from('reports').insert({target_type:'ad',target_id:curMk.id,reporter_id:USER?USER.id:null,reason:'بلاغ من مستخدم'});alert('تم استلام بلاغك، هيتم مراجعة الإعلان. شكراً لك.');}
+
+/* ===== الدردشة داخل التطبيق ===== */
+let _chatChannel=null,_curConvo=null,_convos=[];
+async function openChatForAd(m){
+  if(!USER){alert('لازم تسجّل دخول عشان تراسل صاحب الإعلان');openAuth('login');return;}
+  if(!m||!m.id||!m.ownerId){alert('مش ممكن تراسل صاحب الإعلان ده (إعلان تجريبي).');return;}
+  if(m.ownerId===USER.id){alert('ده إعلانك إنت 🙂');return;}
+  try{
+    let conv=null;
+    const {data:found}=await supa.from('conversations').select('*').eq('ad_id',m.id).eq('buyer_id',USER.id).maybeSingle();
+    if(found)conv=found;
+    else{
+      const {data:ins,error}=await supa.from('conversations').insert({ad_id:m.id,ad_title:m.t,buyer_id:USER.id,seller_id:m.ownerId,buyer_name:USER.name||'مشتري',seller_name:m.sellerName||'صاحب الإعلان'}).select().single();
+      if(error)throw error;conv=ins;
+    }
+    closeMk();openConvo(conv);
+  }catch(e){alert('تعذّر فتح المحادثة (شغّل chat.sql في Supabase): '+(e.message||e));}
+}
+function openConvo(conv){
+  _curConvo=conv;
+  const other=(conv.buyer_id===USER.id)?conv.seller_name:conv.buyer_name;
+  document.getElementById('chat-title').textContent=other||'محادثة';
+  document.getElementById('chat-sub').textContent=conv.ad_title||'';
+  document.getElementById('chat-msgs').innerHTML='<div class="empty2">جارٍ التحميل…</div>';
+  document.getElementById('chatPage').classList.add('open');
+  loadMsgs(conv.id);subscribeChat(conv.id);
+}
+function msgHTML(mm){const mine=mm.sender_id===USER.id;return `<div class="msg ${mine?'me':'them'}"><div class="bubble">${esc(mm.body)}</div><span class="mt">${mm.created_at?timeAgo(new Date(mm.created_at).getTime()):'الآن'}</span></div>`;}
+async function loadMsgs(cid){
+  try{
+    const {data,error}=await supa.from('messages').select('*').eq('conversation_id',cid).order('created_at',{ascending:true}).limit(300);
+    if(error)throw error;
+    const box=document.getElementById('chat-msgs');
+    box.innerHTML=(data&&data.length)?data.map(msgHTML).join(''):'<div class="empty2">ابدأ المحادثة — اكتب رسالتك تحت 👇</div>';
+    box.scrollTop=box.scrollHeight;
+  }catch(e){document.getElementById('chat-msgs').innerHTML='<div class="empty2">تعذّر تحميل الرسائل (شغّل chat.sql).</div>';}
+}
+function subscribeChat(cid){
+  if(_chatChannel){try{supa.removeChannel(_chatChannel);}catch(e){}_chatChannel=null;}
+  try{_chatChannel=supa.channel('chat:'+cid).on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=eq.'+cid},p=>{if(p.new&&p.new.sender_id!==USER.id)appendMsg(p.new);}).subscribe();}catch(e){}
+}
+function appendMsg(mm){const box=document.getElementById('chat-msgs');if(!box)return;const emp=box.querySelector('.empty2');if(emp)box.innerHTML='';box.insertAdjacentHTML('beforeend',msgHTML(mm));box.scrollTop=box.scrollHeight;}
+async function sendMsg(){
+  const inp=document.getElementById('chat-input');if(!inp||!_curConvo)return;
+  const body=inp.value.trim();if(!body)return;
+  inp.value='';
+  appendMsg({sender_id:USER.id,body,created_at:new Date().toISOString()});
+  try{
+    const {error}=await supa.from('messages').insert({conversation_id:_curConvo.id,sender_id:USER.id,body});
+    if(error)throw error;
+    supa.from('conversations').update({last_body:body,updated_at:new Date().toISOString()}).eq('id',_curConvo.id);
+  }catch(e){alert('تعذّر إرسال الرسالة: '+(e.message||e));}
+}
+function closeChat(){if(_chatChannel){try{supa.removeChannel(_chatChannel);}catch(e){}_chatChannel=null;}document.getElementById('chatPage').classList.remove('open');_curConvo=null;}
+function chatMenu(){
+  if(!_curConvo)return;
+  const other=(_curConvo.buyer_id===USER.id)?_curConvo.seller_id:_curConvo.buyer_id;
+  const c=confirm('تحب تبلّغ عن المستخدم ده وتحظره؟ (مش هتوصلك رسايله تاني)');
+  if(!c)return;
+  try{
+    supa.from('reports').insert({target_type:'chat',target_id:_curConvo.id,reporter_id:USER.id,reason:'بلاغ/حظر من محادثة'});
+    supa.from('blocked_users').insert({blocker_id:USER.id,blocked_id:other});
+  }catch(e){}
+  alert('تم التبليغ والحظر. شكراً لك.');
+  closeChat();
+}
+async function openMessages(){
+  const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
+  if(!USER){alert('لازم تسجّل دخول');openAuth('login');return;}
+  document.getElementById('convos-body').innerHTML='<div class="empty2">جارٍ التحميل…</div>';
+  document.getElementById('convosOverlay').classList.add('open');
+  try{
+    const {data,error}=await supa.from('conversations').select('*').or('buyer_id.eq.'+USER.id+',seller_id.eq.'+USER.id).order('updated_at',{ascending:false}).limit(60);
+    if(error)throw error;
+    _convos=data||[];
+    document.getElementById('convos-body').innerHTML=_convos.length?_convos.map((c,i)=>{
+      const other=(c.buyer_id===USER.id)?c.seller_name:c.buyer_name;
+      return `<div class="fav-row" onclick="openConvoIdx(${i})"><div><b>${esc(other||'محادثة')}</b><small>${esc(c.ad_title||'')}${c.last_body?' · '+esc(c.last_body):''}</small></div></div>`;
+    }).join(''):'<div class="empty2">لسه مفيش محادثات. افتح أي إعلان واضغط «مراسلة البائع».</div>';
+  }catch(e){document.getElementById('convos-body').innerHTML='<div class="empty2">شغّل <b>chat.sql</b> في Supabase الأول.</div>';}
+}
+function closeConvos(){document.getElementById('convosOverlay').classList.remove('open');}
+function openConvoIdx(i){closeConvos();if(_convos[i])openConvo(_convos[i]);}
+function promoteAd(){if(!curMk)return;const txt=`عايز أميّز إعلاني في دليل إدفو:\n${curMk.t}\nرقم الإعلان: ${curMk.id||'-'}`;window.open('https://wa.me/201151107993?text='+encodeURIComponent(txt),'_blank');}
 async function delAd(id){if(!confirm('متأكد إنك عايز تحذف الإعلان نهائياً؟'))return;try{const {error}=await supa.from('ads').delete().eq('id',id);if(error)throw error;}catch(e){alert('تعذر الحذف: '+(e.message||e));return;}closeMk();await loadData();go('market');}
 function renderEmg(){
   const e=(x,u)=>`<a class="ecard ${u?'urgent':''}" href="${x.num!=='—'?'tel:'+x.num:'#'}"><div class="eic">${ic('call')}</div><div><h4>${x.t}</h4><div class="num">${x.num}</div></div></a>`;
@@ -2257,7 +2419,7 @@ async function loadData(){
     let ads=[];
     try{const r=await supa.from('ads').select('*, profiles(name)').order('created_at',{ascending:false});if(r.error)throw r.error;ads=r.data||[];}
     catch(e){const r2=await supa.from('ads').select('*').order('created_at',{ascending:false});ads=r2.data||[];}
-    const realAds=(ads&&ads.length)?ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||''})):[];
+    const realAds=(ads&&ads.length)?ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||'',featured:!!a.featured,bumped:a.bumped_at||a.created_at})):[];
     MARKET=SHOW_DEMO?realAds.concat(SEED_MARKET):(realAds.length?realAds:SEED_MARKET.slice());
     try{
       const {data:offers}=await supa.from('offers').select('id,title,discount,ends_note,business_id,businesses(name)').eq('active',true).order('created_at',{ascending:false});
