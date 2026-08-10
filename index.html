@@ -740,6 +740,14 @@
   .republish-btn{background:#e2643a;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-family:inherit;font-weight:700;font-size:.82rem;flex:0 0 auto}
   .republish-btn.full{width:100%;padding:12px;border-radius:12px;font-size:.92rem;margin-bottom:10px}
   .republish-btn:active{transform:scale(.97)}
+  /* إحصائيات التاجر */
+  .biz-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+  .st-mini{background:rgba(212,175,55,.1);border:1px solid var(--bd);border-radius:14px;padding:12px 8px;text-align:center}
+  .st-mini b{display:block;font-family:'Amiri',serif;font-size:1.5rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+  .st-mini span{color:var(--txd);font-size:.72rem}
+  body.light .st-mini{background:rgba(212,175,55,.12)!important}
+  .msg-biz-btn{width:100%;margin:4px 0 12px;background:rgba(212,175,55,.16);border:1px solid rgba(212,175,55,.5);color:#f0e2b0;border-radius:12px;padding:12px;font-family:inherit;font-weight:700;font-size:.92rem}
+  body.light .msg-biz-btn{color:#7a5510!important}
 </style>
 </head>
 <body class="light">
@@ -934,6 +942,8 @@
       <div class="d-sec" id="d-sections-sec" style="display:none"><div id="d-sections"></div></div>
       <div class="d-rater" id="d-rater"></div>
       <div id="d-edit"></div>
+      <div class="biz-stats" id="d-stats" style="display:none"></div>
+      <div id="d-msg"></div>
       <div class="d-tools" id="d-tools"></div>
       <div class="d-actions" id="d-actions"></div>
     </div>
@@ -953,6 +963,7 @@
       <div class="mk-seller" id="mk-d-seller"></div>
       <div id="mk-d-owner"></div>
       <div class="d-actions" id="mk-d-actions"></div>
+      <div class="biz-stats" id="mk-d-stats" style="display:none"></div>
       <div class="d-tools" id="mk-tools"></div>
       <button class="mk-report" onclick="reportAd()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;vertical-align:-2px"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> تبليغ عن الإعلان</button>
     </div>
@@ -1331,7 +1342,9 @@ function closeNotifs(){document.getElementById('notifOverlay').classList.remove(
 async function loadNotifs(){
   if(!supa){renderNotifBadge();return;}
   try{
-    const {data,error}=await supa.from('notifications').select('*').order('created_at',{ascending:false}).limit(50);
+    let qy=supa.from('notifications').select('*').order('created_at',{ascending:false}).limit(50);
+    qy=USER?qy.or('user_id.is.null,user_id.eq.'+USER.id):qy.is('user_id',null);
+    const {data,error}=await qy;
     if(error)throw error;
     const real=(data||[]).map(n=>({id:n.id,title:n.title,body:n.body,created:n.created_at}));
     NOTIFS=SHOW_DEMO?real.concat(SEED_NOTIFS):real;
@@ -1651,7 +1664,7 @@ async function adminDash(){
 
 async function adminBiz(){
   const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
-  try{const {data}=await supa.from('businesses').select('id,name,category_id,phone,status,plan').order('created_at',{ascending:false}).limit(300);ADM.biz=data||[];admRenderBiz();}
+  try{const {data}=await supa.from('businesses').select('id,name,category_id,phone,status,plan,owner_id').order('created_at',{ascending:false}).limit(300);ADM.biz=data||[];admRenderBiz();}
   catch(e){b.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
 function admSetBizFilter(f){admBizFilter=f;admRenderBiz();}
@@ -1664,7 +1677,9 @@ function admRenderBiz(){
   const rows=list.length?list.map(b=>`<div class="ad-row"><div><b>${esc(b.name)}</b><small>${catName(b.category_id)} · ${esc(b.phone||'—')}</small>${stBadge(b.status)}</div><div class="ad-btns">${b.status!=='approved'?`<button class="ok" onclick="admBizStatus('${b.id}','approved')">اعتماد</button>`:''}${b.status!=='rejected'?`<button class="no" onclick="admBizStatus('${b.id}','rejected')">رفض</button>`:''}<select class="adm-plan" onchange="admSetPlan('${b.id}',this.value)"><option value="free"${b.plan==='free'?' selected':''}>مجاني</option><option value="feat"${b.plan==='feat'?' selected':''}>مميّز</option><option value="prem"${b.plan==='prem'?' selected':''}>بريميوم</option></select><button class="del" onclick="admDelBiz('${b.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش نتائج</div>';
   admBody().innerHTML=tools+rows;
 }
-async function admBizStatus(id,st){try{await supa.from('businesses').update({status:st}).eq('id',id);await adminBiz();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
+async function admBizStatus(id,st){try{await supa.from('businesses').update({status:st}).eq('id',id);
+  if(st==='approved'){const b=(ADM.biz||[]).find(x=>x.id===id);if(b&&b.owner_id){try{await supa.from('notifications').insert({user_id:b.owner_id,title:'✅ تم اعتماد محلك',body:`محلك "${b.name}" بقى ظاهر في دليل إدفو لكل أهل المدينة 🎉`});}catch(e){}}}
+  await adminBiz();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
 async function admSetPlan(id,plan){try{await supa.from('businesses').update({plan}).eq('id',id);if(plan!=='free'){const ends=new Date(Date.now()+30*864e5).toISOString();try{await supa.from('subscriptions').insert({business_id:id,plan,ends_at:ends});}catch(_){}}await adminBiz();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
 async function admDelBiz(id){if(!confirm('تحذف المحل ده نهائياً؟'))return;try{const {error}=await supa.from('businesses').delete().eq('id',id);if(error)throw error;await adminBiz();loadData();}catch(e){alert('تعذّر الحذف (محتاج صلاحية أدمن في القاعدة): '+(e.message||e));}}
 
@@ -1807,9 +1822,11 @@ function openMk(i){
   const canMsg=USER&&m.id&&m.ownerId&&m.ownerId!==USER.id;
   let acts='';
   if(canMsg)acts+=`<button class="act msg" onclick="openChatForAd(curMk)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;vertical-align:-3px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> مراسلة البائع</button>`;
-  if(phone)acts+=`<a class="act call" href="tel:${phone}">${ic('call')} اتصال</a><a class="act wa" href="https://wa.me/2${(''+phone).replace(/^0/,'')}" target="_blank">${ic('wa')} واتساب</a>`;
+  if(phone)acts+=`<a class="act call" href="tel:${phone}" onclick="adClick('call','${m.id}')">${ic('call')} اتصال</a><a class="act wa" href="https://wa.me/2${(''+phone).replace(/^0/,'')}" target="_blank" onclick="adClick('wa','${m.id}')">${ic('wa')} واتساب</a>`;
   if(!acts)acts=`<div class="empty2" style="width:100%">لم يُضِف صاحب الإعلان وسيلة تواصل</div>`;
   document.getElementById('mk-d-actions').innerHTML=acts;
+  const mkstats=document.getElementById('mk-d-stats');
+  if(mkstats){if(canEdit&&m.id){mkstats.style.display='grid';mkstats.innerHTML='<div class="empty2" style="grid-column:1/-1">جارٍ تحميل إحصائيات إعلانك…</div>';loadAdStats(m.id,'mk-d-stats');}else mkstats.style.display='none';}
   if(supa&&m.id&&!m._viewed){m._viewed=true;m.views=(m.views||0)+1;supa.rpc('inc_ad_views',{aid:m.id});}
   document.getElementById('mk-tools').innerHTML=(m.id?`<button class="tool-btn${isFav('ad',m.id)?' on':''}" id="mk-fav" onclick="favMk()">${HEART}<span>${isFav('ad',m.id)?'محفوظ':'حفظ'}</span></button>`:'')+`<button class="tool-btn" onclick="shareMk()">${SHARE_IC}<span>مشاركة</span></button>`;
   document.getElementById('mkPage').classList.add('open');
@@ -1823,6 +1840,21 @@ function reportAd(){if(!curMk)return;if(supa&&curMk.id)supa.from('reports').inse
 
 /* ===== الدردشة داخل التطبيق ===== */
 let _chatChannel=null,_curConvo=null,_convos=[];
+async function openChatForBiz(b){
+  if(!USER){alert('لازم تسجّل دخول عشان تراسل المحل');openAuth('login');return;}
+  if(!b||!b.id||!b.ownerId){alert('مش ممكن تراسل المحل ده.');return;}
+  if(b.ownerId===USER.id){alert('ده محلك إنت 🙂');return;}
+  try{
+    let conv=null;
+    const {data:found}=await supa.from('conversations').select('*').eq('ad_id',b.id).eq('buyer_id',USER.id).maybeSingle();
+    if(found)conv=found;
+    else{
+      const {data:ins,error}=await supa.from('conversations').insert({ad_id:b.id,ad_title:'محل: '+b.name,buyer_id:USER.id,seller_id:b.ownerId,buyer_name:USER.name||'عميل',seller_name:b.name||'المحل'}).select().single();
+      if(error)throw error;conv=ins;
+    }
+    closeDet();openConvo(conv);
+  }catch(e){alert('تعذّر فتح المحادثة (شغّل chat.sql في Supabase): '+(e.message||e));}
+}
 async function openChatForAd(m){
   if(!USER){alert('لازم تسجّل دخول عشان تراسل صاحب الإعلان');openAuth('login');return;}
   if(!m||!m.id||!m.ownerId){alert('مش ممكن تراسل صاحب الإعلان ده (إعلان تجريبي).');return;}
@@ -1904,6 +1936,27 @@ async function openMessages(){
 function closeConvos(){document.getElementById('convosOverlay').classList.remove('open');}
 function openConvoIdx(i){closeConvos();if(_convos[i])openConvo(_convos[i]);}
 function promoteAd(){if(!curMk)return;const txt=`عايز أميّز إعلاني في دليل إدفو:\n${curMk.t}\nرقم الإعلان: ${curMk.id||'-'}`;window.open('https://wa.me/201151107993?text='+encodeURIComponent(txt),'_blank');}
+
+/* ===== إحصائيات التاجر (تتبّع الضغطات + العرض) ===== */
+function bizClick(kind,id){if(supa&&id)try{supa.rpc(kind==='call'?'inc_business_call':'inc_business_wa',{bid:id});}catch(e){}}
+function adClick(kind,id){if(supa&&id)try{supa.rpc(kind==='call'?'inc_ad_call':'inc_ad_wa',{aid:id});}catch(e){}}
+function statMini(label,val){return `<div class="st-mini"><b>${val}</b><span>${label}</span></div>`;}
+async function loadBizStats(bizId,elId){
+  const el=document.getElementById(elId);if(!el||!supa||!bizId)return;
+  try{
+    const {data,error}=await supa.from('businesses').select('views_count,call_clicks,wa_clicks').eq('id',bizId).single();
+    if(error)throw error;
+    el.innerHTML=statMini('👁 مشاهدات',data.views_count||0)+statMini('📞 اتصالات',data.call_clicks||0)+statMini('💬 واتساب',data.wa_clicks||0);
+  }catch(e){el.innerHTML='<div class="empty2" style="grid-column:1/-1">فعّل الإحصائيات: شغّل <b>analytics.sql</b> في Supabase.</div>';}
+}
+async function loadAdStats(adId,elId){
+  const el=document.getElementById(elId);if(!el||!supa||!adId)return;
+  try{
+    const {data,error}=await supa.from('ads').select('views,call_clicks,wa_clicks').eq('id',adId).single();
+    if(error)throw error;
+    el.innerHTML=statMini('👁 مشاهدات',data.views||0)+statMini('📞 اتصالات',data.call_clicks||0)+statMini('💬 واتساب',data.wa_clicks||0);
+  }catch(e){el.innerHTML='<div class="empty2" style="grid-column:1/-1">فعّل الإحصائيات: شغّل <b>analytics.sql</b>.</div>';}
+}
 async function delAd(id){if(!confirm('متأكد إنك عايز تحذف الإعلان نهائياً؟'))return;try{const {error}=await supa.from('ads').delete().eq('id',id);if(error)throw error;}catch(e){alert('تعذر الحذف: '+(e.message||e));return;}closeMk();await loadData();go('market');}
 function renderEmg(){
   const e=(x,u)=>`<a class="ecard ${u?'urgent':''}" href="${x.num!=='—'?'tel:'+x.num:'#'}"><div class="eic">${ic('call')}</div><div><h4>${x.t}</h4><div class="num">${x.num}</div></div></a>`;
@@ -1963,10 +2016,15 @@ function openDet(i){
   document.getElementById('d-edit').innerHTML=canEdit?`<button class="editbtn" onclick="closeDet();openAdd(${i})">${ic("edit")} تعديل المحل</button>`:'';
   document.getElementById('d-tools').innerHTML=(b.id?`<button class="tool-btn${isFav('biz',b.id)?' on':''}" id="d-fav" onclick="favBiz()">${HEART}<span>${isFav('biz',b.id)?'محفوظ':'حفظ'}</span></button>`:'')+`<button class="tool-btn" onclick="shareBiz()">${SHARE_IC}<span>مشاركة</span></button>`;
   const maploc=b.lat?`${b.lat},${b.lng}`:encodeURIComponent(b.addr||'إدفو');
-  let a=`<a class="act call" href="tel:${b.phone}">${ic('call')} اتصال</a>`;
-  if(isFeat&&b.wa)a+=`<a class="act wa" href="https://wa.me/2${b.wa.replace(/^0/,'')}" target="_blank">${ic('wa')} واتساب</a>`;
+  let a=`<a class="act call" href="tel:${b.phone}" onclick="bizClick('call','${b.id}')">${ic('call')} اتصال</a>`;
+  if(isFeat&&b.wa)a+=`<a class="act wa" href="https://wa.me/2${b.wa.replace(/^0/,'')}" target="_blank" onclick="bizClick('wa','${b.id}')">${ic('wa')} واتساب</a>`;
   if(isFeat)a+=`<a class="act map" href="https://www.google.com/maps/search/?api=1&query=${maploc}" target="_blank">${ic('pin')} الموقع</a>`;
   document.getElementById('d-actions').innerHTML=a;
+  const dstats=document.getElementById('d-stats');
+  if(canEdit&&b.id){dstats.style.display='grid';dstats.innerHTML='<div class="empty2" style="grid-column:1/-1">جارٍ تحميل إحصائيات محلك…</div>';loadBizStats(b.id,'d-stats');}
+  else dstats.style.display='none';
+  const dmsg=document.getElementById('d-msg');
+  if(dmsg){const canMsgB=USER&&b.id&&b.ownerId&&b.ownerId!==USER.id;dmsg.innerHTML=canMsgB?`<button class="msg-biz-btn" onclick="openChatForBiz(BIZ[${i}])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;vertical-align:-3px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> مراسلة المحل</button>`:'';}
   document.getElementById('detailPage').classList.add('open');
   document.getElementById('detailPage').scrollTop=0;
 }
