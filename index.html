@@ -748,6 +748,21 @@
   body.light .st-mini{background:rgba(212,175,55,.12)!important}
   .msg-biz-btn{width:100%;margin:4px 0 12px;background:rgba(212,175,55,.16);border:1px solid rgba(212,175,55,.5);color:#f0e2b0;border-radius:12px;padding:12px;font-family:inherit;font-weight:700;font-size:.92rem}
   body.light .msg-biz-btn{color:#7a5510!important}
+  /* باقات الاشتراك */
+  .pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+  .pkg{position:relative;background:var(--pnl);border:1px solid var(--bd);border-radius:16px;padding:16px 14px;display:flex;flex-direction:column}
+  .pkg.gold{border-color:rgba(212,175,55,.55);box-shadow:0 10px 28px rgba(212,175,55,.14)}
+  .pkg-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gg);color:var(--ink);font-size:.62rem;font-weight:800;padding:3px 11px;border-radius:999px}
+  .pkg-name{font-family:'Amiri',serif;font-size:1.3rem;color:#f0e2b0;text-align:center}
+  .pkg-price{text-align:center;font-family:'Amiri',serif;font-size:1.7rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;margin:2px 0 10px}
+  .pkg-price span{font-family:'Tajawal';font-size:.7rem;color:var(--txd);-webkit-text-fill-color:var(--txd)}
+  .pkg ul{list-style:none;padding:0;margin:0 0 14px;flex:1}
+  .pkg li{position:relative;padding:5px 20px 5px 0;font-size:.82rem;color:var(--txd);border-bottom:1px dashed rgba(255,255,255,.06)}
+  .pkg li::before{content:"\2713";position:absolute;right:0;top:5px;color:#26d07c;font-weight:800}
+  .pkg-btn{background:var(--gg);color:var(--ink);border:none;border-radius:12px;padding:11px;font-family:inherit;font-weight:800;font-size:.9rem}
+  body.light .pkg{background:#fff!important;border-color:rgba(14,42,72,.1)!important}
+  body.light .pkg-name{color:#8a6414!important}
+  body.light .pkg li::before{color:#12a15c}
 </style>
 </head>
 <body class="light">
@@ -982,7 +997,21 @@
         <div class="field"><label>كلمة السر</label><input id="a-pass" type="password" placeholder="6 أحرف على الأقل"></div>
         <div class="err" id="signup-err"></div>
         <button class="save" onclick="doSignup()">إنشاء الحساب</button>
+        <div class="auth-alt">📱 <a onclick="authGo('phone')">أو الدخول برقم الموبايل</a></div>
         <div class="auth-alt">عندك حساب؟ <a onclick="authGo('login')">سجّل دخول</a></div>
+      </div>
+      <div class="authstep" id="step-phone">
+        <p class="auth-sub">ادخل برقم موبايلك — هيوصلك كود تأكيد على SMS.</p>
+        <div class="field"><label>رقم الموبايل</label><input id="p-phone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
+        <div class="err" id="phone-err"></div>
+        <button class="save" id="p-send-btn" onclick="sendPhoneOtp()">أرسل الكود</button>
+        <div id="p-code-sec" style="display:none;margin-top:14px">
+          <p class="auth-sub">اكتب الكود اللي وصلك على <b id="p-num"></b></p>
+          <div class="otp" id="p-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div>
+          <button class="save" onclick="verifyPhoneOtp()">تأكيد الدخول</button>
+          <div class="auth-alt"><a onclick="sendPhoneOtp()">إعادة إرسال الكود</a></div>
+        </div>
+        <div class="auth-alt">أو <a onclick="authGo('login')">الدخول بالإيميل</a></div>
       </div>
       <div class="authstep" id="step-verify">
         <p class="auth-sub">بعتنا كود تحقق من 6 أرقام على إيميلك <b id="v-email"></b></p>
@@ -1000,6 +1029,7 @@
         <div class="field"><label>كلمة السر</label><input id="l-pass" type="password" placeholder="كلمة السر"></div>
         <div class="err" id="login-err"></div>
         <button class="save" onclick="doLogin()">دخول</button>
+        <div class="auth-alt">📱 <a onclick="authGo('phone')">أو الدخول برقم الموبايل</a></div>
         <div class="auth-alt">لسه معندكش حساب؟ <a onclick="authGo('signup')">أنشئ حساب</a></div>
       </div>
     </div>
@@ -1012,6 +1042,7 @@
   <button onclick="openMyAccount()">👤 حسابي</button>
   <button onclick="openMyAds()">📋 إعلاناتي</button>
   <button onclick="openMessages()">💬 رسائلي</button>
+  <button onclick="enablePush()">🔔 فعّل الإشعارات</button>
   <button onclick="openFavs()">❤️ المفضلة</button>
   <button id="install-btn" onclick="installApp()" style="display:none">📲 ثبّت التطبيق</button>
   <button onclick="shareApp()">📤 شارك التطبيق</button>
@@ -1301,6 +1332,25 @@ function openMyAds(){
   document.getElementById('userOverlay').classList.add('open');
 }
 function contactUs(){window.open('https://wa.me/201151107993','_blank');}
+/* ===== إشعارات Push (Web Push / VAPID) — جاهز، محتاج مفتاح VAPID بس ===== */
+const VAPID_PUBLIC_KEY=''; /* ← حط مفتاح VAPID العام هنا بعد توليده (راجع push-setup.md) */
+function _urlB64ToUint8(b64){const pad='='.repeat((4-b64.length%4)%4);const s=(b64+pad).replace(/-/g,'+').replace(/_/g,'/');const raw=atob(s);const a=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return a;}
+async function enablePush(){
+  const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
+  if(!('serviceWorker' in navigator)||!('PushManager' in window)){alert('جهازك مش بيدعم الإشعارات الفورية.');return;}
+  if(!USER){alert('سجّل دخول الأول عشان توصلك الإشعارات');openAuth('login');return;}
+  if(!VAPID_PUBLIC_KEY){alert('الإشعارات لسه مش مفعّلة من الإدارة (محتاجة مفتاح VAPID). راجع ملف push-setup.');return;}
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){alert('لازم تسمح بالإشعارات عشان توصلك رسايل الشات.');return;}
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:_urlB64ToUint8(VAPID_PUBLIC_KEY)});
+    const j=sub.toJSON();
+    if(supa){try{await supa.from('push_tokens').upsert({user_id:USER.id,endpoint:j.endpoint,subscription:j},{onConflict:'endpoint'});}catch(e){}}
+    alert('تم تفعيل الإشعارات ✓ هتوصلك رسايل الشات والأخبار على موبايلك.');
+  }catch(e){alert('تعذّر تفعيل الإشعارات: '+(e.message||e));}
+}
 /* ===== تثبيت + مشاركة التطبيق + حالة الاتصال ===== */
 let _deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();_deferredPrompt=e;const b=document.getElementById('install-btn');if(b)b.style.display='block';});
@@ -2288,7 +2338,7 @@ function authGo(step){
   document.querySelectorAll('.authstep').forEach(s=>s.classList.remove('on'));
   document.getElementById('step-'+step).classList.add('on');
   document.getElementById('auth-title').textContent=
-    step==='login'?'تسجيل الدخول':step==='verify'?'كود التحقق':'إنشاء حساب';
+    step==='login'?'تسجيل الدخول':step==='verify'?'كود التحقق':step==='phone'?'الدخول بالموبايل':'إنشاء حساب';
 }
 async function doSignup(){
   const name=v('a-name'),phone=v('a-phone'),email=v('a-email').toLowerCase(),pass=v('a-pass');
@@ -2401,6 +2451,37 @@ document.querySelectorAll('#otp input').forEach((inp,idx,arr)=>{
   inp.addEventListener('input',()=>{inp.value=inp.value.replace(/\D/g,'');if(inp.value&&idx<arr.length-1)arr[idx+1].focus();});
   inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&idx>0)arr[idx-1].focus();});
 });
+/* ===== الدخول برقم الموبايل (OTP) — جاهز لتفعيل Phone Auth في Supabase ===== */
+document.querySelectorAll('#p-otp input').forEach((inp,idx,arr)=>{
+  inp.addEventListener('input',()=>{inp.value=inp.value.replace(/\D/g,'');if(inp.value&&idx<arr.length-1)arr[idx+1].focus();});
+  inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&idx>0)arr[idx-1].focus();});
+});
+function egPhoneE164(v){let d=(''+v).replace(/[^\d]/g,'');if(d.indexOf('0')===0)d=d.slice(1);if(d.indexOf('20')!==0)d='20'+d;return '+'+d;}
+let _phoneE164='';
+async function sendPhoneOtp(){
+  const raw=v('p-phone'),errEl=document.getElementById('phone-err');errEl.textContent='';
+  if(!raw||raw.replace(/[^\d]/g,'').length<10){errEl.textContent='اكتب رقم موبايل صحيح';return;}
+  if(!supa){errEl.textContent='الخدمة غير متاحة';return;}
+  _phoneE164=egPhoneE164(raw);
+  const btn=document.getElementById('p-send-btn');btn.disabled=true;btn.textContent='بيتبعت...';
+  try{
+    const {error}=await supa.auth.signInWithOtp({phone:_phoneE164});
+    if(error)throw error;
+    document.getElementById('p-num').textContent=_phoneE164;
+    document.getElementById('p-code-sec').style.display='block';
+    btn.textContent='تم الإرسال ✓';btn.disabled=false;
+    const f=document.querySelectorAll('#p-otp input')[0];if(f)f.focus();
+  }catch(e){errEl.textContent='تعذّر الإرسال — لازم تفعّل «Phone Auth» ومزوّد SMS في Supabase. ('+(e.message||e)+')';btn.disabled=false;btn.textContent='أرسل الكود';}
+}
+async function verifyPhoneOtp(){
+  const code=[...document.querySelectorAll('#p-otp input')].map(i=>i.value).join(''),errEl=document.getElementById('phone-err');errEl.textContent='';
+  if(code.length<6){errEl.textContent='اكتب الكود كامل (6 أرقام)';return;}
+  try{
+    const {error}=await supa.auth.verifyOtp({phone:_phoneE164,token:code,type:'sms'});
+    if(error)throw error;
+    closeAuth();
+  }catch(e){errEl.textContent='الكود غلط أو انتهت صلاحيته';}
+}
 
 /* ===== نشر إعلان في السوق ===== */
 let postPhotos_arr=[],postCond='used',editPostIndex=null;
@@ -2578,6 +2659,7 @@ async function loadMyStore(){
         <div class="ms-meta">${catName(b.category_id)} \u00B7 باقة ${planName(b.plan)} \u00B7 ${stat}</div>
         <button class="editbtn" onclick="editMyBiz('${b.id}')">${ic('edit')} تعديل بيانات المحل</button>
       </div>
+      ${packagesHTML(b.plan)}
       <div class="section-h"><h3>عروض محلي</h3><div class="rule"></div></div>
       <div class="ms-addoffer">
         <input id="off-title" placeholder="نص العرض (مثال: خصم على كل البيتزا يوم الثلاثاء)">
@@ -2588,6 +2670,23 @@ async function loadMyStore(){
   }catch(e){body.innerHTML='<div class="empty2">خطأ: '+(e.message||e)+'</div>';}
 }
 function editMyBiz(id){const i=BIZ.findIndex(b=>b.id===id);if(i>=0)openAdd(i);else openAdd();}
+/* ===== باقات الاشتراك (جاهزة للربط ببوابة دفع) ===== */
+function packagesHTML(plan){
+  if(plan&&plan!=='free')return `<div class="note"><span>\u2B50</span><span>باقتك الحالية: <b>${planName(plan)}</b> — محلك ظاهر بشارة «موثّق» ومميّزات الباقة. لأي تغيير كلّمنا.</span></div>`;
+  const P=[
+    {id:'feat',name:'مميّز',price:'50 ج',per:'/شهر',feats:['يظهر فوق في القوائم بصورة','زر واتساب + موقع على الخريطة','شارة «موثّق» ✓','حق نشر العروض','حتى 5 صور للمحل']},
+    {id:'prem',name:'بريميوم',price:'100 ج',per:'/شهر',feats:['كل مميزات «مميّز»','أولوية ظهور أعلى','شارة ذهبية مميّزة','حتى 10 صور','دعم أسرع']}
+  ];
+  return `<div class="section-h"><h3>رقّي محلك</h3><div class="rule"></div></div>
+    <p style="color:var(--txd);font-size:.85rem;margin:0 0 12px">محلك دلوقتي «مجاني» وبيظهر في القوائم العادية. رقّيه عشان يوصل لعدد أكبر:</p>
+    <div class="pkg-grid">${P.map(p=>`<div class="pkg${p.id==='prem'?' gold':''}">${p.id==='prem'?'<span class="pkg-tag">الأفضل</span>':''}<div class="pkg-name">${p.name}</div><div class="pkg-price">${p.price}<span>${p.per}</span></div><ul>${p.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><button class="pkg-btn" onclick="subscribePlan('${p.id}')">اشترك الآن</button></div>`).join('')}</div>`;
+}
+function subscribePlan(plan){
+  const name=plan==='prem'?'بريميوم':'مميّز';
+  /* TODO: لما تربط بوابة دفع (Paymob/Fawry/Kashier) استبدل السطر اللي تحت باستدعاء الدفع + webhook يفعّل الباقة تلقائياً */
+  const txt=`عايز أشترك في باقة «${name}» لمحلي في دليل إدفو.`;
+  window.open('https://wa.me/201151107993?text='+encodeURIComponent(txt),'_blank');
+}
 async function addOffer(){
   const title=document.getElementById('off-title').value.trim();
   if(!title){alert('اكتب نص العرض');return;}
