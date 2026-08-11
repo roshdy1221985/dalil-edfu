@@ -761,6 +761,33 @@
   body.light .save-srch-btn{color:#8a5f14!important}
   .save-del{background:rgba(226,55,68,.14);border:1px solid rgba(226,55,68,.4);color:#ff8a94;border-radius:9px;padding:7px 13px;font-family:inherit;font-size:.8rem;font-weight:700;flex:0 0 auto}
   body.light .save-del{color:#c0293a!important}
+  /* ===== الشريط السفلي — ثابت وملوّن ومنسّق ===== */
+  nav.tabs{z-index:88!important;height:68px;transition:transform .28s ease}
+  nav.tabs.nav-hidden{transform:translateY(130%)}
+  nav.tabs button{gap:4px;padding:8px 0 7px;font-size:.66rem;font-weight:700}
+  nav.tabs button::before{display:none!important}
+  nav.tabs .ti{width:46px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:14px;transition:background .2s,transform .2s}
+  nav.tabs .ti svg{width:22px;height:22px}
+  nav.tabs button.active .ti{transform:translateY(-1px)}
+  nav.tabs button[data-view=home] .ti{color:#c79418!important}
+  nav.tabs button[data-view=offers] .ti{color:#ff7a1a!important}
+  nav.tabs button[data-view=market] .ti{color:#12a15c!important}
+  nav.tabs button[data-view=emg] .ti{color:#e23744!important}
+  nav.tabs button[data-view=news] .ti{color:#2e7be4!important}
+  nav.tabs button.active[data-view=home]{color:#b9860f!important}
+  nav.tabs button.active[data-view=home] .ti{background:rgba(199,148,24,.16)}
+  nav.tabs button.active[data-view=offers]{color:#ff7a1a!important}
+  nav.tabs button.active[data-view=offers] .ti{background:rgba(255,122,26,.16)}
+  nav.tabs button.active[data-view=market]{color:#12a15c!important}
+  nav.tabs button.active[data-view=market] .ti{background:rgba(18,161,92,.16)}
+  nav.tabs button.active[data-view=emg]{color:#e23744!important}
+  nav.tabs button.active[data-view=emg] .ti{background:rgba(226,55,68,.16)}
+  nav.tabs button.active[data-view=news]{color:#2e7be4!important}
+  nav.tabs button.active[data-view=news] .ti{background:rgba(46,123,228,.16)}
+  /* المحتوى في الصفحات الكاملة ميتغطّاش بالشريط */
+  .page-body{padding-bottom:calc(68px + env(safe-area-inset-bottom) + 18px)!important}
+  #chatPage .chat-input-row{margin-bottom:calc(68px + env(safe-area-inset-bottom))}
+  #adminPage .page-body,#detailPage .page-body,#mkPage .page-body{padding-bottom:calc(68px + env(safe-area-inset-bottom) + 18px)!important}
   .chat-input-row input{flex:1;background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:22px;padding:11px 16px;font-family:inherit;font-size:.92rem;outline:none}
   .chat-send{background:var(--gg);color:var(--ink);border:none;border-radius:22px;padding:0 20px;font-family:inherit;font-weight:800;font-size:.92rem}
   .act.msg{background:rgba(212,175,55,.16)!important;border:1px solid rgba(212,175,55,.5)!important;color:#f0e2b0!important}
@@ -948,11 +975,11 @@
 <button class="fab" id="fab" onclick="openAdd()">+ سجّل محلك</button>
 
 <nav class="tabs">
-  <button class="active" data-view="home" onclick="go('home')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 5v16l6-2 6 2 6-2V3l-6 2-6-2z"/><path d="M9 3v16M15 5v16"/></svg></span>الدليل</button>
-  <button data-view="offers" onclick="go('offers')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.3" fill="currentColor" stroke="none"/></svg></span>عروض</button>
-  <button data-view="market" onclick="go('market')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg></span>السوق</button>
-  <button data-view="emg" onclick="go('emg')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>أرقام مهمة</button>
-  <button data-view="news" onclick="go('news')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg></span>أخبار</button>
+  <button class="active" data-view="home" onclick="navGo('home')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 5v16l6-2 6 2 6-2V3l-6 2-6-2z"/><path d="M9 3v16M15 5v16"/></svg></span>الدليل</button>
+  <button data-view="offers" onclick="navGo('offers')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.3" fill="currentColor" stroke="none"/></svg></span>عروض</button>
+  <button data-view="market" onclick="navGo('market')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg></span>السوق</button>
+  <button data-view="emg" onclick="navGo('emg')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>أرقام مهمة</button>
+  <button data-view="news" onclick="navGo('news')"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg></span>أخبار</button>
 </nav>
 
 <div class="overlay" id="addOverlay">
@@ -2349,6 +2376,17 @@ function renderNews(){
 }
 
 let _suppressPush=false;
+function navGo(v){document.querySelectorAll('.page.open,.overlay.open').forEach(el=>el.classList.remove('open'));go(v);}
+/* الشريط السفلي: يختفي وانت نازل، ويظهر أول ما تسحب لفوق */
+let _navLastY=0;
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav.tabs');if(!nav)return;
+  const y=window.scrollY||document.documentElement.scrollTop||0;
+  if(y<48){nav.classList.remove('nav-hidden');}
+  else if(y>_navLastY+5){nav.classList.add('nav-hidden');}
+  else if(y<_navLastY-5){nav.classList.remove('nav-hidden');}
+  _navLastY=y;
+},{passive:true});
 function pushView(){ if(!_suppressPush){try{history.pushState({app:1},'');}catch(e){}} }
 function go(v){
   const prev=current;
@@ -2360,6 +2398,7 @@ function go(v){
   document.getElementById('fab').style.display=(v==='home'||v==='cat')?'block':'none';
   if(v==='home')renderHome();
   if(v!=='home'&&prev!==v)pushView();
+  const nv=document.querySelector('nav.tabs');if(nv)nv.classList.remove('nav-hidden');_navLastY=0;
   window.scrollTo({top:0});
 }
 
