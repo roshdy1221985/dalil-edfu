@@ -57,7 +57,7 @@
   .stat b{font-family:'Reem Kufi';font-size:1.5rem;color:var(--ochre-lt);display:block;line-height:1}
   .stat span{font-size:.78rem;color:#bcd0c8}
 
-  main{width:100%;max-width:1080px;margin:0 auto;padding:0 18px 24px;flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  main{width:100%;max-width:1080px;margin:0 auto;padding:0 18px 24px;flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .view{display:none}
   .view.active{display:block}
   #v-home{margin-top:-42px;position:relative;z-index:5}
@@ -900,13 +900,6 @@
 
 <main>
   <section class="view active" id="v-home">
-    <div class="cta" id="ctaBanner">
-      <div class="cta-txt">
-        <b>عندك محل أو خدمة في إدفو؟</b>
-        <span>سجّل مجاناً وأضف نشاطك ووصّل لكل أهل المدينة في دقايق.</span>
-      </div>
-      <button class="cta-btn" onclick="openAdd()">سجّل وأضف متجرك مجاناً</button>
-    </div>
     <div class="trending" id="trending"></div>
     <div class="section-h"><h3>أقسام الدليل</h3><span class="tag" id="dir-count">0</span><div class="rule"></div></div>
     <div class="cat-grid" id="cat-grid"></div>
@@ -2828,7 +2821,7 @@ function renderAcct(){
   else{b.classList.remove('in');b.textContent='دخول';}
   const ab=document.getElementById('admin-btn');if(ab)ab.style.display=(USER&&USER.isAdmin)?'block':'none';
   const sb=document.getElementById('store-btn');if(sb)sb.style.display=USER?'block':'none';
-  const cta=document.getElementById('ctaBanner');if(cta)cta.style.display=USER?'none':'flex';
+  const cta=document.getElementById('ctaBanner');if(cta)cta.style.display='none';
 }
 function acctClick(){
   if(USER)document.getElementById('acctMenu').classList.toggle('open');
