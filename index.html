@@ -756,6 +756,11 @@
   .specs-title{font-family:'Amiri',serif;font-size:1.05rem;color:#f0e2b0;padding:10px 0 4px}
   body.light .specs-block{background:#f7f9fc!important;border-color:rgba(14,42,72,.1)!important}
   body.light .specs-title{color:#8a6414!important}
+  /* البحث المحفوظ */
+  .save-srch-btn{background:rgba(212,175,55,.14);border:1px solid rgba(212,175,55,.5);color:#e8d59a;border-radius:999px;padding:6px 13px;font-family:inherit;font-size:.8rem;font-weight:700;white-space:nowrap}
+  body.light .save-srch-btn{color:#8a5f14!important}
+  .save-del{background:rgba(226,55,68,.14);border:1px solid rgba(226,55,68,.4);color:#ff8a94;border-radius:9px;padding:7px 13px;font-family:inherit;font-size:.8rem;font-weight:700;flex:0 0 auto}
+  body.light .save-del{color:#c0293a!important}
   .chat-input-row input{flex:1;background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:22px;padding:11px 16px;font-family:inherit;font-size:.92rem;outline:none}
   .chat-send{background:var(--gg);color:var(--ink);border:none;border-radius:22px;padding:0 20px;font-family:inherit;font-weight:800;font-size:.92rem}
   .act.msg{background:rgba(212,175,55,.16)!important;border:1px solid rgba(212,175,55,.5)!important;color:#f0e2b0!important}
@@ -1121,6 +1126,7 @@
   <button onclick="openMyAccount()">👤 حسابي</button>
   <button onclick="openMyAds()">📋 إعلاناتي</button>
   <button onclick="openMessages()">💬 رسائلي</button>
+  <button onclick="openSavedSearches()">🔖 عمليات البحث المحفوظة</button>
   <button onclick="enablePush()">🔔 فعّل الإشعارات</button>
   <button onclick="openFavs()">❤️ المفضلة</button>
   <button id="install-btn" onclick="installApp()" style="display:none">📲 ثبّت التطبيق</button>
@@ -2080,6 +2086,45 @@ function renderMarketCats(){
 }
 function mkSetCat(id){mkCat=id;renderMarketCats();renderMarket();}
 function mkSearch(val){mkQuery=(val||'').trim();renderMarket();}
+/* ===== البحث المحفوظ + تنبيهات إعلانات جديدة ===== */
+function getSaved(){try{return JSON.parse(localStorage.getItem('dalil_saved')||'[]');}catch(e){return [];}}
+function setSaved(a){try{localStorage.setItem('dalil_saved',JSON.stringify(a));}catch(e){}}
+function savedLabel(s){const p=[];if(s.query)p.push('«'+s.query+'»');if(s.cat&&s.cat!=='all')p.push(mkCatName(s.cat));if(s.min!==''||s.max!=='')p.push((s.min||'0')+'–'+(s.max||'∞')+'ج');return p.join(' · ')||'كل الإعلانات';}
+function saveCurrentSearch(){
+  if(mkCat==='all'&&!mkQuery&&mkMin===''&&mkMax===''){alert('اعمل بحث أو فلتر الأول عشان تحفظه');return;}
+  const s={id:'s'+Date.now(),query:mkQuery,cat:mkCat,min:mkMin,max:mkMax};
+  const arr=getSaved();
+  if(arr.some(x=>x.query===s.query&&x.cat===s.cat&&x.min===s.min&&x.max===s.max)){alert('البحث ده محفوظ عندك بالفعل ✓');return;}
+  arr.unshift(s);setSaved(arr);
+  alert('تم حفظ البحث ✓ هنبّهك في الجرس بأي إعلان جديد يطابقه.');
+}
+function matchesSaved(m,s){
+  if(s.cat&&s.cat!=='all'&&mkCatId(m.cat)!==s.cat)return false;
+  if(s.query){const q=(''+s.query).toLowerCase();const hay=((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase();if(hay.indexOf(q)<0)return false;}
+  if(s.min!==''||s.max!==''){const d=(''+(m.price||'')).replace(/[^\d]/g,'');if(!d)return false;const p=+d;if(s.min!==''&&p<+s.min)return false;if(s.max!==''&&p>+s.max)return false;}
+  return true;
+}
+function checkSavedSearches(){
+  const arr=getSaved();if(!arr.length||!Array.isArray(MARKET))return;
+  let lastCheck=0;try{lastCheck=+localStorage.getItem('dalil_saved_check')||0;}catch(e){}
+  const nowTs=Date.now();
+  if(lastCheck>0){
+    const newAds=MARKET.filter(m=>m.id&&!adExpired(m)&&m.created&&new Date(m.created).getTime()>lastCheck);
+    let added=false;
+    arr.forEach(s=>{const mt=newAds.filter(m=>matchesSaved(m,s));if(mt.length){NOTIFS.unshift({title:'🔔 إعلانات جديدة تطابق بحثك',body:`فيه ${mt.length} إعلان جديد في «${savedLabel(s)}». افتح السوق وشوفهم.`,created:nowTs});added=true;}});
+    if(added)renderNotifBadge();
+  }
+  try{localStorage.setItem('dalil_saved_check',String(nowTs));}catch(e){}
+}
+function openSavedSearches(){
+  const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
+  const arr=getSaved();
+  document.getElementById('user-title').textContent='🔖 عمليات البحث المحفوظة';
+  document.getElementById('user-body').innerHTML=arr.length?arr.map((s,i)=>`<div class="fav-row"><div onclick="runSaved(${i})" style="flex:1;cursor:pointer"><b>${esc(savedLabel(s))}</b><small>هنبّهك بأي إعلان جديد يطابقه</small></div><button class="save-del" onclick="event.stopPropagation();removeSaved(${i})">حذف</button></div>`).join(''):'<div class="empty2">لسه مفيش بحث محفوظ. افتح السوق، اعمل بحث/فلتر، واضغط «🔖 احفظ البحث».</div>';
+  document.getElementById('userOverlay').classList.add('open');
+}
+function runSaved(i){const s=getSaved()[i];if(!s)return;closeUser();mkCat=s.cat||'all';mkQuery=s.query||'';mkMin=s.min||'';mkMax=s.max||'';const sr=document.getElementById('mk-search');if(sr)sr.value=mkQuery;const mn=document.getElementById('mk-min');if(mn)mn.value=s.min||'';const mx=document.getElementById('mk-max');if(mx)mx.value=s.max||'';go('market');renderMarketCats();renderMarket();}
+function removeSaved(i){const arr=getSaved();arr.splice(i,1);setSaved(arr);openSavedSearches();}
 function mkSetSort(val){mkSort=val;renderMarket();}
 function mkSetRange(){const mn=document.getElementById('mk-min'),mx=document.getElementById('mk-max');mkMin=mn?mn.value.replace(/[^\d]/g,''):'';mkMax=mx?mx.value.replace(/[^\d]/g,''):'';renderMarket();}
 function mkClear(){mkCat='all';mkQuery='';mkMin='';mkMax='';const s=document.getElementById('mk-search');if(s)s.value='';const mn=document.getElementById('mk-min');if(mn)mn.value='';const mx=document.getElementById('mk-max');if(mx)mx.value='';renderMarketCats();renderMarket();}
@@ -2099,7 +2144,7 @@ function renderMarket(){
     return _bump(b.m)-_bump(a.m);
   });
   const act=document.getElementById('mk-active');
-  if(act)act.innerHTML=(mkCat!=='all'||mkQuery)?`<span class="mk-chip">${mkCat!=='all'?mkCatName(mkCat):'نتائج البحث'} · ${list.length} إعلان <button onclick="mkClear()">&times;</button></span>`:'';
+  if(act)act.innerHTML=(mkCat!=='all'||mkQuery||mkMin!==''||mkMax!=='')?`<span class="mk-chip">${mkCat!=='all'?mkCatName(mkCat):(mkQuery?'نتائج البحث':'مفلتر')} · ${list.length} إعلان <button onclick="mkClear()">&times;</button></span><button class="save-srch-btn" onclick="saveCurrentSearch()">🔖 احفظ البحث</button>`:'';
   const empty=document.getElementById('mk-empty');
   if(!list.length){grid.innerHTML='';if(empty)empty.style.display='block';return;}
   if(empty)empty.style.display='none';
@@ -2916,7 +2961,7 @@ async function loadData(){
       const {data:offers}=await supa.from('offers').select('id,title,discount,ends_note,business_id,businesses(name)').eq('active',true).order('created_at',{ascending:false});
       OFFERS_LIVE=(offers||[]).map(o=>({id:o.id,disc:o.discount||'',shop:(o.businesses&&o.businesses.name)||'',txt:o.title,ends:o.ends_note||''}));
     }catch(e){OFFERS_LIVE=[];}
-    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();applyDeepLink();checkExpiredAds();
+    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();applyDeepLink();checkExpiredAds();checkSavedSearches();
   }catch(e){console.error('loadData',e);}
 }
 
