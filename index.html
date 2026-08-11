@@ -743,6 +743,19 @@
   .review p{margin:0;color:var(--txd);font-size:.9rem;line-height:1.6}
   body.light .review-box{background:#f4f6fa!important;color:#17293f!important}
   body.light .review{background:#f7f9fc!important;border-color:rgba(14,42,72,.1)!important}
+  /* المواصفات المخصّصة للسوق */
+  .specs-h{font-family:'Amiri',serif;font-size:1.02rem;color:#e8d59a;margin:6px 0 10px}
+  body.light .specs-h{color:#8a6414!important}
+  .mk-specline{font-size:.76rem;color:#e8d59a;margin-bottom:5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.light .mk-specline{color:#8a6414!important}
+  .specs-block{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:14px;padding:6px 14px;margin-bottom:14px}
+  .spec-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.08)}
+  .spec-row:last-child{border-bottom:none}
+  .spec-row span{color:var(--txd);font-size:.86rem}
+  .spec-row b{color:var(--tx);font-size:.9rem;text-align:left}
+  .specs-title{font-family:'Amiri',serif;font-size:1.05rem;color:#f0e2b0;padding:10px 0 4px}
+  body.light .specs-block{background:#f7f9fc!important;border-color:rgba(14,42,72,.1)!important}
+  body.light .specs-title{color:#8a6414!important}
   .chat-input-row input{flex:1;background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:22px;padding:11px 16px;font-family:inherit;font-size:.92rem;outline:none}
   .chat-send{background:var(--gg);color:var(--ink);border:none;border-radius:22px;padding:0 20px;font-family:inherit;font-weight:800;font-size:.92rem}
   .act.msg{background:rgba(212,175,55,.16)!important;border:1px solid rgba(212,175,55,.5)!important;color:#f0e2b0!important}
@@ -1039,6 +1052,7 @@
       <h3 id="mk-d-title" class="mk-d-title"></h3>
       <div class="mk-badges" id="mk-d-badges"></div>
       <div class="mk-d-metaline" id="mk-d-metaline"></div>
+      <div id="mk-d-specs"></div>
       <div class="mk-d-sec"><h4>الوصف</h4><p id="mk-d-desc" class="mk-desc"></p></div>
       <div class="mk-seller" id="mk-d-seller"></div>
       <div id="mk-d-owner"></div>
@@ -1175,7 +1189,8 @@
   <div class="modal">
     <div class="modal-head"><h3 id="post-title">أضف إعلان في السوق</h3><button class="x" onclick="closePost()">&times;</button></div>
     <div class="modal-body">
-      <div class="field"><label>القسم</label><select id="p-cat" class="p-sel"></select></div>
+      <div class="field"><label>القسم</label><select id="p-cat" class="p-sel" onchange="renderPostFields(this.value)"></select></div>
+      <div id="p-specs"></div>
       <div class="field"><label>عنوان الإعلان</label><input id="p-title" placeholder="مثال: موبايل سامسونج للبيع"></div>
       <div class="field"><label>السعر (بالجنيه)</label><input id="p-price" inputmode="numeric" placeholder="مثال: 5000">
         <div class="p-opts">
@@ -1673,6 +1688,83 @@ const mkIc=id=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const CAT_ALIAS={'سيارات':'cars','مركبات':'cars','دراجات':'cars','عربيات':'cars','موبايلات':'phones','عقارات':'realestate','أثاث':'furniture','إلكترونيات':'electronics','مواشي':'animals','حيوانات':'animals','زراعة':'agri','وظائف':'jobs','خدمات':'services','ملابس':'fashion','متنوع':'misc'};
 const mkCatId=name=>{const c=MK_CATS.find(x=>x.name===name);if(c)return c.id;if(CAT_ALIAS[name])return CAT_ALIAS[name];for(const k in CAT_ALIAS){if((name||'').includes(k))return CAT_ALIAS[k];}return 'misc';};
 const mkCatName=id=>{const c=MK_CATS.find(x=>x.id===id);return c?c.name:'متنوع';};
+/* ===== حقول مخصّصة لكل قسم في السوق (احترافي، data-driven) ===== */
+function _mkYears(){const y=new Date().getFullYear(),a=[];for(let i=y+1;i>=1990;i--)a.push(''+i);return a;}
+const MK_FIELDS={
+  cars:[
+    {k:'brand',label:'الماركة',type:'select',opts:['تويوتا','هيونداي','كيا','نيسان','شيفروليه','مرسيدس','بي إم دبليو','أودي','فولكس فاجن','رينو','فيات','سكودا','ميتسوبيشي','بيجو','سوزوكي','هوندا','مازدا','أخرى'],key:true},
+    {k:'model',label:'الموديل',type:'text',ph:'مثال: كورولا'},
+    {k:'year',label:'سنة الصنع',type:'select',opts:_mkYears(),key:true},
+    {k:'km',label:'الكيلومترات',type:'number',unit:'كم',key:true},
+    {k:'trans',label:'ناقل الحركة',type:'select',opts:['أوتوماتيك','مانوال']},
+    {k:'fuel',label:'الوقود',type:'select',opts:['بنزين','سولار','غاز طبيعي','كهرباء','هايبرد']},
+    {k:'color',label:'اللون',type:'text',ph:'مثال: أبيض'}
+  ],
+  realestate:[
+    {k:'ptype',label:'نوع العقار',type:'select',opts:['شقة','فيلا','دوبلكس','ستوديو','محل تجاري','مكتب','أرض','مخزن','عمارة'],key:true},
+    {k:'purpose',label:'الغرض',type:'select',opts:['للبيع','للإيجار'],key:true},
+    {k:'area_sz',label:'المساحة',type:'number',unit:'م²',key:true},
+    {k:'rooms',label:'عدد الغرف',type:'number',key:true},
+    {k:'baths',label:'عدد الحمامات',type:'number'},
+    {k:'floor',label:'الدور',type:'text',ph:'مثال: الثالث'},
+    {k:'finish',label:'التشطيب',type:'select',opts:['سوبر لوكس','لوكس','نصف تشطيب','على المحارة']}
+  ],
+  phones:[
+    {k:'brand',label:'الشركة',type:'select',opts:['سامسونج','آبل','شاومي','أوبو','ريلمي','هواوي','إنفينكس','تكنو','فيفو','نوكيا','أخرى'],key:true},
+    {k:'model',label:'الموديل',type:'text',ph:'مثال: A54',key:true},
+    {k:'storage',label:'الذاكرة',type:'select',opts:['32 جيجا','64 جيجا','128 جيجا','256 جيجا','512 جيجا','1 تيرا'],key:true},
+    {k:'ram',label:'الرام',type:'select',opts:['2 جيجا','3 جيجا','4 جيجا','6 جيجا','8 جيجا','12 جيجا']},
+    {k:'warranty',label:'الضمان',type:'select',opts:['بضمان','بدون ضمان']}
+  ],
+  electronics:[
+    {k:'etype',label:'النوع',type:'select',opts:['لابتوب','كمبيوتر','تليفزيون','ثلاجة','غسالة','مكيّف','ديب فريزر','ميكروويف','بلايستيشن','سماعات','أخرى'],key:true},
+    {k:'brand',label:'الماركة',type:'text',key:true},
+    {k:'warranty',label:'الضمان',type:'select',opts:['بضمان','بدون ضمان']}
+  ],
+  furniture:[
+    {k:'ftype',label:'النوع',type:'select',opts:['أنتريه','ركنة','كنبة','سفرة','غرفة نوم','غرفة أطفال','مطبخ','مكتب','دولاب','سرير','تسريحة'],key:true},
+    {k:'material',label:'الخامة',type:'text',ph:'مثال: خشب زان'}
+  ],
+  fashion:[
+    {k:'target',label:'لمن',type:'select',opts:['رجالي','حريمي','أطفال','للجنسين'],key:true},
+    {k:'ftype',label:'النوع',type:'select',opts:['ملابس','أحذية','شنط','إكسسوارات','ساعات'],key:true},
+    {k:'size',label:'المقاس',type:'text'}
+  ],
+  animals:[
+    {k:'atype',label:'النوع',type:'select',opts:['أبقار','جاموس','أغنام','ماعز','جِمال','دواجن','أرانب','طيور','قطط','كلاب','خيول','أسماك','أخرى'],key:true},
+    {k:'count',label:'العدد',type:'number',key:true},
+    {k:'age',label:'العمر',type:'text',ph:'مثال: سنتين'}
+  ],
+  agri:[
+    {k:'gtype',label:'النوع',type:'select',opts:['جرار','معدة زراعية','أرض زراعية','محصول','بذور وشتلات','مستلزمات ري','مبيدات وأسمدة'],key:true},
+    {k:'qty',label:'المساحة/الكمية',type:'text',ph:'مثال: 5 أفدنة'}
+  ],
+  jobs:[
+    {k:'jtype',label:'نوع الدوام',type:'select',opts:['دوام كامل','دوام جزئي','عن بعد','مؤقت'],key:true},
+    {k:'field',label:'المجال',type:'text',ph:'مثال: مبيعات',key:true},
+    {k:'exp',label:'الخبرة',type:'select',opts:['بدون خبرة','1-3 سنوات','أكثر من 3 سنوات']}
+  ]
+};
+function renderPostFields(catName){
+  const id=mkCatId(catName),defs=MK_FIELDS[id]||[],box=document.getElementById('p-specs');if(!box)return;
+  if(!defs.length){box.innerHTML='';return;}
+  box.innerHTML=`<div class="specs-h">مواصفات ${esc(mkCatName(id))}</div>`+defs.map(f=>{
+    if(f.type==='select')return `<div class="field"><label>${f.label}</label><select class="p-sel spec-f" data-k="${f.k}"><option value="">— اختر —</option>${f.opts.map(o=>`<option>${o}</option>`).join('')}</select></div>`;
+    return `<div class="field"><label>${f.label}${f.unit?' ('+f.unit+')':''}</label><input class="spec-f" data-k="${f.k}" ${f.type==='number'?'inputmode="numeric"':''} placeholder="${f.ph||''}"></div>`;
+  }).join('');
+}
+function readPostSpecs(){const o={};document.querySelectorAll('#p-specs .spec-f').forEach(el=>{const val=(el.value||'').trim();if(val)o[el.dataset.k]=val;});return o;}
+function fillPostSpecs(specs){if(!specs)return;document.querySelectorAll('#p-specs .spec-f').forEach(el=>{const val=specs[el.dataset.k];if(val!=null)el.value=val;});}
+function renderAdSpecs(m){
+  const id=mkCatId(m.cat),defs=MK_FIELDS[id]||[],specs=m.specs||{};
+  const rows=defs.filter(f=>specs[f.k]!=null&&specs[f.k]!=='').map(f=>`<div class="spec-row"><span>${f.label}</span><b>${esc(''+specs[f.k])}${f.unit?' '+f.unit:''}</b></div>`);
+  return rows.length?`<div class="specs-block"><div class="specs-title">المواصفات</div>${rows.join('')}</div>`:'';
+}
+function adSpecLine(m){
+  const id=mkCatId(m.cat),defs=MK_FIELDS[id]||[],specs=m.specs||{};
+  const parts=defs.filter(f=>f.key&&specs[f.k]).slice(0,3).map(f=>esc(''+specs[f.k])+(f.unit?' '+f.unit:''));
+  return parts.length?`<div class="mk-specline">${parts.join(' · ')}</div>`:'';
+}
 const timeAgo=ts=>{if(!ts)return 'حديثاً';const s=(Date.now()-new Date(ts).getTime())/1000;if(s<3600)return 'من '+Math.max(1,Math.floor(s/60))+' دقيقة';if(s<86400)return 'من '+Math.floor(s/3600)+' ساعة';const dd=Math.floor(s/86400);if(dd<30)return 'من '+dd+' يوم';if(dd<365)return 'من '+Math.floor(dd/30)+' شهر';return 'من '+Math.floor(dd/365)+' سنة';};
 const priceLabel=m=>{if(m.free||/مجان/.test(''+(m.price||'')))return 'مجاناً';if(!m.price)return 'السعر عند الاتصال';const dgt=(''+m.price).replace(/[^\d]/g,'');const base=dgt?(+dgt).toLocaleString('en-US')+' ج':m.price;return base+(m.nego?' · قابل للتفاوض':'');};
 
@@ -2020,6 +2112,7 @@ function renderMarket(){
       <div class="mk-info">
         <h4>${esc(m.t)}</h4>
         <div class="price">${esc(priceLabel(m))}</div>
+        ${adSpecLine(m)}
         <div class="meta"><svg class="mm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span>${esc(m.loc)}</span><span class="dotsep">·</span><span>${timeAgo(m.created)}</span></div>
       </div></div>`;
   }).join('');
@@ -2032,6 +2125,7 @@ function openMk(i){
     ?`<div class="mkg-main" style="background-image:url('${imgs[0]}')"></div>`+(imgs.length>1?`<div class="mkg-thumbs">${imgs.map((u,gi)=>`<div class="mkg-th${gi===0?' on':''}" style="background-image:url('${u}')" onclick="mkPick(${i},${gi})"></div>`).join('')}</div>`:'')
     :`<div class="mkg-main noimg2"><span>${mkIc(mkCatId(m.cat))}</span></div>`;
   document.getElementById('mk-d-price').textContent=priceLabel(m);
+  document.getElementById('mk-d-specs').innerHTML=renderAdSpecs(m);
   document.getElementById('mk-d-title').textContent=m.t;
   let badges=`<span class="mk-tag">${esc(m.cat||mkCatName(mkCatId(m.cat)))}</span>`;
   if(m.featured)badges+=`<span class="mk-tag feat">\u2B50 مميّز</span>`;
@@ -2735,6 +2829,7 @@ function openPost(editIdx){
   setV('p-desc',m?(m.desc||''):'');
   setV('p-phone',m?(m.phone||''):(USER&&USER.phone?USER.phone:''));
   if(m&&m.cat&&MK_CATS.some(c=>c.name===m.cat))sel.value=m.cat;
+  renderPostFields(sel.value);fillPostSpecs(m?m.specs:null);
   document.getElementById('p-free').checked=isFree;
   document.getElementById('p-nego').checked=m?!!m.nego:false;
   postCond=m&&m.cond?m.cond:'used';setCondUI();togFree();
@@ -2775,6 +2870,7 @@ async function savePost(){
     const urls=[];
     for(let i=0;i<postPhotos_arr.length;i++){let u=postPhotos_arr[i];if(u&&u.startsWith('data:'))u=await putImg('ad-images',adId,u,'ad'+i);if(u)urls.push(u);}
     await supa.from('ads').update({images:urls,img_url:urls[0]||null}).eq('id',adId);
+    try{await supa.from('ads').update({specs:readPostSpecs()}).eq('id',adId);}catch(e){}
     closePost();await loadData();go('market');
     alert(editPostIndex!=null?'تم حفظ التعديلات ✓':'تم إرسال الإعلان ✓ هيظهر بعد المراجعة');
   }catch(e){console.error(e);alert('حصل خطأ: '+(e.message||e));}
@@ -2814,7 +2910,7 @@ async function loadData(){
     let ads=[];
     try{const r=await supa.from('ads').select('*, profiles(name)').order('created_at',{ascending:false});if(r.error)throw r.error;ads=r.data||[];}
     catch(e){const r2=await supa.from('ads').select('*').order('created_at',{ascending:false});ads=r2.data||[];}
-    const realAds=(ads&&ads.length)?ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||'',featured:!!a.featured,bumped:a.bumped_at||a.created_at})):[];
+    const realAds=(ads&&ads.length)?ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||'',featured:!!a.featured,bumped:a.bumped_at||a.created_at,specs:a.specs||{}})):[];
     MARKET=SHOW_DEMO?realAds.concat(SEED_MARKET):(realAds.length?realAds:SEED_MARKET.slice());
     try{
       const {data:offers}=await supa.from('offers').select('id,title,discount,ends_note,business_id,businesses(name)').eq('active',true).order('created_at',{ascending:false});
