@@ -720,6 +720,29 @@
   .msg.them .bubble{background:rgba(255,255,255,.07);border:1px solid var(--bd);color:var(--tx);border-bottom-left-radius:4px}
   .msg .mt{font-size:.62rem;color:var(--txd);margin-top:3px;padding:0 4px}
   .chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--bd);background:var(--pnl2)}
+  .chat-quick{display:flex;gap:7px;overflow-x:auto;padding:8px 12px 0;-webkit-overflow-scrolling:touch}
+  .chat-quick::-webkit-scrollbar{display:none}
+  .qr{flex:0 0 auto;background:rgba(212,175,55,.12);border:1px solid var(--bd);color:#e8d59a;border-radius:999px;padding:6px 12px;font-family:inherit;font-size:.8rem;white-space:nowrap}
+  .qr:active{transform:scale(.96)}
+  body.light .qr{background:rgba(212,175,55,.14)!important;color:#8a5f14!important}
+  /* البحث الرائج */
+  .trending{margin:2px 0 6px}
+  .trend-h{font-size:.85rem;color:var(--txd);margin-bottom:8px}
+  .trend-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .trend-chip{background:rgba(255,255,255,.05);border:1px solid var(--bd);color:var(--tx);border-radius:999px;padding:6px 13px;font-family:inherit;font-size:.82rem}
+  .trend-chip:active{transform:scale(.96)}
+  body.light .trend-chip{background:#fff!important;border-color:rgba(14,42,72,.1)!important;color:#17293f!important;box-shadow:0 2px 8px rgba(14,42,72,.05)}
+  /* المراجعات المكتوبة */
+  .review-box{width:100%;margin:12px 0 8px;background:rgba(0,0,0,.3);border:1px solid var(--bd);color:var(--tx);border-radius:12px;padding:10px 13px;font-family:inherit;font-size:.9rem;resize:vertical;min-height:52px;outline:none}
+  .review-send{width:100%}
+  .d-reviews{margin-top:18px}
+  .review{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:13px;padding:12px 14px;margin-bottom:9px}
+  .rv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+  .rv-top b{color:var(--tx)}
+  .rv-stars{color:#e6a91e;font-size:.85rem;letter-spacing:1px}
+  .review p{margin:0;color:var(--txd);font-size:.9rem;line-height:1.6}
+  body.light .review-box{background:#f4f6fa!important;color:#17293f!important}
+  body.light .review{background:#f7f9fc!important;border-color:rgba(14,42,72,.1)!important}
   .chat-input-row input{flex:1;background:rgba(0,0,0,.32);border:1px solid var(--bd);color:var(--tx);border-radius:22px;padding:11px 16px;font-family:inherit;font-size:.92rem;outline:none}
   .chat-send{background:var(--gg);color:var(--ink);border:none;border-radius:22px;padding:0 20px;font-family:inherit;font-weight:800;font-size:.92rem}
   .act.msg{background:rgba(212,175,55,.16)!important;border:1px solid rgba(212,175,55,.5)!important;color:#f0e2b0!important}
@@ -763,6 +786,36 @@
   body.light .pkg{background:#fff!important;border-color:rgba(14,42,72,.1)!important}
   body.light .pkg-name{color:#8a6414!important}
   body.light .pkg li::before{color:#12a15c}
+  /* مفتوح الآن / مغلق */
+  .open-tag{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .open-tag.on{background:rgba(38,208,124,.15);color:#43d68a;border:1px solid rgba(38,208,124,.4)}
+  .open-tag.off{background:rgba(226,55,68,.14);color:#ff8a94;border:1px solid rgba(226,55,68,.4)}
+  body.light .open-tag.on{color:#0d8a4f!important}
+  body.light .open-tag.off{color:#c0293a!important}
+  /* محرّر المواعيد */
+  .hours-ed{background:rgba(0,0,0,.18);border:1px solid var(--bd);border-radius:14px;padding:12px}
+  .hrs-lbl{font-size:.8rem;color:var(--txd);margin-bottom:8px}
+  .hrs-days{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .hrs-day{background:rgba(255,255,255,.05);border:1px solid var(--bd);color:var(--txd);border-radius:9px;padding:6px 10px;font-family:inherit;font-size:.78rem}
+  .hrs-day.on{background:rgba(38,208,124,.16);border-color:rgba(38,208,124,.5);color:#43d68a;font-weight:700}
+  .hrs-seg{display:flex;gap:6px;margin-bottom:10px}
+  .hrs-seg button{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--bd);color:var(--txd);border-radius:9px;padding:8px;font-family:inherit;font-size:.82rem}
+  .hrs-seg button.on{background:var(--gg);color:var(--ink);font-weight:800;border:none}
+  .hrs-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .hrs-row>span:first-child{font-size:.8rem;color:var(--txd);min-width:52px}
+  .hrs-row input[type=time],.hcr-times input[type=time]{background:rgba(0,0,0,.3);border:1px solid var(--bd);color:var(--tx);border-radius:9px;padding:7px 9px;font-family:inherit;font-size:.85rem;color-scheme:dark}
+  .dash{color:var(--txd)}
+  .hrs-custom-row{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:11px;padding:9px;margin:8px 0}
+  .hcr-top{display:flex;align-items:center;gap:8px}
+  .hcr-day{flex:1;background:rgba(0,0,0,.3);border:1px solid var(--bd);color:var(--tx);border-radius:9px;padding:7px;font-family:inherit;font-size:.82rem}
+  .hcr-closed{font-size:.78rem;color:var(--txd);display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .hcr-x{background:none;border:none;color:#ff8a94;font-size:1.3rem;line-height:1;padding:0 4px}
+  .hcr-times{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .hrs-add{width:100%;margin-top:6px;background:rgba(212,175,55,.12);border:1px dashed rgba(212,175,55,.5);color:#e8d59a;border-radius:10px;padding:9px;font-family:inherit;font-size:.82rem;font-weight:600}
+  body.light .hours-ed{background:rgba(14,42,72,.03)!important}
+  body.light .hrs-day,body.light .hrs-seg button:not(.on){background:#f4f6fa!important;color:#5f708a!important}
+  body.light .hrs-row input[type=time],body.light .hcr-times input[type=time],body.light .hcr-day{background:#f4f6fa!important;color:#17293f!important;color-scheme:light}
+  body.light .hrs-add{color:#8a5f14!important}
 </style>
 </head>
 <body class="light">
@@ -809,6 +862,7 @@
       </div>
       <button class="cta-btn" onclick="openAdd()">سجّل وأضف متجرك مجاناً</button>
     </div>
+    <div class="trending" id="trending"></div>
     <div class="section-h"><h3>أقسام الدليل</h3><span class="tag" id="dir-count">0</span><div class="rule"></div></div>
     <div class="cat-grid" id="cat-grid"></div>
     <div class="section-h"><h3>إعلانات مقترحة</h3><div class="rule"></div></div>
@@ -897,7 +951,17 @@
       <div class="field"><label>الموقع على الخريطة</label>
         <button type="button" class="mapbtn" id="mapbtn" onclick="grabLoc()">&#x1F4CD; حدد موقعي الحالي</button>
       </div>
-      <div class="field"><label>مواعيد العمل</label><input id="f-hours" placeholder="مثال: يومياً 10ص – 11م / السبت–الخميس"></div>
+      <div class="field"><label>مواعيد العمل</label>
+        <div class="hours-ed">
+          <div class="hrs-lbl">أيام العمل (دوس على اليوم المفتوح):</div>
+          <div class="hrs-days" id="hrs-days"></div>
+          <div class="hrs-seg" id="hrs-pseg"><button type="button" class="on" onclick="setHrsN(1)">فترة واحدة</button><button type="button" onclick="setHrsN(2)">فترتين</button></div>
+          <div class="hrs-row"><span>الفترة 1</span><input type="time" id="hrs-p1a"><span class="dash">–</span><input type="time" id="hrs-p1b"></div>
+          <div class="hrs-row" id="hrs-p2row" style="display:none"><span>الفترة 2</span><input type="time" id="hrs-p2a"><span class="dash">–</span><input type="time" id="hrs-p2b"></div>
+          <div id="hrs-custom-list"></div>
+          <button type="button" class="hrs-add" onclick="addHrsCustom()">+ خصّص يوم بمواعيد مختلفة</button>
+        </div>
+      </div>
       <div class="field"><label>وصف قصير</label><textarea id="f-desc" placeholder="بتقدّم إيه؟"></textarea></div>
 
       <div class="field"><label>الخدمات وأسعارها</label>
@@ -956,6 +1020,7 @@
       <div class="d-sec" id="d-svc-sec" style="display:none"><h4>الخدمات والأسعار</h4><div class="price-list" id="d-svc"></div></div>
       <div class="d-sec" id="d-sections-sec" style="display:none"><div id="d-sections"></div></div>
       <div class="d-rater" id="d-rater"></div>
+      <div class="d-reviews" id="d-reviews" style="display:none"><div class="section-h"><h3>آراء العملاء</h3><div class="rule"></div></div><div id="d-reviews-list"></div></div>
       <div id="d-edit"></div>
       <div class="biz-stats" id="d-stats" style="display:none"></div>
       <div id="d-msg"></div>
@@ -1075,6 +1140,16 @@
   </div>
 </div>
 
+<div class="overlay" id="adPromoOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3>⭐ تمييز إعلانك</h3><button class="x" onclick="closeAdPromo()">&times;</button></div>
+    <div class="modal-body">
+      <p style="color:var(--txd);font-size:.85rem;margin:0 0 14px">الإعلان المميّز بيظهر <b>فوق نتائج السوق</b> بشارة ⭐ ومشاهدات أكتر بكتير.</p>
+      <div class="pkg-grid" id="adpromo-grid"></div>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="chatPage">
   <div class="page-bar">
     <button class="backb" onclick="closeChat()">&#x2192;</button>
@@ -1082,6 +1157,7 @@
     <button class="chat-menu-btn" onclick="chatMenu()" aria-label="خيارات">&#8942;</button>
   </div>
   <div class="chat-msgs" id="chat-msgs"></div>
+  <div class="chat-quick" id="chat-quick"></div>
   <div class="chat-input-row">
     <input id="chat-input" placeholder="اكتب رسالتك..." onkeydown="if(event.key==='Enter')sendMsg()">
     <button class="chat-send" onclick="sendMsg()">إرسال</button>
@@ -1229,6 +1305,85 @@ const bizPic=b=>(b.photos&&b.photos.length)?b.photos[0]:((!b.id&&CAT_IMG[b.cat])
 /* شارة موثّق للمتاجر المدفوعة (مميّز/بريميوم) */
 const VERIFIED='<svg class="vrf" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#d4af37"/><path d="m7.8 12 2.6 2.6L16.2 9" fill="none" stroke="#0b1628" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const vrf=b=>(b&&b.plan&&b.plan!=='free')?VERIFIED:'';
+/* حالة «مفتوح الآن» من نص المواعيد */
+function openStatus(hoursText){
+  if(!hoursText)return null;
+  let jo=null;try{if((''+hoursText).trim().charAt(0)==='{')jo=JSON.parse(hoursText);}catch(e){}
+  if(jo&&jo.v)return openStatusStructured(jo);
+  const t=(''+hoursText).trim();
+  if(/24\s*ساعة|طوال اليوم|24\/7/.test(t))return{open:true,label:'مفتوح الآن'};
+  const now=new Date();
+  if(now.getDay()===5&&/خميس/.test(t)&&!/جمعة|يومي/.test(t))return{open:false,label:'مغلق (الجمعة)'};
+  const toks=[...t.matchAll(/(\d{1,2})(?::(\d{2}))?\s*(ص|م|ظ)/g)];
+  if(toks.length<2)return null;
+  const conv=m=>{let h=+m[1];const min=m[2]?+m[2]:0,mk=m[3];
+    if(mk==='ظ')h=12;else if(mk==='ص'){if(h===12)h=0;}else if(mk==='م'){h=(h===12)?0:h+12;}
+    return h*60+min;};
+  const o=conv(toks[0]),c=conv(toks[1]),cur=now.getHours()*60+now.getMinutes();
+  const isOpen=(c>o)?(cur>=o&&cur<c):(cur>=o||cur<c);
+  return{open:isOpen,label:isOpen?'مفتوح الآن':'مغلق الآن'};
+}
+function openBadge(b){const s=openStatus(b&&b.hours);return s?`<span class="open-tag ${s.open?'on':'off'}">${s.open?'🟢':'🔴'} ${s.label}</span>`:'';}
+/* ===== محرّر مواعيد العمل المنظّم ===== */
+const HRS_DAYS=[['sat','السبت'],['sun','الأحد'],['mon','الاثنين'],['tue','الثلاثاء'],['wed','الأربعاء'],['thu','الخميس'],['fri','الجمعة']];
+const HRS_NM={sat:'السبت',sun:'الأحد',mon:'الاثنين',tue:'الثلاثاء',wed:'الأربعاء',thu:'الخميس',fri:'الجمعة'};
+const HRS_IDX={0:'sun',1:'mon',2:'tue',3:'wed',4:'thu',5:'fri',6:'sat'};
+let _hrsN=1;
+function sV(id,val){const e=document.getElementById(id);if(e)e.value=val||'';}
+function buildHrsDays(openKeys){const box=document.getElementById('hrs-days');if(!box)return;box.innerHTML=HRS_DAYS.map(([k,n])=>`<button type="button" class="hrs-day${openKeys.indexOf(k)>=0?' on':''}" data-d="${k}" onclick="this.classList.toggle('on')">${n}</button>`).join('');}
+function setHrsN(n){_hrsN=n;document.querySelectorAll('#hrs-pseg button').forEach((b,i)=>b.classList.toggle('on',i===n-1));const r=document.getElementById('hrs-p2row');if(r)r.style.display=n===2?'flex':'none';}
+function addHrsCustom(day,closed,periods){
+  const list=document.getElementById('hrs-custom-list');if(!list)return;
+  const dsel=HRS_DAYS.map(([k,n])=>`<option value="${k}"${day===k?' selected':''}>${n}</option>`).join('');
+  const p=(periods&&periods[0])?periods[0]:['',''];
+  list.insertAdjacentHTML('beforeend',`<div class="hrs-custom-row">
+    <div class="hcr-top"><select class="hcr-day">${dsel}</select><label class="hcr-closed"><input type="checkbox" class="hcr-cl"${closed?' checked':''} onchange="this.closest('.hrs-custom-row').querySelector('.hcr-times').style.display=this.checked?'none':'flex'"> مغلق</label><button type="button" class="hcr-x" onclick="this.closest('.hrs-custom-row').remove()">&times;</button></div>
+    <div class="hcr-times" style="display:${closed?'none':'flex'}"><input type="time" class="hcr-a" value="${p[0]||''}"><span class="dash">–</span><input type="time" class="hcr-b" value="${p[1]||''}"></div>
+  </div>`);
+}
+function readHoursEditor(){
+  const days=[...document.querySelectorAll('#hrs-days .hrs-day.on')].map(b=>b.dataset.d);
+  const periods=[];
+  const p1a=v('hrs-p1a'),p1b=v('hrs-p1b');if(p1a&&p1b)periods.push([p1a,p1b]);
+  if(_hrsN===2){const p2a=v('hrs-p2a'),p2b=v('hrs-p2b');if(p2a&&p2b)periods.push([p2a,p2b]);}
+  const custom={};
+  document.querySelectorAll('.hrs-custom-row').forEach(r=>{const d=r.querySelector('.hcr-day').value,cl=r.querySelector('.hcr-cl').checked;
+    if(cl)custom[d]={closed:true};else{const a=r.querySelector('.hcr-a').value,b=r.querySelector('.hcr-b').value;if(a&&b)custom[d]={periods:[[a,b]]};}});
+  if(!days.length&&!periods.length&&!Object.keys(custom).length)return null;
+  return JSON.stringify({v:1,days,periods,custom});
+}
+function fillHoursEditor(str){
+  let obj=null;try{if(str&&(''+str).trim().charAt(0)==='{')obj=JSON.parse(str);}catch(e){}
+  const cl=document.getElementById('hrs-custom-list');if(cl)cl.innerHTML='';
+  if(obj&&obj.v){
+    buildHrsDays(obj.days||[]);setHrsN((obj.periods&&obj.periods.length>1)?2:1);
+    if(obj.periods&&obj.periods[0]){sV('hrs-p1a',obj.periods[0][0]);sV('hrs-p1b',obj.periods[0][1]);}else{sV('hrs-p1a','');sV('hrs-p1b','');}
+    if(obj.periods&&obj.periods[1]){sV('hrs-p2a',obj.periods[1][0]);sV('hrs-p2b',obj.periods[1][1]);}else{sV('hrs-p2a','');sV('hrs-p2b','');}
+    Object.keys(obj.custom||{}).forEach(d=>{const c=obj.custom[d];addHrsCustom(d,c.closed,c.periods);});
+  }else{buildHrsDays(['sat','sun','mon','tue','wed','thu']);setHrsN(1);sV('hrs-p1a','09:00');sV('hrs-p1b','23:00');sV('hrs-p2a','');sV('hrs-p2b','');}
+}
+function _fmtT(t){if(!t)return '';let[h,m]=(''+t).split(':').map(Number);const mk=h<12?'ص':'م';let hh=h%12;if(hh===0)hh=12;return hh+(m?':'+String(m).padStart(2,'0'):'')+mk;}
+function _perStr(ps){return (ps||[]).map(p=>_fmtT(p[0])+'–'+_fmtT(p[1])).join(' و ');}
+function formatHours(str){
+  let obj=null;try{if(str&&(''+str).trim().charAt(0)==='{')obj=JSON.parse(str);}catch(e){}
+  if(!obj||!obj.v)return (str&&(''+str).trim())?(''+str):'—';
+  const order=['sat','sun','mon','tue','wed','thu','fri'],lines=[];
+  const defDays=(obj.days||[]).filter(d=>!(obj.custom&&obj.custom[d]));
+  if(defDays.length&&obj.periods&&obj.periods.length)lines.push(defDays.map(d=>HRS_NM[d]).join('، ')+': '+_perStr(obj.periods));
+  Object.keys(obj.custom||{}).forEach(d=>{const c=obj.custom[d];lines.push(HRS_NM[d]+': '+(c.closed?'مغلق':_perStr(c.periods)));});
+  const closed=order.filter(d=>(obj.days||[]).indexOf(d)<0&&!(obj.custom&&obj.custom[d]));
+  if(closed.length)lines.push('إجازة: '+closed.map(d=>HRS_NM[d]).join('، '));
+  return lines.join(' · ')||'—';
+}
+function openStatusStructured(obj){
+  const now=new Date(),dk=HRS_IDX[now.getDay()];let periods=null;
+  if(obj.custom&&obj.custom[dk]){if(obj.custom[dk].closed)return{open:false,label:'مغلق الآن'};periods=obj.custom[dk].periods;}
+  else if((obj.days||[]).indexOf(dk)>=0)periods=obj.periods;
+  if(!periods||!periods.length)return{open:false,label:'مغلق الآن'};
+  const cur=now.getHours()*60+now.getMinutes(),toM=t=>{const[h,m]=(''+t).split(':').map(Number);return h*60+(m||0);};
+  const isOpen=periods.some(p=>{const o=toM(p[0]),c=toM(p[1]);return (c>o)?(cur>=o&&cur<c):(cur>=o||cur<c);});
+  return{open:isOpen,label:isOpen?'مفتوح الآن':'مغلق الآن'};
+}
 /* التخصصات/الأنواع الفرعية لكل قسم (زي المرجع) */
 const SUBCATS={
   clinic:['باطنة','أطفال','أسنان','جلدية','عظام','نساء وتوليد','أنف وأذن','عيون','قلب','مخ وأعصاب','جراحة','مسالك بولية','رمد','نفسية'],
@@ -1550,6 +1705,7 @@ const rateLabel=b=>rcountOf(b)?`${goldStar} <b>${ratingOf(b).toFixed(1)}</b> (${
 
 /* ===== الشاشة الرئيسية: شبكة الأقسام + إعلانات مقترحة ===== */
 function renderHome(){
+  renderTrending();
   document.getElementById('cat-grid').innerHTML=CATS.map(c=>
     `<div class="cat-tile" onclick="openCat('${c.id}')">${CAT_IMG[c.id]?`<div class="cat-sq has-img"><img class="cat-img" src="${CAT_IMG[c.id]}" alt=""></div>`:`<div class="cat-sq"><span class="cat-ic2" style="color:${catSolid(c.id)}">${catSvg(c.id)}</span></div>`}<span class="cl">${c.name}</span></div>`).join('');
   document.getElementById('dir-count').textContent=BIZ.length+' نشاط';
@@ -1565,6 +1721,26 @@ document.getElementById('q').addEventListener('input',e=>{
   query=e.target.value.trim();
   if(query){openCat('all',true);}else if(current==='cat'){go('home');}
 });
+document.getElementById('q').addEventListener('blur',e=>{trackSearch(e.target.value.trim());});
+/* ===== البحث الرائج ===== */
+const TREND_DEFAULT=['مطاعم','صيدلية','دكتور أسنان','موبايل','سبّاك','عربيات','شقق للإيجار','مكتبة','كافيه','مواصلات'];
+function trackSearch(term){
+  term=(term||'').trim();if(term.length<2)return;
+  let t={};try{t=JSON.parse(localStorage.getItem('dalil_trend')||'{}');}catch(e){}
+  t[term]=(t[term]||0)+1;
+  try{localStorage.setItem('dalil_trend',JSON.stringify(t));}catch(e){}
+}
+function trendingTerms(){
+  let t={};try{t=JSON.parse(localStorage.getItem('dalil_trend')||'{}');}catch(e){}
+  const sorted=Object.keys(t).sort((a,b)=>t[b]-t[a]);
+  const out=[];for(const x of sorted.concat(TREND_DEFAULT)){if(out.indexOf(x)<0)out.push(x);if(out.length>=8)break;}
+  return out;
+}
+function renderTrending(){
+  const box=document.getElementById('trending');if(!box)return;
+  box.innerHTML='<div class="trend-h">🔥 الأكثر بحثاً في إدفو</div><div class="trend-chips">'+trendingTerms().map(x=>`<button class="trend-chip" onclick="doTrendSearch('${x.replace(/'/g,"\\'")}')">${esc(x)}</button>`).join('')+'</div>';
+}
+function doTrendSearch(term){const q=document.getElementById('q');q.value=term;query=term;trackSearch(term);openCat('all',true);}
 
 /* ===== شاشة قائمة القسم ===== */
 let current='home';
@@ -1632,6 +1808,7 @@ function listCompact(b,i){
     <div class="lc-rows">
       <div>${rateLabel(b)}</div>
       <div><span class="ri">${ic('pin')}</span>${esc(b.addr||areaOf(b))}</div>
+      ${openBadge(b)?`<div>${openBadge(b)}</div>`:''}
       <div><span class="ri">${ic('eye')}</span>${viewsOf(b)} مشاهدة</div>
       <div><span class="ri">${ic('clock')}</span>نُشر منذ ${daysOf(b)} يوم</div>
     </div>
@@ -1789,7 +1966,7 @@ function cardHTML(b,i){
     ${thumb}
     <div class="card-body"><h4 onclick="openDet(${i})" style="cursor:pointer">${esc(b.name)} ${vrf(b)}</h4>
     <div class="cat-line"><span class="cdot" style="background:${catSolid(b.cat)}"></span>${catName(b.cat)}${b.sub?' · '+esc(b.sub):''}</div>
-    <div class="rate-mini">${rateLabel(b)} \u00B7 \u{1F441} ${viewsOf(b)}</div>
+    <div class="rate-mini">${rateLabel(b)} \u00B7 \u{1F441} ${viewsOf(b)}${openBadge(b)?' \u00B7 '+openBadge(b):''}</div>
     <div class="desc">${esc(b.desc||'')}</div>${actions}</div></div>`;
 }
 const rank=p=>p==='prem'?0:p==='feat'?1:2;
@@ -1927,8 +2104,15 @@ function openConvo(conv){
   document.getElementById('chat-sub').textContent=conv.ad_title||'';
   document.getElementById('chat-msgs').innerHTML='<div class="empty2">جارٍ التحميل…</div>';
   document.getElementById('chatPage').classList.add('open');
+  renderQuickReplies();
   loadMsgs(conv.id);subscribeChat(conv.id);
 }
+const QUICK_REPLIES=['السلام عليكم 👋','لسه متاح؟','آخر سعر كام؟','ممكن صور أكتر؟','تمام، هعدّي المحل','ممكن تبعت الموقع؟','متاح، اتفضل','السعر آخره كذا','خلص اتباع، آسف'];
+function renderQuickReplies(){
+  const box=document.getElementById('chat-quick');if(!box)return;
+  box.innerHTML=QUICK_REPLIES.map(q=>`<button class="qr" onclick="quickReply(this)">${esc(q)}</button>`).join('');
+}
+function quickReply(btn){const inp=document.getElementById('chat-input');inp.value=btn.textContent;inp.focus();}
 function msgHTML(mm){const mine=mm.sender_id===USER.id;return `<div class="msg ${mine?'me':'them'}"><div class="bubble">${esc(mm.body)}</div><span class="mt">${mm.created_at?timeAgo(new Date(mm.created_at).getTime()):'الآن'}</span></div>`;}
 async function loadMsgs(cid){
   try{
@@ -1985,7 +2169,14 @@ async function openMessages(){
 }
 function closeConvos(){document.getElementById('convosOverlay').classList.remove('open');}
 function openConvoIdx(i){closeConvos();if(_convos[i])openConvo(_convos[i]);}
-function promoteAd(){if(!curMk)return;const txt=`عايز أميّز إعلاني في دليل إدفو:\n${curMk.t}\nرقم الإعلان: ${curMk.id||'-'}`;window.open('https://wa.me/201151107993?text='+encodeURIComponent(txt),'_blank');}
+function promoteAd(){
+  if(!curMk)return;
+  const P=[{d:'أسبوع',price:'20 ج'},{d:'شهر',price:'50 ج',best:true}];
+  document.getElementById('adpromo-grid').innerHTML=P.map(p=>`<div class="pkg${p.best?' gold':''}">${p.best?'<span class="pkg-tag">الأوفر</span>':''}<div class="pkg-name">تمييز ${p.d}</div><div class="pkg-price">${p.price}</div><ul><li>يظهر فوق القائمة</li><li>شارة ⭐ مميّز</li><li>مشاهدات أكتر</li></ul><button class="pkg-btn" onclick="reqAdPromo('${p.d}')">اطلب دلوقتي</button></div>`).join('');
+  document.getElementById('adPromoOverlay').classList.add('open');
+}
+function closeAdPromo(){document.getElementById('adPromoOverlay').classList.remove('open');}
+function reqAdPromo(dur){const txt=`عايز أميّز إعلاني (${dur}) في دليل إدفو:\n${curMk?curMk.t:''}\nرقم الإعلان: ${curMk&&curMk.id?curMk.id:'-'}`;window.open('https://wa.me/201151107993?text='+encodeURIComponent(txt),'_blank');}
 
 /* ===== إحصائيات التاجر (تتبّع الضغطات + العرض) ===== */
 function bizClick(kind,id){if(supa&&id)try{supa.rpc(kind==='call'?'inc_business_call':'inc_business_wa',{bid:id});}catch(e){}}
@@ -2036,11 +2227,14 @@ function go(v){
 function openDet(i){
   const b=BIZ[i];detIdx=i;
   d('d-name',b.name);d('d-name2',b.name);d('d-cat',catName(b.cat));
-  d('d-desc',b.desc||'');d('d-addr',b.addr||'—');d('d-phone',b.phone||'—');d('d-hours',b.hours||'—');
-  document.getElementById('d-rating').innerHTML=(b.plan&&b.plan!=='free'?`<span class="vrf-tag">${VERIFIED} موثّق</span> `:'')+(!b.id?`<span class="mk-tag demo" style="margin-left:6px">محل تجريبي</span> `:'')+(rcountOf(b)
+  d('d-desc',b.desc||'');d('d-addr',b.addr||'—');d('d-phone',b.phone||'—');d('d-hours',formatHours(b.hours));
+  document.getElementById('d-rating').innerHTML=(openBadge(b)?openBadge(b)+' ':'')+(b.plan&&b.plan!=='free'?`<span class="vrf-tag">${VERIFIED} موثّق</span> `:'')+(!b.id?`<span class="mk-tag demo" style="margin-left:6px">محل تجريبي</span> `:'')+(rcountOf(b)
     ?`${goldStar}<span class="val">${ratingOf(b).toFixed(1)}</span><span>(${rcountOf(b)} تقييم)</span> \u00B7 <span class="vw">${ic('eye')} ${viewsOf(b)} مشاهدة</span>`
     :`<span>\u2728 لسه مفيش تقييم</span> \u00B7 <span class="vw">${ic('eye')} ${viewsOf(b)} مشاهدة</span>`);
-  document.getElementById('d-rater').innerHTML=`<div class="lbl">${b.myRated?'\u2713 شكراً لتقييمك':'قيّم المحل:'}</div><div class="rstars">${[1,2,3,4,5].map(n=>`<span data-n="${n}" onmouseover="rHover(${n})" onmouseout="rClear()" onclick="rateShop(${n})">\u2605</span>`).join('')}</div>`;
+  document.getElementById('d-rater').innerHTML=`<div class="lbl">${b.myRated?'\u2713 شكراً لتقييمك — تقدر تعدّله':'قيّم المحل واكتب رأيك:'}</div><div class="rstars">${[1,2,3,4,5].map(n=>`<span data-n="${n}" onmouseover="rHover(${n})" onmouseout="rClear()" onclick="setStars(${n})">\u2605</span>`).join('')}</div><textarea id="review-text" class="review-box" placeholder="اكتب رأيك في المحل (اختياري)..."></textarea><button class="save review-send" onclick="submitReview()">أرسل تقييمك</button>`;
+  _pendingStars=0;
+  const drv=document.getElementById('d-reviews');
+  if(b.id){drv.style.display='block';loadReviews(b.id,'d-reviews-list');}else drv.style.display='none';
   if(supa&&b.id&&!b._viewed){b._viewed=true;b.views=(b.views||0)+1;supa.rpc('inc_business_views',{bid:b.id});}
   const vis=document.getElementById('d-visual');
   if(b.photos&&b.photos.length){vis.className='gallery';vis.style.background='';vis.style.height='';vis.innerHTML=b.photos.map(p=>`<img src="${p}" alt="">`).join('');}
@@ -2082,7 +2276,35 @@ const d=(id,v)=>document.getElementById(id).textContent=v;
 function closeDet(){document.getElementById('detailPage').classList.remove('open');}
 let detIdx=null;
 function rHover(n){document.querySelectorAll('#d-rater .rstars span').forEach(s=>s.classList.toggle('on',+s.dataset.n<=n));}
-function rClear(){document.querySelectorAll('#d-rater .rstars span.on').forEach(s=>s.classList.remove('on'));}
+function rClear(){document.querySelectorAll('#d-rater .rstars span').forEach(s=>s.classList.toggle('on',+s.dataset.n<=_pendingStars));}
+let _pendingStars=0;
+function setStars(n){_pendingStars=n;document.querySelectorAll('#d-rater .rstars span').forEach(s=>s.classList.toggle('on',+s.dataset.n<=n));}
+async function submitReview(){
+  if(detIdx==null)return;const b=BIZ[detIdx];
+  if(!supa||!USER){alert('سجّل دخول عشان تقيّم وتكتب رأيك');openAuth('signup');return;}
+  if(!b.id)return;
+  if(!_pendingStars){alert('اختار عدد النجوم الأول ⭐');return;}
+  const comment=((document.getElementById('review-text')||{}).value||'').trim();
+  try{
+    const {error}=await supa.from('ratings').upsert({business_id:b.id,user_id:USER.id,stars:_pendingStars,comment:comment||null},{onConflict:'business_id,user_id'});
+    if(error)throw error;
+    const {data}=await supa.from('ratings').select('stars').eq('business_id',b.id);
+    const st=(data||[]).map(x=>x.stars);
+    b.ratingCount=st.length;b.rating=st.length?Math.round((st.reduce((a,c)=>a+c,0)/st.length)*10)/10:_pendingStars;b.myRated=true;
+    alert('تم إرسال تقييمك ✓ شكراً لك 🙏');
+    openDet(detIdx);renderHome();if(current==='cat')renderCatList();
+  }catch(e){alert('تعذّر حفظ التقييم (شغّل reviews.sql في Supabase): '+(e.message||e));}
+}
+async function loadReviews(bizId,elId){
+  const el=document.getElementById(elId);if(!el||!supa)return;
+  el.innerHTML='<div class="empty2">جارٍ تحميل الآراء…</div>';
+  try{
+    const {data,error}=await supa.from('ratings').select('stars,comment,created_at,profiles(name)').eq('business_id',bizId).order('created_at',{ascending:false}).limit(30);
+    if(error)throw error;
+    const list=(data||[]).filter(r=>r.comment&&(''+r.comment).trim());
+    el.innerHTML=list.length?list.map(r=>`<div class="review"><div class="rv-top"><b>${esc((r.profiles&&r.profiles.name)||'مستخدم')}</b><span class="rv-stars">${'\u2605'.repeat(r.stars)}${'\u2606'.repeat(5-r.stars)}</span></div><p>${esc(r.comment)}</p></div>`).join(''):'<div class="empty2">لسه مفيش آراء مكتوبة. كن أول واحد يكتب رأيه 👆</div>';
+  }catch(e){el.innerHTML='<div class="empty2">فعّل الآراء: شغّل <b>reviews.sql</b> في Supabase.</div>';}
+}
 async function rateShop(n){
   if(detIdx==null)return;
   const b=BIZ[detIdx];
@@ -2217,7 +2439,7 @@ function openAdd(editIdx){
   selPlan=b?b.plan:'free';
   prodImgs={};brandImgs={logo:b?b.logo||null:null,cover:null};
   setV('f-name',b?b.name:'');setV('f-phone',b?b.phone:'');setV('f-wa',b?b.wa||'':'');
-  setV('f-addr',b?b.addr||'':'');setV('f-hours',b&&b.hours!=='—'?b.hours:'');setV('f-desc',b?b.desc||'':'');
+  setV('f-addr',b?b.addr||'':'');fillHoursEditor(b?b.hours:'');setV('f-desc',b?b.desc||'':'');
   document.getElementById('svc-list').innerHTML='';
   if(b&&b.services&&b.services.length)b.services.forEach(s=>addSvcRow(s.n,s.p));else addSvcRow();
   document.getElementById('biz-sections').innerHTML='';
@@ -2282,7 +2504,7 @@ async function saveBiz(){
   const btn=document.getElementById('add-save'),old=btn.textContent;btn.disabled=true;btn.textContent='بيتحفظ...';
   try{
     const payload={owner_id:USER.id,name,category_id:val('f-cat'),phone,whatsapp:val('f-wa')||null,
-      address:val('f-addr')||null,description:val('f-desc')||null,hours:val('f-hours')||null,
+      address:val('f-addr')||null,description:val('f-desc')||null,hours:readHoursEditor(),
       plan:selPlan,features:selFeatures.slice(),lat:hasLoc?hasLoc.lat:null,lng:hasLoc?hasLoc.lng:null};
     let bizId, editing=(editIndex!=null&&BIZ[editIndex]&&BIZ[editIndex].id);
     if(editing){
