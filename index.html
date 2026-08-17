@@ -573,6 +573,11 @@
   .map-pick-btn{width:100%;margin-top:8px;background:rgba(46,123,228,.12);border:1px solid rgba(46,123,228,.45);color:#6bb0ff;border-radius:10px;padding:10px;font-family:inherit;font-weight:700;font-size:.85rem}
   body.light .map-pick-btn{color:#1c66c9!important}
   .leaflet-container{font-family:inherit}
+  .price-hint{color:var(--txd);font-size:.78rem;margin-top:6px}
+  .price-hint b{color:#43d68a}
+  body.light .price-hint b{color:#0d8a4f!important}
+  .ord-price{margin-top:6px;font-weight:800;color:#e8d59a;font-size:.95rem}
+  body.light .ord-price{color:#8a5f14!important}
   .adm-stat{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:14px;padding:14px 15px}
   .adm-stat b{display:block;font-family:'Amiri',serif;font-size:1.8rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05}
   .adm-stat span{color:var(--txd);font-size:.8rem}
@@ -1267,12 +1272,13 @@
   <div class="modal">
     <div class="modal-head"><h3>🛵 اطلب توصيلة</h3><button class="x" onclick="closeDeliveryReq()">&times;</button></div>
     <div class="modal-body">
-      <div class="field"><label>من (مكان الاستلام)</label><input id="dv-from" placeholder="مثال: محل كذا، شارع كذا"></div>
-      <div class="field"><label>إلى (مكان التسليم)</label><input id="dv-to" placeholder="عنوانك بالتفصيل"><button type="button" class="map-pick-btn" onclick="openMapPick()">📍 حدّد على الخريطة</button></div>
+      <div class="field"><label>من (مكان الاستلام)</label><input id="dv-from" placeholder="مثال: محل كذا، شارع كذا"><button type="button" class="map-pick-btn" onclick="openMapPick('from')">📍 حدّد على الخريطة</button></div>
+      <div class="field"><label>إلى (مكان التسليم)</label><input id="dv-to" placeholder="عنوانك بالتفصيل"><button type="button" class="map-pick-btn" onclick="openMapPick('to')">📍 حدّد على الخريطة</button></div>
       <div class="field"><label>المنطقة</label><select id="dv-area" class="p-sel"></select></div>
       <div class="field"><label>نوع المركبة المطلوبة</label><select id="dv-veh" class="p-sel"><option value="any">أي مركبة</option></select></div>
       <div class="field"><label>تفاصيل الطلب</label><textarea id="dv-det" rows="2" placeholder="مثال: أكل من مطعم / أدوية من صيدلية / أغراض"></textarea></div>
       <div class="field"><label>رقم موبايلك</label><input id="dv-phone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
+      <div class="field"><label>السعر اللي مستعد تدفعه (ج)</label><input id="dv-price" inputmode="numeric" placeholder="مثال: 20"><div class="price-hint" id="dv-price-hint">حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.</div></div>
       <div class="err" id="dv-err"></div>
       <button class="save" onclick="sendDeliveryReq()">أرسل الطلب للسواقين</button>
       <p style="color:var(--txd);font-size:.78rem;text-align:center;margin:8px 0 0">هيوصل السواقين المتاحين في منطقتك، وأول واحد يقبل هيتواصل معاك.</p>
@@ -2608,10 +2614,14 @@ async function sendDeliveryReq(){
   if(supa){
     try{
       const base={customer_id:USER?USER.id:null,from_addr:from,to_addr:to,details:det||null,phone,area,vehicle_pref:veh,status:'open'};
-      const withGeo=Object.assign({},base);if(_pickLat!=null){withGeo.to_lat=_pickLat;withGeo.to_lng=_pickLng;}
-      let r=await supa.from('delivery_orders').insert(withGeo);
-      if(r.error&&_pickLat!=null){r=await supa.from('delivery_orders').insert(base);}
-      if(r.error)throw r.error;saved=true;_pickLat=null;_pickLng=null;window._pickAddr='';
+      const priceNum=parseInt((v('dv-price')||'').replace(/[^\d]/g,''),10);
+      const extra={};
+      if(priceNum)extra.price=priceNum;
+      if(_pickLat!=null){extra.to_lat=_pickLat;extra.to_lng=_pickLng;}
+      if(_pickFromLat!=null){extra.from_lat=_pickFromLat;extra.from_lng=_pickFromLng;}
+      let r=await supa.from('delivery_orders').insert(Object.assign({},base,extra));
+      if(r.error&&Object.keys(extra).length){r=await supa.from('delivery_orders').insert(base);}
+      if(r.error)throw r.error;saved=true;_pickLat=_pickLng=_pickFromLat=_pickFromLng=null;window._pickAddr='';
     }catch(e){}
   }
   closeDeliveryReq();
@@ -2669,13 +2679,25 @@ function playDing(){
   try{if(navigator.vibrate)navigator.vibrate([250,90,250]);}catch(e){}
 }
 function jsStr(s){return (''+s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
-/* خريطة تحديد الوجهة (Leaflet مجاني) */
-let _pmap=null,_pmarker=null,_pickLat=null,_pickLng=null;
-function openMapPick(){
-  if(typeof L==='undefined'){ // مفيش نت/المكتبة متحمّلتش → افتح جوجل مابس
-    window.open('https://www.google.com/maps/@24.978,32.873,15z','_blank');return;
-  }
+/* خريطة تحديد المكان (Leaflet مجاني) — للاستلام والتسليم + حساب السعر */
+let _pmap=null,_pmarker=null,_pickLat=null,_pickLng=null,_pickFromLat=null,_pickFromLng=null,_tmpLat=null,_tmpLng=null,_pickTarget='to';
+const FARE_BASE=10,FARE_PERKM=5,FARE_MIN=10;
+function haversineKm(la1,lo1,la2,lo2){const R=6371,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180,s=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+function computeSuggested(){
+  const hint=document.getElementById('dv-price-hint'),pr=document.getElementById('dv-price');
+  if(_pickFromLat!=null&&_pickLat!=null){
+    const km=haversineKm(_pickFromLat,_pickFromLng,_pickLat,_pickLng);
+    const price=Math.max(FARE_MIN,Math.round((FARE_BASE+km*FARE_PERKM)/5)*5);
+    if(hint)hint.innerHTML='المسافة ~<b>'+km.toFixed(1)+' كم</b> · سعر مقترح: <b>'+price+' ج</b> (تقدر تعدّله)';
+    if(pr&&!pr.value)pr.value=price;
+  }else{if(hint)hint.textContent='حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.';}
+}
+function openMapPick(which){
+  _pickTarget=which||'to';_tmpLat=null;_tmpLng=null;
+  if(typeof L==='undefined'){window.open('https://www.google.com/maps/@24.978,32.873,15z','_blank');return;}
+  const hd=document.querySelector('#mapPickOverlay .modal-head h3');if(hd)hd.textContent=_pickTarget==='from'?'📍 حدّد مكان الاستلام':'📍 حدّد الوجهة على الخريطة';
   document.getElementById('mapPickOverlay').classList.add('open');
+  const cur=_pickTarget==='from'?[_pickFromLat,_pickFromLng]:[_pickLat,_pickLng];
   setTimeout(()=>{
     if(!_pmap){
       _pmap=L.map('pickmap').setView([24.9781,32.8730],14);
@@ -2685,21 +2707,24 @@ function openMapPick(){
       _pmap.on('click',(e)=>{_pmarker.setLatLng(e.latlng);setPick(e.latlng.lat,e.latlng.lng);});
     }
     _pmap.invalidateSize();
-    if(_pickLat){_pmap.setView([_pickLat,_pickLng],15);_pmarker.setLatLng([_pickLat,_pickLng]);}
+    const c=cur[0]!=null?cur:[24.9781,32.8730];_pmap.setView(c,cur[0]!=null?15:14);_pmarker.setLatLng(c);
+    document.getElementById('pick-addr').textContent='';
   },250);
 }
 function setPick(lat,lng){
-  _pickLat=lat;_pickLng=lng;
-  const ad=document.getElementById('pick-addr');if(ad)ad.textContent='📍 تم اختيار موقع — جاري جلب العنوان...';
+  _tmpLat=lat;_tmpLng=lng;
+  const ad=document.getElementById('pick-addr');if(ad)ad.textContent='📍 جاري جلب العنوان...';
   fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lng+'&accept-language=ar')
-    .then(r=>r.json()).then(d=>{const name=(d&&d.display_name)||'';if(ad)ad.textContent=name?('📍 '+name):('📍 موقع محدّد ('+lat.toFixed(4)+', '+lng.toFixed(4)+')');window._pickAddr=name;})
-    .catch(()=>{if(ad)ad.textContent='📍 موقع محدّد على الخريطة';});
+    .then(r=>r.json()).then(d=>{const name=(d&&d.display_name)||'';window._pickAddr=name;if(ad)ad.textContent=name?('📍 '+name):('📍 موقع محدّد ('+lat.toFixed(4)+', '+lng.toFixed(4)+')');})
+    .catch(()=>{window._pickAddr='';if(ad)ad.textContent='📍 موقع محدّد على الخريطة';});
 }
 function confirmMapPick(){
-  if(_pickLat==null){alert('دوس على الخريطة لتحديد المكان الأول');return;}
-  const to=document.getElementById('dv-to');
-  if(to)to.value=(window._pickAddr&&window._pickAddr.split(',').slice(0,3).join('،'))||('موقع على الخريطة ('+_pickLat.toFixed(4)+', '+_pickLng.toFixed(4)+')');
-  closeMapPick();
+  if(_tmpLat==null){alert('دوس على الخريطة لتحديد المكان الأول');return;}
+  const label=(window._pickAddr&&window._pickAddr.split(',').slice(0,3).join('،'))||('موقع على الخريطة ('+_tmpLat.toFixed(4)+', '+_tmpLng.toFixed(4)+')');
+  if(_pickTarget==='from'){_pickFromLat=_tmpLat;_pickFromLng=_tmpLng;const f=document.getElementById('dv-from');if(f)f.value=label;}
+  else{_pickLat=_tmpLat;_pickLng=_tmpLng;const to=document.getElementById('dv-to');if(to)to.value=label;}
+  computeSuggested();
+  window._pickAddr='';closeMapPick();
 }
 function closeMapPick(){document.getElementById('mapPickOverlay').classList.remove('open');}
 function orderMap(from,to){window.open('https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(from+' إدفو')+'&destination='+encodeURIComponent(to+' إدفو')+'&travelmode=driving','_blank');}
@@ -2732,6 +2757,7 @@ async function loadDriverOrders(firstLoad){
       <div class="ord-route"><span>📍 من:</span> ${esc(o.from_addr)}</div>
       <div class="ord-route"><span>🎯 إلى:</span> ${esc(o.to_addr)}</div>
       <div class="ord-meta">${esc(o.area)} · ${o.vehicle_pref&&o.vehicle_pref!=='any'?esc(vehName(o.vehicle_pref))+' · ':''}${esc(timeAgo(o.created_at))}</div>
+      <div class="ord-price">💰 ${o.price?esc(''+o.price)+' ج':'السعر بالاتفاق'}</div>
       ${o.details?`<div class="ord-det">${esc(o.details)}</div>`:''}
       <div class="ord-btns2"><button class="ord-map" onclick="${o.to_lat?`orderMapGeo(${o.to_lat},${o.to_lng})`:`orderMap('${jsStr(o.from_addr)}','${jsStr(o.to_addr)}')`}">🗺️ المسار</button><button class="ord-take" onclick="takeOrder('${o.id}')">أنا هوصّلها ✋</button></div>
     </div>`).join(''):'<div class="empty2">مفيش طلبات متاحة في مناطقك دلوقتي.<br>سيب الشاشة مفتوحة — هتسمع نغمة أول ما تيجي طلبية 🔔</div>';
