@@ -561,6 +561,12 @@
   body.light .veh-b,body.light .area-b{background:#f4f6fa!important}
   body.light .ord-card{background:#fff!important;border-color:rgba(14,42,72,.1)!important}
   .deliv-shop-btn{width:100%;margin-top:8px;background:linear-gradient(135deg,#0ea5a0,#12a15c);color:#fff;border:none;border-radius:12px;padding:12px;font-family:inherit;font-weight:700;font-size:.9rem}
+  .ord-btns2{display:flex;gap:8px;margin-top:8px}
+  .ord-map{flex:0 0 auto;background:rgba(46,123,228,.15);border:1px solid rgba(46,123,228,.45);color:#6bb0ff;border-radius:10px;padding:11px 14px;font-family:inherit;font-weight:700;font-size:.85rem}
+  .ord-btns2 .ord-take{flex:1;margin-top:0}
+  .ord-card.ord-new{border-color:rgba(18,161,92,.6);box-shadow:0 0 0 3px rgba(18,161,92,.18);animation:ordpulse 1.2s ease 2}
+  @keyframes ordpulse{0%,100%{box-shadow:0 0 0 3px rgba(18,161,92,.18)}50%{box-shadow:0 0 0 6px rgba(18,161,92,.28)}}
+  body.light .ord-map{color:#1c66c9!important}
   .adm-stat{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:14px;padding:14px 15px}
   .adm-stat b{display:block;font-family:'Amiri',serif;font-size:1.8rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05}
   .adm-stat span{color:var(--txd);font-size:.8rem}
@@ -701,7 +707,7 @@
   @media(max-width:560px){.mkg-main{height:210px}.mk-price{font-size:1.5rem}}
   /* ===== الوضع الفاتح (Light) ===== */
   body.light{--pnl:#ffffff;--bd:rgba(14,42,72,.12);--tx:#17293f;--txd:#5f708a;--txm:#8695a8;--gg:linear-gradient(135deg,#a9791a,#caa02c,#96691a,#c19a2e,#8f6416)}
-  body.light{background:radial-gradient(1000px 500px at 88% -12%,rgba(212,175,55,.14),transparent 60%),radial-gradient(900px 500px at 6% 108%,rgba(46,123,228,.08),transparent 55%),linear-gradient(160deg,#f7f3ea,#eef4f1 70%)!important}
+  body.light{background:linear-gradient(180deg,#e9eef5 0%,#f1f5fa 45%,#f7fafd 100%)!important}
   body.light::before{opacity:.4;background-image:radial-gradient(circle at 1px 1px,rgba(14,42,72,.05) 1px,transparent 0)}
   body.light .card,body.light .offer,body.light .mk,body.light .ecard,body.light .news,body.light .lcard,body.light .menu,body.light .secblk,body.light .imgcard,body.light .prod{background:#fff!important;border:1px solid rgba(14,42,72,.1)!important;box-shadow:0 10px 30px rgba(14,42,72,.1), inset 0 1px 0 rgba(255,255,255,.6)!important;color:var(--tx)}
   body.light .cat-tile{background:none!important;box-shadow:none!important;border:none!important}
@@ -2521,7 +2527,7 @@ function renderEmg(){
 }
 /* ===== قسم توصيل الطلبات — سواقين + طلبات (منطقة + مركبة) ===== */
 const DELIV_LINE='201151107993';
-const VEHICLES=[{k:'motorcycle',t:'موتوسيكل',e:'🏍️'},{k:'tuktuk',t:'تكاتك',e:'🛺'},{k:'trosikl',t:'تروسيكل',e:'🚚'},{k:'car',t:'عربية',e:'🚗'}];
+const VEHICLES=[{k:'motorcycle',t:'موتوسيكل',e:'🏍️'},{k:'tuktuk',t:'تكاتك',e:'🛺'},{k:'trosikl',t:'تروسيكل',e:'🚚'},{k:'suzuki',t:'سوزوكي ٧ راكب',e:'🚐'},{k:'car',t:'عربية',e:'🚗'}];
 const DV_AREAS=['وسط البلد','شرق إدفو','غرب إدفو','شمال إدفو','جنوب إدفو','القرى المجاورة'];
 const vehName=k=>{const v=VEHICLES.find(x=>x.k===k);return v?v.e+' '+v.t:'مركبة';};
 let DRIVERS_LIVE=[],myDriver=null,_drVeh='',_drAreas=[];
@@ -2621,31 +2627,51 @@ async function saveDriver(){
 }
 
 /* ---- لوحة السائق: الطلبات المتاحة ---- */
+/* نغمة تنبيه السائق + اهتزاز + مسار الخريطة */
+let _audioCtx=null,_driverPoll=null,_seenOrders={};
+function primeAudio(){try{_audioCtx=_audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(_audioCtx.resume)_audioCtx.resume();}catch(e){}}
+function playDing(){
+  try{primeAudio();const ctx=_audioCtx,now=ctx.currentTime;
+    [[0,880],[0.18,1175],[0.36,1568]].forEach(([t,f])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(f,now+t);
+      g.gain.setValueAtTime(0.0001,now+t);g.gain.exponentialRampToValueAtTime(0.4,now+t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,now+t+0.17);
+      o.connect(g);g.connect(ctx.destination);o.start(now+t);o.stop(now+t+0.2);});
+  }catch(e){}
+  try{if(navigator.vibrate)navigator.vibrate([250,90,250]);}catch(e){}
+}
+function jsStr(s){return (''+s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function orderMap(from,to){window.open('https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(from+' إدفو')+'&destination='+encodeURIComponent(to+' إدفو')+'&travelmode=driving','_blank');}
 async function openDriverDash(){
   if(!myDriver){openDriverReg();return;}
   document.getElementById('driverDashOverlay').classList.add('open');
-  await loadDriverOrders();
+  primeAudio();
+  await loadDriverOrders(true);
+  if(_driverPoll)clearInterval(_driverPoll);
+  _driverPoll=setInterval(()=>{if(document.getElementById('driverDashOverlay').classList.contains('open'))loadDriverOrders(false);else{clearInterval(_driverPoll);_driverPoll=null;}},15000);
 }
-function closeDriverDash(){document.getElementById('driverDashOverlay').classList.remove('open');}
+function closeDriverDash(){document.getElementById('driverDashOverlay').classList.remove('open');if(_driverPoll){clearInterval(_driverPoll);_driverPoll=null;}}
 function orderMatchesDriver(o){
   if(!myDriver)return false;
   if((myDriver.areas||[]).indexOf(o.area)<0)return false;
   if(o.vehicle_pref&&o.vehicle_pref!=='any'&&o.vehicle_pref!==myDriver.vehicle)return false;
   return true;
 }
-async function loadDriverOrders(){
+async function loadDriverOrders(firstLoad){
   const box=document.getElementById('driver-orders');if(!box||!supa)return;
-  box.innerHTML='<div class="empty2">بيحمّل...</div>';
+  if(firstLoad)box.innerHTML='<div class="empty2">بيحمّل...</div>';
   try{
     const {data}=await supa.from('delivery_orders').select('*').eq('status','open').order('created_at',{ascending:false}).limit(50);
     const mine=(data||[]).filter(orderMatchesDriver);
-    box.innerHTML=mine.length?mine.map(o=>`<div class="ord-card">
+    const fresh=mine.filter(o=>!_seenOrders[o.id]);
+    if(!firstLoad&&fresh.length){playDing();}
+    mine.forEach(o=>_seenOrders[o.id]=1);
+    box.innerHTML=mine.length?mine.map(o=>`<div class="ord-card${(!firstLoad&&fresh.some(f=>f.id===o.id))?' ord-new':''}">
       <div class="ord-route"><span>📍 من:</span> ${esc(o.from_addr)}</div>
       <div class="ord-route"><span>🎯 إلى:</span> ${esc(o.to_addr)}</div>
-      <div class="ord-meta">${esc(o.area)} · ${esc(timeAgo(o.created_at))}</div>
+      <div class="ord-meta">${esc(o.area)} · ${o.vehicle_pref&&o.vehicle_pref!=='any'?esc(vehName(o.vehicle_pref))+' · ':''}${esc(timeAgo(o.created_at))}</div>
       ${o.details?`<div class="ord-det">${esc(o.details)}</div>`:''}
-      <button class="ord-take" onclick="takeOrder('${o.id}')">أنا هوصّلها ✋</button>
-    </div>`).join(''):'<div class="empty2">مفيش طلبات متاحة في مناطقك دلوقتي. هنبّهك أول ما تيجي طلبية.</div>';
+      <div class="ord-btns2"><button class="ord-map" onclick="orderMap('${jsStr(o.from_addr)}','${jsStr(o.to_addr)}')">🗺️ المسار</button><button class="ord-take" onclick="takeOrder('${o.id}')">أنا هوصّلها ✋</button></div>
+    </div>`).join(''):'<div class="empty2">مفيش طلبات متاحة في مناطقك دلوقتي.<br>سيب الشاشة مفتوحة — هتسمع نغمة أول ما تيجي طلبية 🔔</div>';
   }catch(e){box.innerHTML='<div class="empty2">فعّل التوصيل: شغّل <b>drivers-orders.sql</b> في Supabase.</div>';}
 }
 async function takeOrder(id){
@@ -2655,9 +2681,9 @@ async function takeOrder(id){
     if(error)throw error;
     const {data:o}=await supa.from('delivery_orders').select('*').eq('id',id).maybeSingle();
     if(o&&o.customer_id){try{await supa.from('notifications').insert({user_id:o.customer_id,title:'✅ سائق استلم طلبك',body:`${myDriver.name} (${vehName(myDriver.vehicle)}) هيوصّل طلبك. رقمه: ${myDriver.phone}`});}catch(e){}}
-    alert('تمام ✓ الطلب بقى ليك. اتصل بالعميل: '+((o&&o.phone)||''));
+    if(o&&confirm('تمام ✓ الطلب بقى ليك.\nتحب تفتح مسار التوصيل على الخريطة؟'))orderMap(o.from_addr||'',o.to_addr||'');
     if(o&&o.phone)window.open('tel:'+o.phone,'_self');
-    loadDriverOrders();
+    loadDriverOrders(true);
   }catch(e){alert('الطلب اتاخد من سائق تاني أو حصل خطأ.');loadDriverOrders();}
 }
 async function checkDriverOrders(){
@@ -2668,7 +2694,7 @@ async function checkDriverOrders(){
     try{
       const {data}=await supa.from('delivery_orders').select('*').eq('status','open').gt('created_at',new Date(last).toISOString()).limit(50);
       const mine=(data||[]).filter(orderMatchesDriver);
-      if(mine.length){NOTIFS.unshift({title:'🛵 طلبية توصيل جديدة',body:`فيه ${mine.length} طلب توصيل في منطقتك. افتح «توصيل ← الطلبات المتاحة».`,created:nowTs});renderNotifBadge();}
+      if(mine.length){NOTIFS.unshift({title:'🛵 طلبية توصيل جديدة',body:`فيه ${mine.length} طلب توصيل في منطقتك. افتح «توصيل ← الطلبات المتاحة».`,created:nowTs});renderNotifBadge();try{playDing();}catch(e){}}
     }catch(e){}
   }
   try{localStorage.setItem('dalil_driver_check',String(nowTs));}catch(e){}
