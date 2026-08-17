@@ -573,6 +573,20 @@
   .map-pick-btn{width:100%;margin-top:8px;background:rgba(46,123,228,.12);border:1px solid rgba(46,123,228,.45);color:#6bb0ff;border-radius:10px;padding:10px;font-family:inherit;font-weight:700;font-size:.85rem}
   body.light .map-pick-btn{color:#1c66c9!important}
   .leaflet-container{font-family:inherit}
+  #mapPickOverlay{z-index:130!important}
+  .sub-badge{border-radius:12px;padding:11px 14px;margin-bottom:10px;font-weight:700;font-size:.88rem;text-align:center}
+  .sub-badge.ok{background:rgba(38,208,124,.14);border:1px solid rgba(38,208,124,.45);color:#43d68a}
+  .sub-badge.no{background:rgba(226,55,68,.12);border:1px solid rgba(226,55,68,.4);color:#ff8a94}
+  .sub-price{font-family:'Amiri',serif;font-size:2.4rem;text-align:center;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:2px}
+  .sub-price span{font-family:'Tajawal';font-size:.9rem;color:var(--txd);-webkit-text-fill-color:var(--txd)}
+  .pay-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:10px;padding:11px 14px;margin-bottom:8px}
+  .pay-row b{color:var(--tx);font-size:.9rem}.pay-row span{color:var(--txd);font-size:.9rem;font-family:'Courier New',monospace}
+  body.light .pay-row{background:#f4f6fa!important}
+  .ord-sec{font-weight:800;color:var(--tx);font-size:.95rem;margin:14px 0 10px}
+  .ord-sec:first-child{margin-top:0}
+  .ord-callc{display:block;text-align:center;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.4);color:#4ee089;border-radius:10px;padding:10px;font-weight:700;font-size:.85rem;margin-top:8px;text-decoration:none}
+  .ord-release{width:100%;background:transparent;border:1px solid rgba(226,55,68,.4);color:#ff8a94;border-radius:10px;padding:9px;font-family:inherit;font-size:.8rem;margin-top:8px}
+  body.light .ord-callc{color:#128a3e!important}
   .price-hint{color:var(--txd);font-size:.78rem;margin-top:6px}
   .price-hint b{color:#43d68a}
   body.light .price-hint b{color:#0d8a4f!important}
@@ -1272,11 +1286,12 @@
   <div class="modal">
     <div class="modal-head"><h3>🛵 اطلب توصيلة</h3><button class="x" onclick="closeDeliveryReq()">&times;</button></div>
     <div class="modal-body">
-      <div class="field"><label>من (مكان الاستلام)</label><input id="dv-from" placeholder="مثال: محل كذا، شارع كذا"><button type="button" class="map-pick-btn" onclick="openMapPick('from')">📍 حدّد على الخريطة</button></div>
-      <div class="field"><label>إلى (مكان التسليم)</label><input id="dv-to" placeholder="عنوانك بالتفصيل"><button type="button" class="map-pick-btn" onclick="openMapPick('to')">📍 حدّد على الخريطة</button></div>
+      <div class="field"><label>من (مكان الاستلام)</label><input id="dv-from" placeholder="مثال: محل كذا، شارع كذا" oninput="onAddrTyped('from')"><button type="button" class="map-pick-btn" onclick="openMapPick('from')">📍 حدّد على الخريطة</button></div>
+      <div class="field"><label>إلى (مكان التسليم)</label><input id="dv-to" placeholder="عنوانك بالتفصيل" oninput="onAddrTyped('to')"><button type="button" class="map-pick-btn" onclick="openMapPick('to')">📍 حدّد على الخريطة</button></div>
       <div class="field"><label>المنطقة</label><select id="dv-area" class="p-sel"></select></div>
       <div class="field"><label>نوع المركبة المطلوبة</label><select id="dv-veh" class="p-sel"><option value="any">أي مركبة</option></select></div>
       <div class="field"><label>تفاصيل الطلب</label><textarea id="dv-det" rows="2" placeholder="مثال: أكل من مطعم / أدوية من صيدلية / أغراض"></textarea></div>
+      <div class="field"><label>اسمك</label><input id="dv-name" placeholder="اسمك"></div>
       <div class="field"><label>رقم موبايلك</label><input id="dv-phone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
       <div class="field"><label>السعر اللي مستعد تدفعه (ج)</label><input id="dv-price" inputmode="numeric" placeholder="مثال: 20"><div class="price-hint" id="dv-price-hint">حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.</div></div>
       <div class="err" id="dv-err"></div>
@@ -2254,7 +2269,7 @@ async function adminDrivers(){
 }
 function admRenderDrivers(){
   const st=s=>({pending:['قيد المراجعة','pend'],approved:['معتمد','ok'],rejected:['مرفوض','rej']}[s]||['قيد المراجعة','pend']);
-  const rows=admDrivers.length?admDrivers.map(d=>{const x=st(d.status||'pending');return `<div class="ad-row"><div><b>${esc(d.name)}</b><small>${esc(vehName(d.vehicle))}${d.plate?' · لوحة '+esc(d.plate):''} · ${esc((d.areas||[]).join('، ')||'—')} · ${esc(d.phone||'—')}</small><span class="adm-b ${x[1]}">${x[0]}</span></div><div class="ad-btns">${d.status!=='approved'?`<button class="ok" onclick="admDriverStatus('${d.id}','approved')">اعتماد</button>`:''}${d.status!=='rejected'?`<button class="no" onclick="admDriverStatus('${d.id}','rejected')">رفض</button>`:''}<button class="del" onclick="admDelDriver('${d.id}')">حذف</button></div></div>`;}).join(''):'<div class="empty2">مفيش سواقين مسجّلين</div>';
+  const rows=admDrivers.length?admDrivers.map(d=>{const x=st(d.status||'pending');const sub=driverSubActive(d);return `<div class="ad-row"><div><b>${esc(d.name)}</b><small>${esc(vehName(d.vehicle))}${d.plate?' · لوحة '+esc(d.plate):''} · ${esc((d.areas||[]).join('، ')||'—')} · ${esc(d.phone||'—')}</small><span class="adm-b ${x[1]}">${x[0]}</span>${sub?'<span class="adm-b ok">مشترك '+driverSubDays(d)+'ي</span>':'<span class="adm-b rej">غير مشترك</span>'}</div><div class="ad-btns">${d.status!=='approved'?`<button class="ok" onclick="admDriverStatus('${d.id}','approved')">اعتماد</button>`:''}${d.status!=='rejected'?`<button class="no" onclick="admDriverStatus('${d.id}','rejected')">رفض</button>`:''}<button class="feat-b" onclick="admDriverSub('${d.id}')">+ شهر اشتراك</button><button class="del" onclick="admDelDriver('${d.id}')">حذف</button></div></div>`;}).join(''):'<div class="empty2">مفيش سواقين مسجّلين</div>';
   admBody().innerHTML=rows;
 }
 async function admDriverStatus(id,st){
@@ -2274,6 +2289,18 @@ async function admDriverStatus(id,st){
   }catch(e){alert('خطأ: '+(e.message||e));}
 }
 async function admDelDriver(id){if(!confirm('تأكيد حذف السائق؟'))return;try{await supa.from('drivers').delete().eq('id',id);await adminDrivers();loadDrivers().then(renderDelivery);}catch(e){alert('خطأ: '+(e.message||e));}}
+async function admDriverSub(id){
+  const d=admDrivers.find(x=>x.id===id);if(!d)return;
+  const base=(d.sub_until&&new Date(d.sub_until).getTime()>Date.now())?new Date(d.sub_until):new Date();
+  const until=new Date(base.getTime()+30*864e5).toISOString();
+  try{
+    const {error}=await supa.from('drivers').update({sub_until:until}).eq('id',id);
+    if(error)throw error;
+    if(d.user_id){try{await supa.from('notifications').insert({user_id:d.user_id,title:'✅ تم تفعيل اشتراكك',body:'تم تفعيل/تجديد اشتراكك شهر كامل. هتوصلك طلبات التوصيل في مناطقك 🛵'});}catch(e){}}
+    await adminDrivers();loadDrivers().then(renderDelivery);
+    alert('تم تفعيل الاشتراك شهر ✓');
+  }catch(e){alert('خطأ (شغّل drivers-sub.sql الأول): '+(e.message||e));}
+}
 async function admAdStatus(id,st){
   let reason=null;
   if(st==='rejected'){reason=prompt('سبب رفض الإعلان (هيوصل لصاحبه):','');if(reason===null)return;}
@@ -2633,9 +2660,14 @@ function renderDelivery(){
     if(myDriver){
       const dst=myDriver.status||'pending';
       if(dst==='approved'){
+        const active=driverSubActive(myDriver),days=driverSubDays(myDriver);
+        const subCard=active
+          ?`<div class="sub-badge ok">اشتراكك فعّال ✓ — متبقّي ${days} يوم</div>`
+          :`<div class="sub-badge no">اشتراكك ${myDriver.sub_until?'انتهى':'مش مفعّل'} — جدّد عشان توصلك الطلبات</div>`;
         zone.innerHTML=`<div class="driver-card-me"><div><b>سائق معتمد ✓</b><small>${vehName(myDriver.vehicle)} · ${(myDriver.areas||[]).join('، ')||'—'}</small></div></div>
-        <button class="deliv-cta2" onclick="openDriverDash()">🛵 شوف الطلبات المتاحة ليك</button>
-        <button class="deliv-sound" id="deliv-sound-btn" onclick="enableDriverSound()">🔔 فعّل صوت التنبيه</button>
+        ${subCard}
+        ${active?`<button class="deliv-cta2" onclick="openDriverDash()">🛵 شوف الطلبات المتاحة ليك</button>
+        <button class="deliv-sound" id="deliv-sound-btn" onclick="enableDriverSound()">🔔 فعّل صوت التنبيه</button>`:`<button class="deliv-cta2" onclick="openDriverSub()">💳 جدّد اشتراكك (${DRIVER_FEE}ج/شهر)</button>`}
         <button class="deliv-reg" onclick="openDriverReg()">تعديل بياناتي كسائق</button>`;
       }else if(dst==='rejected'){
         zone.innerHTML=`<div class="driver-card-me" style="background:rgba(226,55,68,.1);border-color:rgba(226,55,68,.4)"><div><b style="color:#ff8a94">تسجيلك مترفض</b><small>${esc(myDriver.reject_reason||'راجع بياناتك')}</small></div></div>
@@ -2664,25 +2696,30 @@ function renderDelivery(){
 /* ---- طلب توصيلة (العميل) ---- */
 function openDeliveryReq(){
   const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
+  _pickLat=_pickLng=_pickFromLat=_pickFromLng=null;window._pickAddr='';
+  ['dv-from','dv-to','dv-det','dv-price'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const nm=document.getElementById('dv-name');if(nm)nm.value=(typeof USER!=='undefined'&&USER&&USER.name)?USER.name:'';
+  const ph=document.getElementById('dv-phone');if(ph){ph.value='';ph.placeholder='01xxxxxxxxx';}
+  const hint=document.getElementById('dv-price-hint');if(hint)hint.textContent='حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.';
   const hd=document.querySelector('#deliveryOverlay .modal-head h3');if(hd)hd.textContent='🛵 اطلب توصيلة';
   const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn)sbtn.textContent='أرسل الطلب للسواقين';
   const ff=document.getElementById('dv-from');if(ff)ff.placeholder='مثال: محل كذا، شارع كذا';
   const tt=document.getElementById('dv-to');if(tt)tt.placeholder='عنوانك بالتفصيل';
   const dd=document.getElementById('dv-det');if(dd)dd.placeholder='مثال: أكل من مطعم / أدوية من صيدلية / أغراض';
-  const pp=document.getElementById('dv-phone');if(pp)pp.placeholder='01xxxxxxxxx';
   const area=document.getElementById("dv-area");if(area&&!area.options.length)area.innerHTML=DV_AREAS.map(a=>`<option>${a}</option>`).join('');
   const veh=document.getElementById('dv-veh');if(veh&&veh.options.length<=1)veh.innerHTML='<option value="any">أي مركبة</option>'+VEHICLES.map(v=>`<option value="${v.k}">${v.e} ${v.t}</option>`).join('');
   document.getElementById('deliveryOverlay').classList.add('open');
 }
 function closeDeliveryReq(){document.getElementById('deliveryOverlay').classList.remove('open');}
 async function sendDeliveryReq(){
-  const from=v('dv-from'),to=v('dv-to'),det=v('dv-det'),phone=v('dv-phone'),area=v('dv-area')||DV_AREAS[0],veh=v('dv-veh')||'any',err=document.getElementById('dv-err');err.textContent='';
+  const from=v('dv-from'),to=v('dv-to'),det=v('dv-det'),phone=v('dv-phone'),cname=v('dv-name'),area=v('dv-area')||DV_AREAS[0],veh=v('dv-veh')||'any',err=document.getElementById('dv-err');err.textContent='';
   if(!from||!to){err.textContent='اكتب مكان الاستلام والتسليم';return;}
-  if(!phone||phone.replace(/[^\d]/g,'').length<10){err.textContent='اكتب رقم موبايل صحيح';return;}
+  if(!/^01[0125]\d{8}$/.test(phone)){err.textContent='رقم الموبايل غير صحيح (لازم 11 رقم يبدأ بـ 01)';return;}
+  const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn){sbtn.disabled=true;sbtn.textContent='جاري الإرسال...';}
   let saved=false;
   if(supa){
     try{
-      const base={customer_id:USER?USER.id:null,from_addr:from,to_addr:to,details:det||null,phone,area,vehicle_pref:veh,status:'open'};
+      const base={customer_id:USER?USER.id:null,customer_name:cname||null,from_addr:from,to_addr:to,details:det||null,phone,area,vehicle_pref:veh,status:'open'};
       const priceNum=parseInt((v('dv-price')||'').replace(/[^\d]/g,''),10);
       const extra={};
       if(priceNum)extra.price=priceNum;
@@ -2690,9 +2727,11 @@ async function sendDeliveryReq(){
       if(_pickFromLat!=null){extra.from_lat=_pickFromLat;extra.from_lng=_pickFromLng;}
       let r=await supa.from('delivery_orders').insert(Object.assign({},base,extra));
       if(r.error&&Object.keys(extra).length){r=await supa.from('delivery_orders').insert(base);}
+      if(r.error){const b2=Object.assign({},base);delete b2.customer_name;r=await supa.from('delivery_orders').insert(b2);}
       if(r.error)throw r.error;saved=true;_pickLat=_pickLng=_pickFromLat=_pickFromLng=null;window._pickAddr='';
     }catch(e){}
   }
+  if(sbtn){sbtn.disabled=false;sbtn.textContent='أرسل الطلب للسواقين';}
   closeDeliveryReq();
   if(saved){alert('تم إرسال الطلب ✓ هيوصل للسواقين المتاحين في «'+area+'»، وأول واحد يقبل هيتصل بيك.');}
   else{const msg=`🛵 طلب توصيلة - دليل إدفو\n\nمن: ${from}\nإلى: ${to}\nالمنطقة: ${area}\nالمركبة: ${veh==='any'?'أي مركبة':vehName(veh)}\nالتفاصيل: ${det||'-'}\nرقمي: ${phone}`;window.open('https://wa.me/'+DELIV_LINE+'?text='+encodeURIComponent(msg),'_blank');}
@@ -2738,6 +2777,27 @@ async function saveDriver(){
 /* نغمة تنبيه السائق + اهتزاز + مسار الخريطة */
 let _audioCtx=null,_driverPoll=null,_seenOrders={},_soundOn=false;
 function enableDriverSound(){_soundOn=true;primeAudio();playDing();const b=document.getElementById('deliv-sound-btn');if(b){b.textContent='🔔 صوت التنبيه مفعّل ✓';b.classList.add('on');}try{localStorage.setItem('dalil_snd','1');}catch(e){}}
+/* ===== اشتراك السائق ===== */
+const DRIVER_FEE=50; /* اشتراك السائق الشهري بالجنيه */
+const VF_CASH='01151107993';   /* رقم فودافون كاش — غيّره */
+const INSTAPAY='dalil.edfu@instapay'; /* عنوان إنستاباي — غيّره */
+function driverSubActive(d){if(!d||!d.sub_until)return false;return new Date(d.sub_until).getTime()>Date.now();}
+function driverSubDays(d){if(!d||!d.sub_until)return 0;return Math.max(0,Math.ceil((new Date(d.sub_until).getTime()-Date.now())/864e5));}
+function openDriverSub(){
+  const name=myDriver?myDriver.name:'';
+  const msg=`عايز أجدّد اشتراكي كسائق في دليل إدفو (${DRIVER_FEE}ج/شهر).\nاسمي: ${name}`;
+  const html=`<div class="sub-pay">
+    <div class="sub-price">${DRIVER_FEE} <span>ج / شهر</span></div>
+    <p style="color:var(--txd);font-size:.85rem;margin:0 0 12px">ادفع بأي طريقة، وابعتلنا صورة التحويل على واتساب، وهنفعّل اشتراكك فوراً.</p>
+    <div class="pay-row"><b>📱 فودافون كاش</b><span>${VF_CASH}</span></div>
+    <div class="pay-row"><b>💳 إنستاباي</b><span>${esc(INSTAPAY)}</span></div>
+    <a class="save" style="display:block;text-align:center;text-decoration:none;margin-top:12px" href="https://wa.me/2${DELIV_LINE.replace(/^20/,'')}?text=${encodeURIComponent(msg)}" target="_blank">ابعت إثبات الدفع على واتساب</a>
+  </div>`;
+  document.getElementById('user-title').textContent='🚗 اشتراك السائق';
+  document.getElementById('user-body').innerHTML=html;
+  const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
+  document.getElementById('userOverlay').classList.add('open');
+}
 function primeAudio(){try{_audioCtx=_audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(_audioCtx.resume)_audioCtx.resume();}catch(e){}}
 function playDing(){
   try{primeAudio();const ctx=_audioCtx,now=ctx.currentTime;
@@ -2753,6 +2813,10 @@ function jsStr(s){return (''+s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
 let _pmap=null,_pmarker=null,_pickLat=null,_pickLng=null,_pickFromLat=null,_pickFromLng=null,_tmpLat=null,_tmpLng=null,_pickTarget='to';
 const FARE_BASE=10,FARE_PERKM=5,FARE_MIN=10;
 function haversineKm(la1,lo1,la2,lo2){const R=6371,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180,s=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+function onAddrTyped(which){
+  if(which==='from'){_pickFromLat=_pickFromLng=null;}else{_pickLat=_pickLng=null;}
+  const hint=document.getElementById('dv-price-hint');if(hint)hint.textContent='حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.';
+}
 function computeSuggested(){
   const hint=document.getElementById('dv-price-hint'),pr=document.getElementById('dv-price');
   if(_pickFromLat!=null&&_pickLat!=null){
@@ -2802,6 +2866,7 @@ function orderMapGeo(lat,lng){window.open('https://www.google.com/maps/dir/?api=
 async function openDriverDash(){
   if(!myDriver){openDriverReg();return;}
   if((myDriver.status||'pending')!=='approved'){alert(myDriver.status==='rejected'?('تسجيلك مترفض. السبب: '+(myDriver.reject_reason||'—')):'طلبك لسه قيد المراجعة. هيوصلك إشعار أول ما تتعمد.');return;}
+  if(!driverSubActive(myDriver)){alert('اشتراكك مش مفعّل. جدّد اشتراكك عشان توصلك الطلبات 💳');openDriverSub();return;}
   document.getElementById('driverDashOverlay').classList.add('open');
   primeAudio();
   await loadDriverOrders(true);
@@ -2818,36 +2883,64 @@ function orderMatchesDriver(o){
 async function loadDriverOrders(firstLoad){
   const box=document.getElementById('driver-orders');if(!box||!supa)return;
   if(firstLoad)box.innerHTML='<div class="empty2">بيحمّل...</div>';
-  try{
-    const {data}=await supa.from('delivery_orders').select('*').eq('status','open').order('created_at',{ascending:false}).limit(50);
-    const mine=(data||[]).filter(orderMatchesDriver);
-    const fresh=mine.filter(o=>!_seenOrders[o.id]);
-    if(!firstLoad&&fresh.length){playDing();}
-    mine.forEach(o=>_seenOrders[o.id]=1);
-    box.innerHTML=mine.length?mine.map(o=>`<div class="ord-card${(!firstLoad&&fresh.some(f=>f.id===o.id))?' ord-new':''}">
+  const ordCard=(o,mode,fresh)=>{
+    const isNew=mode==='open'&&!firstLoad&&fresh&&fresh.some(f=>f.id===o.id);
+    const btns=mode==='active'
+      ?`<div class="ord-btns2"><button class="ord-map" onclick="${o.to_lat?`orderMapGeo(${o.to_lat},${o.to_lng})`:`orderMap('${jsStr(o.from_addr)}','${jsStr(o.to_addr)}')`}">🗺️ المسار</button><button class="ord-take" onclick="completeOrder('${o.id}')">تم التسليم ✓</button></div><button class="ord-release" onclick="releaseOrder('${o.id}')">تعذّر التوصيل — رجّع الطلب</button>`
+      :`<div class="ord-btns2"><button class="ord-map" onclick="${o.to_lat?`orderMapGeo(${o.to_lat},${o.to_lng})`:`orderMap('${jsStr(o.from_addr)}','${jsStr(o.to_addr)}')`}">🗺️ المسار</button><button class="ord-take" onclick="takeOrder('${o.id}')">أنا هوصّلها ✋</button></div>`;
+    return `<div class="ord-card${isNew?' ord-new':''}">
+      ${o.customer_name?`<div class="ord-route"><span>👤 العميل:</span> ${esc(o.customer_name)}</div>`:''}
       <div class="ord-route"><span>📍 من:</span> ${esc(o.from_addr)}</div>
       <div class="ord-route"><span>🎯 إلى:</span> ${esc(o.to_addr)}</div>
       <div class="ord-meta">${esc(o.area)} · ${o.vehicle_pref&&o.vehicle_pref!=='any'?esc(vehName(o.vehicle_pref))+' · ':''}${esc(timeAgo(o.created_at))}</div>
       <div class="ord-price">💰 ${o.price?esc(''+o.price)+' ج':'السعر بالاتفاق'}</div>
       ${o.details?`<div class="ord-det">${esc(o.details)}</div>`:''}
-      <div class="ord-btns2"><button class="ord-map" onclick="${o.to_lat?`orderMapGeo(${o.to_lat},${o.to_lng})`:`orderMap('${jsStr(o.from_addr)}','${jsStr(o.to_addr)}')`}">🗺️ المسار</button><button class="ord-take" onclick="takeOrder('${o.id}')">أنا هوصّلها ✋</button></div>
-    </div>`).join(''):'<div class="empty2">مفيش طلبات متاحة في مناطقك دلوقتي.<br>سيب الشاشة مفتوحة — هتسمع نغمة أول ما تيجي طلبية 🔔</div>';
+      ${mode==='active'&&o.phone?`<a class="ord-callc" href="tel:${o.phone}">📞 اتصل بالعميل</a>`:''}
+      ${btns}
+    </div>`;
+  };
+  try{
+    const [openRes,mineRes]=await Promise.all([
+      supa.from('delivery_orders').select('*').eq('status','open').order('created_at',{ascending:false}).limit(50),
+      supa.from('delivery_orders').select('*').eq('status','taken').eq('taken_by',myDriver.id).order('created_at',{ascending:false}).limit(20)
+    ]);
+    const openList=(openRes.data||[]).filter(orderMatchesDriver);
+    const active=mineRes.data||[];
+    const fresh=openList.filter(o=>!_seenOrders[o.id]);
+    if(!firstLoad&&fresh.length){playDing();}
+    openList.forEach(o=>_seenOrders[o.id]=1);
+    let html='';
+    if(active.length)html+='<div class="ord-sec">🚚 طلباتك الجارية ('+active.length+')</div>'+active.map(o=>ordCard(o,'active')).join('');
+    html+='<div class="ord-sec">🆕 طلبات متاحة</div>';
+    html+=openList.length?openList.map(o=>ordCard(o,'open',fresh)).join(''):'<div class="empty2">مفيش طلبات متاحة في مناطقك دلوقتي.<br>سيب الشاشة مفتوحة — هتسمع نغمة أول ما تيجي طلبية 🔔</div>';
+    box.innerHTML=html;
   }catch(e){box.innerHTML='<div class="empty2">فعّل التوصيل: شغّل <b>drivers-orders.sql</b> في Supabase.</div>';}
+}
+async function completeOrder(id){
+  if(!confirm('تأكيد إنك وصّلت الطلب للعميل؟'))return;
+  try{const {error}=await supa.from('delivery_orders').update({status:'completed'}).eq('id',id);if(error)throw error;alert('تمام ✓ اتقفل الطلب. شكراً لشغلك!');loadDriverOrders(true);}
+  catch(e){alert('خطأ: '+(e.message||e));}
+}
+async function releaseOrder(id){
+  if(!confirm('هترجّع الطلب متاح لباقي السواقين؟'))return;
+  try{const {error}=await supa.from('delivery_orders').update({status:'open',taken_by:null,taken_name:null,taken_phone:null}).eq('id',id);if(error)throw error;loadDriverOrders(true);}
+  catch(e){alert('خطأ: '+(e.message||e));}
 }
 async function takeOrder(id){
   if(!myDriver||!supa)return;
   try{
-    const {error}=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone}).eq('id',id).eq('status','open');
+    const {data:upd,error}=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone}).eq('id',id).eq('status','open').select();
     if(error)throw error;
-    const {data:o}=await supa.from('delivery_orders').select('*').eq('id',id).maybeSingle();
-    if(o&&o.customer_id){try{await supa.from('notifications').insert({user_id:o.customer_id,title:'✅ سائق في الطريق إليك',body:`السائق: ${myDriver.name}\nالمركبة: ${vehName(myDriver.vehicle)}${myDriver.plate?' — لوحة '+myDriver.plate:''}\nللتواصل: ${myDriver.phone}`});}catch(e){}}
-    if(o&&confirm('تمام ✓ الطلب بقى ليك.\nتحب تفتح مسار التوصيل على الخريطة؟'))orderMap(o.from_addr||'',o.to_addr||'');
-    if(o&&o.phone)window.open('tel:'+o.phone,'_self');
+    if(!upd||!upd.length){alert('الطلب اتاخد من سائق تاني ⚡');loadDriverOrders(true);return;}
+    const o=upd[0];
+    if(o.customer_id){try{await supa.from('notifications').insert({user_id:o.customer_id,title:'✅ سائق في الطريق إليك',body:`السائق: ${myDriver.name}\nالمركبة: ${vehName(myDriver.vehicle)}${myDriver.plate?' — لوحة '+myDriver.plate:''}\nللتواصل: ${myDriver.phone}`});}catch(e){}}
+    if(confirm('تمام ✓ الطلب بقى ليك.\nتحب تفتح مسار التوصيل على الخريطة؟'))(o.to_lat?orderMapGeo(o.to_lat,o.to_lng):orderMap(o.from_addr||'',o.to_addr||''));
+    if(o.phone)window.open('tel:'+o.phone,'_self');
     loadDriverOrders(true);
-  }catch(e){alert('الطلب اتاخد من سائق تاني أو حصل خطأ.');loadDriverOrders();}
+  }catch(e){alert('حصل خطأ، جرّب تاني.');loadDriverOrders(true);}
 }
 async function checkDriverOrders(){
-  if(!supa||!myDriver||(myDriver.status||'pending')!=='approved')return;
+  if(!supa||!myDriver||(myDriver.status||'pending')!=='approved'||!driverSubActive(myDriver))return;
   let last=0;try{last=+localStorage.getItem('dalil_driver_check')||0;}catch(e){}
   const nowTs=Date.now();
   if(last>0){
