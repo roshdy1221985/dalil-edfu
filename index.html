@@ -1386,6 +1386,7 @@
       <button class="on" data-atab="dash" onclick="adminTab('dash')">لوحة</button>
       <button data-atab="biz" onclick="adminTab('biz')">المحلات</button>
       <button data-atab="ads" onclick="adminTab('ads')">الإعلانات</button>
+      <button data-atab="drivers" onclick="adminTab('drivers')">السواقين</button>
       <button data-atab="offers" onclick="adminTab('offers')">العروض</button>
       <button data-atab="reports" onclick="adminTab('reports')">البلاغات</button>
       <button data-atab="users" onclick="adminTab('users')">المستخدمين</button>
@@ -1604,6 +1605,8 @@ async function republishAd(id){
 }
 /* تهريب HTML لمنع حقن السكربتات (XSS) من بيانات المستخدم */
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* يظهر للعامة: التجريبي، أو المعتمد، أو ما يخص المستخدم نفسه */
+function visibleItem(x){return !x||!x.id||x.status==='approved'||(typeof USER!=='undefined'&&USER&&x.ownerId===USER.id);}
 
 /* ===== المفضلة (تتخزّن على جهاز المستخدم) ===== */
 const FAV=(()=>{try{return JSON.parse(localStorage.getItem('dalil_fav')||'{"biz":[],"ad":[]}');}catch(e){return{biz:[],ad:[]};}})();
@@ -2004,8 +2007,8 @@ function renderHome(){
   document.getElementById('dir-count').textContent=BIZ.length+' نشاط';
   document.getElementById('s-count').textContent=BIZ.length;
   document.getElementById('s-cats').textContent=new Set(BIZ.map(b=>b.cat)).size;
-  let feats=BIZ.map((b,i)=>({b,i})).filter(({b})=>b.plan!=='free').sort((a,b)=>rank(a.b.plan)-rank(b.b.plan));
-  if(!feats.length)feats=BIZ.map((b,i)=>({b,i})).sort((a,b)=>viewsOf(b.b)-viewsOf(a.b)).slice(0,8);
+  let feats=BIZ.map((b,i)=>({b,i})).filter(({b})=>visibleItem(b)&&b.plan!=='free').sort((a,b)=>rank(a.b.plan)-rank(b.b.plan));
+  if(!feats.length)feats=BIZ.map((b,i)=>({b,i})).filter(({b})=>visibleItem(b)).sort((a,b)=>viewsOf(b.b)-viewsOf(a.b)).slice(0,8);
   document.getElementById('featured').innerHTML=feats.map(({b,i})=>cardHTML(b,i)).join('');
 }
 
@@ -2060,6 +2063,7 @@ function renderAreaChips(){
 function setArea(a){activeArea=a;renderAreaChips();renderCatList();}
 function catFiltered(){
   return BIZ.map((b,i)=>({b,i})).filter(({b})=>{
+    if(!visibleItem(b))return false;
     const okCat=activeCat==='all'||b.cat===activeCat;
     const okArea=activeArea==='all'||areaOf(b)===activeArea;
     const okQ=!query||(b.name+(b.desc||'')+catName(b.cat)+(b.addr||'')+(b.owner||'')).includes(query);
@@ -2120,7 +2124,7 @@ function renderCatList(){
   let adHtml='';
   if(query){
     const q=query.toLowerCase();
-    const ads=MARKET.map((m,i)=>({m,i})).filter(({m})=>!adExpired(m)&&((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase().includes(q));
+    const ads=MARKET.map((m,i)=>({m,i})).filter(({m})=>!adExpired(m)&&visibleItem(m)&&((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase().includes(q));
     if(ads.length){
       if(list.length)html='<div class="search-sec">محلات وخدمات ('+list.length+')</div>'+html;
       adHtml='<div class="search-sec">إعلانات في السوق ('+ads.length+')</div>'+ads.map(({m,i})=>searchAdRow(m,i)).join('');
@@ -2142,7 +2146,7 @@ const planName=p=>p==='prem'?'بريميوم':p==='feat'?'مميّز':'مجان�
 const stBadge=s=>{const m={pending:['قيد المراجعة','pend'],approved:['معتمد','ok'],rejected:['مرفوض','rej']};const x=m[s]||[s||'—','pend'];return `<span class="adm-b ${x[1]}">${x[0]}</span>`;};
 function openAdmin(){document.getElementById('acctMenu').classList.remove('open');document.getElementById('adminPage').classList.add('open');document.getElementById('adminPage').scrollTop=0;adminTab('dash');}
 function closeAdmin(){document.getElementById('adminPage').classList.remove('open');}
-function adminTab(t){admCur=t;document.querySelectorAll('#admin-seg button').forEach(b=>b.classList.toggle('on',b.dataset.atab===t));({dash:adminDash,biz:adminBiz,ads:adminAds,offers:adminOffers,reports:adminReports,users:adminUsers,notif:adminNotifs}[t]||adminDash)();}
+function adminTab(t){admCur=t;document.querySelectorAll('#admin-seg button').forEach(b=>b.classList.toggle('on',b.dataset.atab===t));({dash:adminDash,biz:adminBiz,ads:adminAds,drivers:adminDrivers,offers:adminOffers,reports:adminReports,users:adminUsers,notif:adminNotifs}[t]||adminDash)();}
 function adminNotifs(){
   admBody().innerHTML=`<div class="field"><label>عنوان الإشعار</label><input id="an-title" class="adm-search" style="width:100%" placeholder="مثال: عروض العيد 🎉"></div>
     <div class="field"><label>نص الإشعار</label><textarea id="an-body" class="adm-search" style="width:100%" rows="3" placeholder="اكتب تفاصيل الإشعار..."></textarea></div>
@@ -2209,9 +2213,22 @@ function admRenderBiz(){
   const rows=list.length?list.map(b=>`<div class="ad-row"><div><b>${esc(b.name)}</b><small>${catName(b.category_id)} · ${esc(b.phone||'—')}</small>${stBadge(b.status)}</div><div class="ad-btns">${b.status!=='approved'?`<button class="ok" onclick="admBizStatus('${b.id}','approved')">اعتماد</button>`:''}${b.status!=='rejected'?`<button class="no" onclick="admBizStatus('${b.id}','rejected')">رفض</button>`:''}<select class="adm-plan" onchange="admSetPlan('${b.id}',this.value)"><option value="free"${b.plan==='free'?' selected':''}>مجاني</option><option value="feat"${b.plan==='feat'?' selected':''}>مميّز</option><option value="prem"${b.plan==='prem'?' selected':''}>بريميوم</option></select><button class="del" onclick="admDelBiz('${b.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش نتائج</div>';
   admBody().innerHTML=tools+rows;
 }
-async function admBizStatus(id,st){try{await supa.from('businesses').update({status:st}).eq('id',id);
-  if(st==='approved'){const b=(ADM.biz||[]).find(x=>x.id===id);if(b&&b.owner_id){try{await supa.from('notifications').insert({user_id:b.owner_id,title:'✅ تم اعتماد محلك',body:`محلك "${b.name}" بقى ظاهر في دليل إدفو لكل أهل المدينة 🎉`});}catch(e){}}}
-  await adminBiz();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
+async function admBizStatus(id,st){
+  let reason=null;
+  if(st==='rejected'){reason=prompt('سبب الرفض (هيوصل لصاحب المحل):','');if(reason===null)return;}
+  try{
+    const payload={status:st};if(st==='rejected')payload.reject_reason=reason||'—';
+    let r=await supa.from('businesses').update(payload).eq('id',id);
+    if(r.error&&st==='rejected'){r=await supa.from('businesses').update({status:st}).eq('id',id);}
+    if(r.error)throw r.error;
+    const b=(ADM.biz||[]).find(x=>x.id===id);
+    if(b&&b.owner_id){try{
+      if(st==='approved')await supa.from('notifications').insert({user_id:b.owner_id,title:'✅ تم اعتماد محلك',body:`محلك "${b.name}" بقى ظاهر في دليل إدفو لكل أهل المدينة 🎉`});
+      else if(st==='rejected')await supa.from('notifications').insert({user_id:b.owner_id,title:'⚠️ محلك محتاج تعديل',body:`للأسف محلك "${b.name}" مترفض. السبب: ${reason||'—'}\nعدّل البيانات وأعد الإرسال.`});
+    }catch(e){}}
+    await adminBiz();loadData();
+  }catch(e){alert('خطأ: '+(e.message||e));}
+}
 async function admSetPlan(id,plan){try{await supa.from('businesses').update({plan}).eq('id',id);if(plan!=='free'){const ends=new Date(Date.now()+30*864e5).toISOString();try{await supa.from('subscriptions').insert({business_id:id,plan,ends_at:ends});}catch(_){}}await adminBiz();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
 async function admDelBiz(id){if(!confirm('تحذف المحل ده نهائياً؟'))return;try{const {error}=await supa.from('businesses').delete().eq('id',id);if(error)throw error;await adminBiz();loadData();}catch(e){alert('تعذّر الحذف (محتاج صلاحية أدمن في القاعدة): '+(e.message||e));}}
 
@@ -2224,12 +2241,55 @@ function admSetAdsFilter(f){admAdsFilter=f;admRenderAds();}
 function admRenderAds(){
   let list=ADM.ads;if(admAdsFilter!=='all')list=list.filter(a=>a.status===admAdsFilter);
   const tools=`<div class="adm-tools"><select class="adm-sel" onchange="admSetAdsFilter(this.value)"><option value="all"${admAdsFilter==='all'?' selected':''}>كل الإعلانات</option><option value="pending"${admAdsFilter==='pending'?' selected':''}>قيد المراجعة</option><option value="approved"${admAdsFilter==='approved'?' selected':''}>معتمد</option></select></div>`;
-  const rows=list.length?list.map(a=>`<div class="ad-row"><div><b>${esc(a.title)}</b><small>${esc(a.price||'—')} · ${esc(a.category||'')}</small>${stBadge(a.status)}${a.featured?'<span class="adm-b feat">\u2B50 مميّز</span>':''}</div><div class="ad-btns">${a.status!=='approved'?`<button class="ok" onclick="admAdStatus('${a.id}','approved')">اعتماد</button>`:''}<button class="feat-b" onclick="admFeatureAd('${a.id}',${a.featured?'false':'true'})">${a.featured?'إلغاء التمييز':'\u2B50 تمييز'}</button><button onclick="admBumpAd('${a.id}')">رفع</button><button class="del" onclick="admDelAd('${a.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش إعلانات</div>';
+  const rows=list.length?list.map(a=>`<div class="ad-row"><div><b>${esc(a.title)}</b><small>${esc(a.price||'—')} · ${esc(a.category||'')}</small>${stBadge(a.status)}${a.featured?'<span class="adm-b feat">\u2B50 مميّز</span>':''}</div><div class="ad-btns">${a.status!=='approved'?`<button class="ok" onclick="admAdStatus('${a.id}','approved')">اعتماد</button>`:''}${a.status!=='rejected'?`<button class="no" onclick="admAdStatus('${a.id}','rejected')">رفض</button>`:''}<button class="feat-b" onclick="admFeatureAd('${a.id}',${a.featured?'false':'true'})">${a.featured?'إلغاء التمييز':'\u2B50 تمييز'}</button><button onclick="admBumpAd('${a.id}')">رفع</button><button class="del" onclick="admDelAd('${a.id}')">حذف</button></div></div>`).join(''):'<div class="empty2">مفيش إعلانات</div>';
   admBody().innerHTML=tools+rows;
 }
 async function admFeatureAd(id,on){try{const {error}=await supa.from('ads').update({featured:on}).eq('id',id);if(error)throw error;await adminAds();loadData();}catch(e){alert('خطأ (شغّل ad-promote.sql الأول): '+(e.message||e));}}
 async function admBumpAd(id){try{const {error}=await supa.from('ads').update({bumped_at:new Date().toISOString()}).eq('id',id);if(error)throw error;await adminAds();loadData();alert('تم رفع الإعلان للأعلى ✓');}catch(e){alert('خطأ (شغّل ad-promote.sql الأول): '+(e.message||e));}}
-async function admAdStatus(id,st){try{await supa.from('ads').update({status:st}).eq('id',id);await adminAds();loadData();}catch(e){alert('خطأ: '+(e.message||e));}}
+let admDrivers=[];
+async function adminDrivers(){
+  const b=admBody();b.innerHTML='<div class="empty2">بيحمّل...</div>';
+  try{const {data}=await supa.from('drivers').select('*').order('created_at',{ascending:false}).limit(300);admDrivers=data||[];admRenderDrivers();}
+  catch(e){b.innerHTML='<div class="empty2">شغّل <b>drivers-orders.sql</b> الأول.</div>';}
+}
+function admRenderDrivers(){
+  const st=s=>({pending:['قيد المراجعة','pend'],approved:['معتمد','ok'],rejected:['مرفوض','rej']}[s]||['قيد المراجعة','pend']);
+  const rows=admDrivers.length?admDrivers.map(d=>{const x=st(d.status||'pending');return `<div class="ad-row"><div><b>${esc(d.name)}</b><small>${esc(vehName(d.vehicle))}${d.plate?' · لوحة '+esc(d.plate):''} · ${esc((d.areas||[]).join('، ')||'—')} · ${esc(d.phone||'—')}</small><span class="adm-b ${x[1]}">${x[0]}</span></div><div class="ad-btns">${d.status!=='approved'?`<button class="ok" onclick="admDriverStatus('${d.id}','approved')">اعتماد</button>`:''}${d.status!=='rejected'?`<button class="no" onclick="admDriverStatus('${d.id}','rejected')">رفض</button>`:''}<button class="del" onclick="admDelDriver('${d.id}')">حذف</button></div></div>`;}).join(''):'<div class="empty2">مفيش سواقين مسجّلين</div>';
+  admBody().innerHTML=rows;
+}
+async function admDriverStatus(id,st){
+  let reason=null;
+  if(st==='rejected'){reason=prompt('سبب رفض السائق (هيوصله):','');if(reason===null)return;}
+  try{
+    const payload={status:st};if(st==='rejected')payload.reject_reason=reason||'—';
+    let r=await supa.from('drivers').update(payload).eq('id',id);
+    if(r.error&&st==='rejected'){r=await supa.from('drivers').update({status:st}).eq('id',id);}
+    if(r.error)throw r.error;
+    const d=admDrivers.find(x=>x.id===id);
+    if(d&&d.user_id){try{
+      if(st==='approved')await supa.from('notifications').insert({user_id:d.user_id,title:'✅ تم اعتمادك كسائق',body:'بقيت سائق معتمد في دليل إدفو 🎉 هتوصلك طلبات التوصيل في مناطقك.'});
+      else if(st==='rejected')await supa.from('notifications').insert({user_id:d.user_id,title:'⚠️ تسجيلك كسائق مترفض',body:`السبب: ${reason||'—'}\nعدّل بياناتك وأعد الإرسال.`});
+    }catch(e){}}
+    await adminDrivers();loadDrivers().then(renderDelivery);
+  }catch(e){alert('خطأ: '+(e.message||e));}
+}
+async function admDelDriver(id){if(!confirm('تأكيد حذف السائق؟'))return;try{await supa.from('drivers').delete().eq('id',id);await adminDrivers();loadDrivers().then(renderDelivery);}catch(e){alert('خطأ: '+(e.message||e));}}
+async function admAdStatus(id,st){
+  let reason=null;
+  if(st==='rejected'){reason=prompt('سبب رفض الإعلان (هيوصل لصاحبه):','');if(reason===null)return;}
+  try{
+    const payload={status:st};if(st==='rejected')payload.reject_reason=reason||'—';
+    let r=await supa.from('ads').update(payload).eq('id',id);
+    if(r.error&&st==='rejected'){r=await supa.from('ads').update({status:st}).eq('id',id);}
+    if(r.error)throw r.error;
+    const a=(ADM.ads||[]).find(x=>x.id===id);
+    if(a&&a.owner_id){try{
+      if(st==='approved')await supa.from('notifications').insert({user_id:a.owner_id,title:'✅ تم اعتماد إعلانك',body:`إعلانك "${a.title}" بقى ظاهر في السوق.`});
+      else if(st==='rejected')await supa.from('notifications').insert({user_id:a.owner_id,title:'⚠️ إعلانك مترفض',body:`إعلانك "${a.title}" مترفض. السبب: ${reason||'—'}`});
+    }catch(e){}}
+    await adminAds();loadData();
+  }catch(e){alert('خطأ: '+(e.message||e));}
+}
 async function admDelAd(id){if(!confirm('تحذف الإعلان ده؟'))return;try{const {error}=await supa.from('ads').delete().eq('id',id);if(error)throw error;await adminAds();loadData();}catch(e){alert('تعذّر الحذف: '+(e.message||e));}}
 
 async function adminOffers(){
@@ -2339,7 +2399,7 @@ function mkClear(){mkCat='all';mkQuery='';mkMin='';mkMax='';const s=document.get
 function renderMarket(){
   const grid=document.getElementById('market'); if(!grid)return;
   let list=MARKET.map((m,i)=>({m,i}));
-  list=list.filter(({m})=>!adExpired(m));
+  list=list.filter(({m})=>!adExpired(m)&&visibleItem(m));
   if(mkCat!=='all')list=list.filter(({m})=>mkCatId(m.cat)===mkCat);
   if(mkQuery){const q=mkQuery.toLowerCase();list=list.filter(({m})=>((m.t||'')+' '+(m.desc||'')+' '+(m.cat||'')+' '+(m.loc||'')).toLowerCase().includes(q));}
   if(mkMin!==''||mkMax!==''){const mn=mkMin!==''?+mkMin:-Infinity,mx=mkMax!==''?+mkMax:Infinity;list=list.filter(({m})=>{const d=(''+(m.price||'')).replace(/[^\d]/g,'');if(!d)return false;const p=+d;return p>=mn&&p<=mx;});}
@@ -2562,7 +2622,7 @@ const COURIERS=[]; /* السواقين الحقيقيين بيتسجّلوا م�
 
 async function loadDrivers(){
   if(!supa)return;
-  try{const {data}=await supa.from('drivers').select('*').eq('active',true).order('created_at',{ascending:false});DRIVERS_LIVE=data||[];}catch(e){DRIVERS_LIVE=[];}
+  try{const {data}=await supa.from('drivers').select('*').eq('active',true).order('created_at',{ascending:false});DRIVERS_LIVE=(data||[]).filter(d=>d.status==='approved');}catch(e){DRIVERS_LIVE=[];}
   myDriver=null;
   if(USER)try{const {data}=await supa.from('drivers').select('*').eq('user_id',USER.id).maybeSingle();myDriver=data||null;}catch(e){}
 }
@@ -2571,10 +2631,19 @@ function renderDelivery(){
   const zone=document.getElementById('driver-zone');
   if(zone){
     if(myDriver){
-      zone.innerHTML=`<div class="driver-card-me"><div><b>سائق مسجّل ✓</b><small>${vehName(myDriver.vehicle)} · ${(myDriver.areas||[]).join('، ')||'—'}</small></div></div>
-      <button class="deliv-cta2" onclick="openDriverDash()">🛵 شوف الطلبات المتاحة ليك</button>
-      <button class="deliv-sound" id="deliv-sound-btn" onclick="enableDriverSound()">🔔 فعّل صوت التنبيه</button>
-      <button class="deliv-reg" onclick="openDriverReg()">تعديل بياناتي كسائق</button>`;
+      const dst=myDriver.status||'pending';
+      if(dst==='approved'){
+        zone.innerHTML=`<div class="driver-card-me"><div><b>سائق معتمد ✓</b><small>${vehName(myDriver.vehicle)} · ${(myDriver.areas||[]).join('، ')||'—'}</small></div></div>
+        <button class="deliv-cta2" onclick="openDriverDash()">🛵 شوف الطلبات المتاحة ليك</button>
+        <button class="deliv-sound" id="deliv-sound-btn" onclick="enableDriverSound()">🔔 فعّل صوت التنبيه</button>
+        <button class="deliv-reg" onclick="openDriverReg()">تعديل بياناتي كسائق</button>`;
+      }else if(dst==='rejected'){
+        zone.innerHTML=`<div class="driver-card-me" style="background:rgba(226,55,68,.1);border-color:rgba(226,55,68,.4)"><div><b style="color:#ff8a94">تسجيلك مترفض</b><small>${esc(myDriver.reject_reason||'راجع بياناتك')}</small></div></div>
+        <button class="deliv-reg-big" onclick="openDriverReg()">🚗 عدّل بياناتك وأعد الإرسال</button>`;
+      }else{
+        zone.innerHTML=`<div class="driver-card-me" style="background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.4)"><div><b style="color:#e8d59a">طلبك قيد المراجعة ⏳</b><small>هنراجع بياناتك ونعتمدك قريباً، وهيوصلك إشعار.</small></div></div>
+        <button class="deliv-reg" onclick="openDriverReg()">تعديل بياناتي</button>`;
+      }
     }else{
       zone.innerHTML=`<button class="deliv-reg-big" onclick="openDriverReg()">🚗 سجّل كسائق توصيل — ووصّلك الطلبات في منطقتك</button>`;
     }
@@ -2654,6 +2723,7 @@ async function saveDriver(){
   if(!_drAreas.length){err.textContent='اختَر منطقة واحدة على الأقل';return;}
   if(!supa){err.textContent='الخدمة غير متاحة';return;}
   const payload={user_id:USER.id,name,phone,wa:wa||null,vehicle:_drVeh,areas:_drAreas,active:true};
+  if(!myDriver)payload.status='pending';
   const plate=(document.getElementById('dr-plate')||{}).value;if(plate&&plate.trim())payload.plate=plate.trim();
   try{
     const doSave=async(pl)=>{if(myDriver){const r=await supa.from('drivers').update(pl).eq('id',myDriver.id);if(r.error)throw r.error;}else{const r=await supa.from('drivers').insert(pl);if(r.error)throw r.error;}};
@@ -2731,6 +2801,7 @@ function orderMap(from,to){window.open('https://www.google.com/maps/dir/?api=1&o
 function orderMapGeo(lat,lng){window.open('https://www.google.com/maps/dir/?api=1&destination='+lat+','+lng+'&travelmode=driving','_blank');}
 async function openDriverDash(){
   if(!myDriver){openDriverReg();return;}
+  if((myDriver.status||'pending')!=='approved'){alert(myDriver.status==='rejected'?('تسجيلك مترفض. السبب: '+(myDriver.reject_reason||'—')):'طلبك لسه قيد المراجعة. هيوصلك إشعار أول ما تتعمد.');return;}
   document.getElementById('driverDashOverlay').classList.add('open');
   primeAudio();
   await loadDriverOrders(true);
@@ -2776,7 +2847,7 @@ async function takeOrder(id){
   }catch(e){alert('الطلب اتاخد من سائق تاني أو حصل خطأ.');loadDriverOrders();}
 }
 async function checkDriverOrders(){
-  if(!supa||!myDriver)return;
+  if(!supa||!myDriver||(myDriver.status||'pending')!=='approved')return;
   let last=0;try{last=+localStorage.getItem('dalil_driver_check')||0;}catch(e){}
   const nowTs=Date.now();
   if(last>0){
@@ -3401,7 +3472,7 @@ async function loadData(){
     let ads=[];
     try{const r=await supa.from('ads').select('*, profiles(name)').order('created_at',{ascending:false});if(r.error)throw r.error;ads=r.data||[];}
     catch(e){const r2=await supa.from('ads').select('*').order('created_at',{ascending:false});ads=r2.data||[];}
-    const realAds=(ads&&ads.length)?ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||'',featured:!!a.featured,bumped:a.bumped_at||a.created_at,specs:a.specs||{}})):[];
+    const realAds=(ads&&ads.length)?ads.map(a=>({id:a.id,t:a.title,price:a.price,cat:a.category||'متنوع',loc:a.area||'إدفو',img:a.img_url,images:Array.isArray(a.images)?a.images:[],desc:a.description||'',phone:a.phone||'',cond:a.condition||'',nego:!!a.negotiable,views:a.views||0,created:a.created_at,ownerId:a.owner_id,sellerName:(a.profiles&&a.profiles.name)||'',featured:!!a.featured,bumped:a.bumped_at||a.created_at,specs:a.specs||{},status:a.status})):[];
     MARKET=SHOW_DEMO?realAds.concat(SEED_MARKET):(realAds.length?realAds:SEED_MARKET.slice());
     try{
       let offers;
