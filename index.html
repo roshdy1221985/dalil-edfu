@@ -636,6 +636,9 @@
   .acc-row b{color:var(--tx)}
   /* جرس الإشعارات */
   .bell-btn{position:relative;flex:0 0 auto;width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--bd);color:var(--tx);display:flex;align-items:center;justify-content:center}
+.admin-hdr{flex:0 0 auto;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(191,149,63,.22),rgba(212,175,55,.12));border:1px solid rgba(212,175,55,.5);color:#e8d59a;display:inline-flex;align-items:center;justify-content:center;margin-inline-end:8px}
+.admin-hdr svg{width:22px;height:22px}
+body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,149,63,.15),rgba(212,175,55,.08))}
   .bell-btn svg{width:20px;height:20px}
   .bell-btn:active{transform:scale(.94)}
   .bell-dot{position:absolute;top:-5px;left:-5px;min-width:18px;height:18px;padding:0 4px;border-radius:999px;background:#e23744;color:#fff;font-size:.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink)}
@@ -962,6 +965,9 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input id="q" type="search" placeholder="دوّر على محل، دكتور، مطعم، خدمة...">
     </div>
+    <button class="admin-hdr" id="adminHdrBtn" onclick="openAdmin()" aria-label="لوحة الأدمن" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5z"/><path d="M9 12l2 2 4-4"/></svg>
+    </button>
     <button class="bell-btn" id="bellBtn" onclick="openNotifs()" aria-label="الإشعارات">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
       <span class="bell-dot" id="bellDot" style="display:none">0</span>
@@ -3409,6 +3415,7 @@ function renderAcct(){
     document.getElementById('mu-name').textContent=USER.name;}
   else{b.classList.remove('in');b.textContent='دخول';}
   const ab=document.getElementById('admin-btn');if(ab)ab.style.display=(USER&&USER.isAdmin)?'block':'none';
+  const ah=document.getElementById('adminHdrBtn');if(ah)ah.style.display=(USER&&USER.isAdmin)?'inline-flex':'none';
   const sb=document.getElementById('store-btn');if(sb)sb.style.display=USER?'block':'none';
   const cta=document.getElementById('ctaBanner');if(cta)cta.style.display='none';
 }
