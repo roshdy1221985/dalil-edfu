@@ -567,6 +567,12 @@
   .ord-card.ord-new{border-color:rgba(18,161,92,.6);box-shadow:0 0 0 3px rgba(18,161,92,.18);animation:ordpulse 1.2s ease 2}
   @keyframes ordpulse{0%,100%{box-shadow:0 0 0 3px rgba(18,161,92,.18)}50%{box-shadow:0 0 0 6px rgba(18,161,92,.28)}}
   body.light .ord-map{color:#1c66c9!important}
+  .deliv-sound{width:100%;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.5);color:#e8d59a;border-radius:12px;padding:11px;font-family:inherit;font-weight:700;font-size:.88rem;margin-bottom:16px}
+  .deliv-sound.on{background:rgba(38,208,124,.14);border-color:rgba(38,208,124,.5);color:#43d68a}
+  body.light .deliv-sound{color:#8a5f14!important}
+  .map-pick-btn{width:100%;margin-top:8px;background:rgba(46,123,228,.12);border:1px solid rgba(46,123,228,.45);color:#6bb0ff;border-radius:10px;padding:10px;font-family:inherit;font-weight:700;font-size:.85rem}
+  body.light .map-pick-btn{color:#1c66c9!important}
+  .leaflet-container{font-family:inherit}
   .adm-stat{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:14px;padding:14px 15px}
   .adm-stat b{display:block;font-family:'Amiri',serif;font-size:1.8rem;background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05}
   .adm-stat span{color:var(--txd);font-size:.8rem}
@@ -919,6 +925,8 @@
   body.light .hrs-row input[type=time],body.light .hcr-times input[type=time],body.light .hcr-day{background:#f4f6fa!important;color:#17293f!important;color-scheme:light}
   body.light .hrs-add{color:#8a5f14!important}
 </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body class="light">
 <div id="offlineBar">⚠️ مفيش اتصال بالإنترنت — بتشوف نسخة محفوظة</div>
@@ -1243,12 +1251,24 @@
   </div>
 </div>
 
+<div class="overlay" id="mapPickOverlay">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head"><h3>📍 حدّد الوجهة على الخريطة</h3><button class="x" onclick="closeMapPick()">&times;</button></div>
+    <div class="modal-body">
+      <p style="color:var(--txd);font-size:.82rem;margin:0 0 8px">دوس على الخريطة على مكان التسليم، أو اسحب الدبوس.</p>
+      <div id="pickmap" style="height:320px;border-radius:14px;overflow:hidden;border:1px solid var(--bd)"></div>
+      <div id="pick-addr" style="color:var(--txd);font-size:.82rem;margin:8px 0"></div>
+      <button class="save" onclick="confirmMapPick()">تأكيد الموقع</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="deliveryOverlay">
   <div class="modal">
     <div class="modal-head"><h3>🛵 اطلب توصيلة</h3><button class="x" onclick="closeDeliveryReq()">&times;</button></div>
     <div class="modal-body">
       <div class="field"><label>من (مكان الاستلام)</label><input id="dv-from" placeholder="مثال: محل كذا، شارع كذا"></div>
-      <div class="field"><label>إلى (مكان التسليم)</label><input id="dv-to" placeholder="عنوانك بالتفصيل"></div>
+      <div class="field"><label>إلى (مكان التسليم)</label><input id="dv-to" placeholder="عنوانك بالتفصيل"><button type="button" class="map-pick-btn" onclick="openMapPick()">📍 حدّد على الخريطة</button></div>
       <div class="field"><label>المنطقة</label><select id="dv-area" class="p-sel"></select></div>
       <div class="field"><label>نوع المركبة المطلوبة</label><select id="dv-veh" class="p-sel"><option value="any">أي مركبة</option></select></div>
       <div class="field"><label>تفاصيل الطلب</label><textarea id="dv-det" rows="2" placeholder="مثال: أكل من مطعم / أدوية من صيدلية / أغراض"></textarea></div>
@@ -1267,6 +1287,7 @@
       <div class="field"><label>الاسم</label><input id="dr-name" placeholder="اسمك"></div>
       <div class="field"><label>رقم الموبايل</label><input id="dr-phone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
       <div class="field"><label>رقم واتساب (اختياري)</label><input id="dr-wa" inputmode="tel" placeholder="لو مختلف عن الموبايل"></div>
+      <div class="field"><label>رقم لوحة المركبة (اختياري)</label><input id="dr-plate" placeholder="مثال: أ ب ج 1234"></div>
       <div class="field"><label>نوع مركبتك</label><div class="veh-pick" id="dr-veh"></div></div>
       <div class="field"><label>المناطق اللي بتوصّلها (اختَر واحدة أو أكتر)</label><div class="area-pick" id="dr-areas"></div></div>
       <div class="err" id="dr-err"></div>
@@ -2546,6 +2567,7 @@ function renderDelivery(){
     if(myDriver){
       zone.innerHTML=`<div class="driver-card-me"><div><b>سائق مسجّل ✓</b><small>${vehName(myDriver.vehicle)} · ${(myDriver.areas||[]).join('، ')||'—'}</small></div></div>
       <button class="deliv-cta2" onclick="openDriverDash()">🛵 شوف الطلبات المتاحة ليك</button>
+      <button class="deliv-sound" id="deliv-sound-btn" onclick="enableDriverSound()">🔔 فعّل صوت التنبيه</button>
       <button class="deliv-reg" onclick="openDriverReg()">تعديل بياناتي كسائق</button>`;
     }else{
       zone.innerHTML=`<button class="deliv-reg-big" onclick="openDriverReg()">🚗 سجّل كسائق توصيل — ووصّلك الطلبات في منطقتك</button>`;
@@ -2558,7 +2580,7 @@ function renderDelivery(){
     const waNum=(c.wa&&c.wa!=='—')?c.wa:c.phone;
     return `<div class="deliv-card">
       <div class="deliv-ic">${(VEHICLES.find(v=>v.k===c.vehicle)||{}).e||'🛵'}</div>
-      <div class="deliv-info"><h4>${esc(c.name)}</h4><div class="deliv-meta">${esc(vehName(c.vehicle))} · ${esc((c.areas||[]).join('، ')||'إدفو')}</div></div>
+      <div class="deliv-info"><h4>${esc(c.name)}</h4><div class="deliv-meta">${esc(vehName(c.vehicle))}${c.plate?' · لوحة '+esc(c.plate):''} · ${esc((c.areas||[]).join('، ')||'إدفو')}</div></div>
       <div class="deliv-btns">${has?`<a class="deliv-call" href="tel:${c.phone}">اتصال</a>`:''}${hasWa?`<a class="deliv-wa" href="https://wa.me/2${(''+waNum).replace(/^0/,'')}" target="_blank">واتساب</a>`:''}</div>
     </div>`;
   }).join(''):'<div class="empty2">لسه مفيش سواقين مسجّلين. كن أول سائق — اضغط «سجّل كسائق توصيل».</div>');
@@ -2585,8 +2607,11 @@ async function sendDeliveryReq(){
   let saved=false;
   if(supa){
     try{
-      const {error}=await supa.from('delivery_orders').insert({customer_id:USER?USER.id:null,from_addr:from,to_addr:to,details:det||null,phone,area,vehicle_pref:veh,status:'open'});
-      if(error)throw error;saved=true;
+      const base={customer_id:USER?USER.id:null,from_addr:from,to_addr:to,details:det||null,phone,area,vehicle_pref:veh,status:'open'};
+      const withGeo=Object.assign({},base);if(_pickLat!=null){withGeo.to_lat=_pickLat;withGeo.to_lng=_pickLng;}
+      let r=await supa.from('delivery_orders').insert(withGeo);
+      if(r.error&&_pickLat!=null){r=await supa.from('delivery_orders').insert(base);}
+      if(r.error)throw r.error;saved=true;_pickLat=null;_pickLng=null;window._pickAddr='';
     }catch(e){}
   }
   closeDeliveryReq();
@@ -2602,6 +2627,7 @@ function openDriverReg(){
   document.getElementById('dr-name').value=myDriver?myDriver.name:(USER.name||'');
   document.getElementById('dr-phone').value=myDriver?(myDriver.phone||''):(USER.phone||'');
   document.getElementById('dr-wa').value=myDriver?(myDriver.wa||''):'';
+  const pl=document.getElementById('dr-plate');if(pl)pl.value=myDriver?(myDriver.plate||''):'';
   document.getElementById('dr-veh').innerHTML=VEHICLES.map(x=>`<button type="button" class="veh-b${_drVeh===x.k?' on':''}" data-k="${x.k}" onclick="pickVeh('${x.k}',this)">${x.e} ${x.t}</button>`).join('');
   document.getElementById('dr-areas').innerHTML=DV_AREAS.map(a=>`<button type="button" class="area-b${_drAreas.indexOf(a)>=0?' on':''}" onclick="pickArea('${a.replace(/'/g,"\\'")}',this)">${a}</button>`).join('');
   document.getElementById('dr-err').textContent='';
@@ -2618,9 +2644,11 @@ async function saveDriver(){
   if(!_drAreas.length){err.textContent='اختَر منطقة واحدة على الأقل';return;}
   if(!supa){err.textContent='الخدمة غير متاحة';return;}
   const payload={user_id:USER.id,name,phone,wa:wa||null,vehicle:_drVeh,areas:_drAreas,active:true};
+  const plate=(document.getElementById('dr-plate')||{}).value;if(plate&&plate.trim())payload.plate=plate.trim();
   try{
-    if(myDriver)await supa.from('drivers').update(payload).eq('id',myDriver.id);
-    else await supa.from('drivers').insert(payload);
+    const doSave=async(pl)=>{if(myDriver){const r=await supa.from('drivers').update(pl).eq('id',myDriver.id);if(r.error)throw r.error;}else{const r=await supa.from('drivers').insert(pl);if(r.error)throw r.error;}};
+    try{await doSave(payload);}
+    catch(e1){if(payload.plate){const p2=Object.assign({},payload);delete p2.plate;await doSave(p2);}else throw e1;}
     await loadDrivers();renderDelivery();closeDriverReg();
     alert('تم ✓ هتوصلك الطلبات في مناطقك. افتح «شوف الطلبات المتاحة ليك».');
   }catch(e){err.textContent='خطأ (شغّل drivers-orders.sql): '+(e.message||e);}
@@ -2628,7 +2656,8 @@ async function saveDriver(){
 
 /* ---- لوحة السائق: الطلبات المتاحة ---- */
 /* نغمة تنبيه السائق + اهتزاز + مسار الخريطة */
-let _audioCtx=null,_driverPoll=null,_seenOrders={};
+let _audioCtx=null,_driverPoll=null,_seenOrders={},_soundOn=false;
+function enableDriverSound(){_soundOn=true;primeAudio();playDing();const b=document.getElementById('deliv-sound-btn');if(b){b.textContent='🔔 صوت التنبيه مفعّل ✓';b.classList.add('on');}try{localStorage.setItem('dalil_snd','1');}catch(e){}}
 function primeAudio(){try{_audioCtx=_audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(_audioCtx.resume)_audioCtx.resume();}catch(e){}}
 function playDing(){
   try{primeAudio();const ctx=_audioCtx,now=ctx.currentTime;
@@ -2640,7 +2669,41 @@ function playDing(){
   try{if(navigator.vibrate)navigator.vibrate([250,90,250]);}catch(e){}
 }
 function jsStr(s){return (''+s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+/* خريطة تحديد الوجهة (Leaflet مجاني) */
+let _pmap=null,_pmarker=null,_pickLat=null,_pickLng=null;
+function openMapPick(){
+  if(typeof L==='undefined'){ // مفيش نت/المكتبة متحمّلتش → افتح جوجل مابس
+    window.open('https://www.google.com/maps/@24.978,32.873,15z','_blank');return;
+  }
+  document.getElementById('mapPickOverlay').classList.add('open');
+  setTimeout(()=>{
+    if(!_pmap){
+      _pmap=L.map('pickmap').setView([24.9781,32.8730],14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(_pmap);
+      _pmarker=L.marker([24.9781,32.8730],{draggable:true}).addTo(_pmap);
+      _pmarker.on('dragend',()=>{const p=_pmarker.getLatLng();setPick(p.lat,p.lng);});
+      _pmap.on('click',(e)=>{_pmarker.setLatLng(e.latlng);setPick(e.latlng.lat,e.latlng.lng);});
+    }
+    _pmap.invalidateSize();
+    if(_pickLat){_pmap.setView([_pickLat,_pickLng],15);_pmarker.setLatLng([_pickLat,_pickLng]);}
+  },250);
+}
+function setPick(lat,lng){
+  _pickLat=lat;_pickLng=lng;
+  const ad=document.getElementById('pick-addr');if(ad)ad.textContent='📍 تم اختيار موقع — جاري جلب العنوان...';
+  fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lng+'&accept-language=ar')
+    .then(r=>r.json()).then(d=>{const name=(d&&d.display_name)||'';if(ad)ad.textContent=name?('📍 '+name):('📍 موقع محدّد ('+lat.toFixed(4)+', '+lng.toFixed(4)+')');window._pickAddr=name;})
+    .catch(()=>{if(ad)ad.textContent='📍 موقع محدّد على الخريطة';});
+}
+function confirmMapPick(){
+  if(_pickLat==null){alert('دوس على الخريطة لتحديد المكان الأول');return;}
+  const to=document.getElementById('dv-to');
+  if(to)to.value=(window._pickAddr&&window._pickAddr.split(',').slice(0,3).join('،'))||('موقع على الخريطة ('+_pickLat.toFixed(4)+', '+_pickLng.toFixed(4)+')');
+  closeMapPick();
+}
+function closeMapPick(){document.getElementById('mapPickOverlay').classList.remove('open');}
 function orderMap(from,to){window.open('https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(from+' إدفو')+'&destination='+encodeURIComponent(to+' إدفو')+'&travelmode=driving','_blank');}
+function orderMapGeo(lat,lng){window.open('https://www.google.com/maps/dir/?api=1&destination='+lat+','+lng+'&travelmode=driving','_blank');}
 async function openDriverDash(){
   if(!myDriver){openDriverReg();return;}
   document.getElementById('driverDashOverlay').classList.add('open');
@@ -2670,7 +2733,7 @@ async function loadDriverOrders(firstLoad){
       <div class="ord-route"><span>🎯 إلى:</span> ${esc(o.to_addr)}</div>
       <div class="ord-meta">${esc(o.area)} · ${o.vehicle_pref&&o.vehicle_pref!=='any'?esc(vehName(o.vehicle_pref))+' · ':''}${esc(timeAgo(o.created_at))}</div>
       ${o.details?`<div class="ord-det">${esc(o.details)}</div>`:''}
-      <div class="ord-btns2"><button class="ord-map" onclick="orderMap('${jsStr(o.from_addr)}','${jsStr(o.to_addr)}')">🗺️ المسار</button><button class="ord-take" onclick="takeOrder('${o.id}')">أنا هوصّلها ✋</button></div>
+      <div class="ord-btns2"><button class="ord-map" onclick="${o.to_lat?`orderMapGeo(${o.to_lat},${o.to_lng})`:`orderMap('${jsStr(o.from_addr)}','${jsStr(o.to_addr)}')`}">🗺️ المسار</button><button class="ord-take" onclick="takeOrder('${o.id}')">أنا هوصّلها ✋</button></div>
     </div>`).join(''):'<div class="empty2">مفيش طلبات متاحة في مناطقك دلوقتي.<br>سيب الشاشة مفتوحة — هتسمع نغمة أول ما تيجي طلبية 🔔</div>';
   }catch(e){box.innerHTML='<div class="empty2">فعّل التوصيل: شغّل <b>drivers-orders.sql</b> في Supabase.</div>';}
 }
@@ -2680,7 +2743,7 @@ async function takeOrder(id){
     const {error}=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone}).eq('id',id).eq('status','open');
     if(error)throw error;
     const {data:o}=await supa.from('delivery_orders').select('*').eq('id',id).maybeSingle();
-    if(o&&o.customer_id){try{await supa.from('notifications').insert({user_id:o.customer_id,title:'✅ سائق استلم طلبك',body:`${myDriver.name} (${vehName(myDriver.vehicle)}) هيوصّل طلبك. رقمه: ${myDriver.phone}`});}catch(e){}}
+    if(o&&o.customer_id){try{await supa.from('notifications').insert({user_id:o.customer_id,title:'✅ سائق في الطريق إليك',body:`السائق: ${myDriver.name}\nالمركبة: ${vehName(myDriver.vehicle)}${myDriver.plate?' — لوحة '+myDriver.plate:''}\nللتواصل: ${myDriver.phone}`});}catch(e){}}
     if(o&&confirm('تمام ✓ الطلب بقى ليك.\nتحب تفتح مسار التوصيل على الخريطة؟'))orderMap(o.from_addr||'',o.to_addr||'');
     if(o&&o.phone)window.open('tel:'+o.phone,'_self');
     loadDriverOrders(true);
