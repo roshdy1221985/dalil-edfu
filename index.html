@@ -624,6 +624,8 @@
   .net-note{background:rgba(38,208,124,.1);border:1px solid rgba(38,208,124,.35);color:#43d68a;border-radius:10px;padding:9px 12px;font-size:.8rem;line-height:1.5;margin-top:8px}
   .net-note b{color:#5fe39c}
   body.light .net-note{color:#0d8a4f!important}body.light .net-note b{color:#0a6e3f!important}
+  .ord-chat{width:100%;background:rgba(46,123,228,.14);border:1px solid rgba(46,123,228,.45);color:#6bb0ff;border-radius:10px;padding:10px;font-family:inherit;font-weight:700;font-size:.85rem;margin-top:8px}
+  body.light .ord-chat{color:#1c66c9!important}
   .price-hint{color:var(--txd);font-size:.78rem;margin-top:6px}
   .price-hint b{color:#43d68a}
   body.light .price-hint b{color:#0d8a4f!important}
@@ -2561,6 +2563,25 @@ function reportAd(){if(!curMk)return;if(supa&&curMk.id)supa.from('reports').inse
 
 /* ===== الدردشة داخل التطبيق ===== */
 let _chatChannel=null,_curConvo=null,_convos=[];
+async function openChatForOrder(o){
+  if(!USER){alert('سجّل دخول الأول عشان تراسل 🙂');openAuth('login');return;}
+  const buyerId=o.customer_id,sellerId=o.taken_user;
+  if(!buyerId||!sellerId){alert('الدردشة متاحة بين العملاء والسواقين المسجّلين. لو مش متاحة، استخدم زر الاتصال.');return;}
+  const buyerName=o.customer_name||'العميل',sellerName=o.taken_name||'السائق';
+  try{
+    let conv=null;
+    const {data:found}=await supa.from('conversations').select('*').eq('ad_id',o.id).eq('buyer_id',buyerId).maybeSingle();
+    if(found)conv=found;
+    else{
+      const {data:ins,error}=await supa.from('conversations').insert({ad_id:o.id,ad_title:'🛵 توصيلة',buyer_id:buyerId,seller_id:sellerId,buyer_name:buyerName,seller_name:sellerName}).select().single();
+      if(error)throw error;conv=ins;
+    }
+    const uo=document.getElementById('userOverlay');if(uo)uo.classList.remove('open');
+    const dd=document.getElementById('driverDashOverlay');if(dd)dd.classList.remove('open');
+    if(_driverPoll){clearInterval(_driverPoll);_driverPoll=null;}
+    openConvo(conv);
+  }catch(e){alert('تعذّر فتح المحادثة (شغّل chat.sql في Supabase): '+(e.message||e));}
+}
 async function openChatForBiz(b){
   if(!USER){alert('سجّل دخول الأول عشان تراسل المحل 🙂');openAuth('login');return;}
   if(!b||!b.id||!b.ownerId){alert('ده محل تجريبي للعرض بس — الدردشة بتشتغل مع المحلات الحقيقية اللي بيضيفها أصحابها.');return;}
@@ -2767,6 +2788,7 @@ async function openMyDeliveries(){
   try{
     const {data}=await supa.from('delivery_orders').select('*').eq('customer_id',USER.id).order('created_at',{ascending:false}).limit(30);
     const list=data||[];
+    list.forEach(o=>{_ordCache[o.id]=o;});
     document.getElementById('user-body').innerHTML=list.length?list.map(o=>{
       const st=ORD_ST[o.status]||ORD_ST.open;
       return `<div class="myord">
@@ -2774,6 +2796,7 @@ async function openMyDeliveries(){
         <div class="myord-route">من ${esc(o.from_addr||'—')} ← إلى ${esc(o.to_addr||'—')}</div>
         ${o.price?`<div class="myord-price">💰 ${esc(''+o.price)} ج</div>`:''}
         ${o.status==='taken'&&o.taken_name?`<div class="myord-driver">🚗 السائق: ${esc(o.taken_name)}${o.taken_phone?' · '+esc(o.taken_phone):''}${o.taken_phone?` <a href="tel:${o.taken_phone}" class="myord-call">اتصل</a>`:''}</div>`:''}
+        ${o.status==='taken'&&o.taken_user?`<button class="ord-chat" onclick="orderChat('${o.id}')">💬 راسل السائق</button>`:''}
         ${o.status==='open'?`<button class="myord-cancel" onclick="cancelMyOrder('${o.id}')">إلغاء الطلب</button>`:''}
       </div>`;
     }).join(''):'<div class="empty2">لسه مطلبتش أي توصيلة. من تبويب «توصيل» اطلب توصيلتك الأولى 🛵</div>';
@@ -2976,6 +2999,7 @@ function orderMap(from,to){window.open('https://www.google.com/maps/dir/?api=1&o
 function orderMapGeo(lat,lng){window.open('https://www.google.com/maps/dir/?api=1&destination='+lat+','+lng+'&travelmode=driving','_blank');}
 /* مسار دقيق: موقع السائق → الاستلام (waypoint) → التسليم */
 let _ordCache={};
+function orderChat(id){const o=_ordCache[id];if(o)openChatForOrder(o);}
 function orderRoute(id){
   const o=_ordCache[id];if(!o){return;}
   const dv=(o.to_lat!=null)?(o.to_lat+','+o.to_lng):((o.to_addr||'')+' إدفو');
@@ -3054,6 +3078,7 @@ async function loadDriverOrders(firstLoad){
       <div class="ord-price">💰 ${o.price?esc(''+o.price)+' ج':'السعر بالاتفاق'}</div>
       ${o.details?`<div class="ord-det">${esc(o.details)}</div>`:''}
       ${mode==='active'&&o.phone?`<a class="ord-callc" href="tel:${o.phone}">📞 اتصل بالعميل</a>`:''}
+      ${mode==='active'&&o.customer_id&&o.taken_user?`<button class="ord-chat" onclick="orderChat('${o.id}')">💬 راسل العميل</button>`:''}
       ${btns}
     </div>`;
   };
@@ -3104,7 +3129,8 @@ async function releaseOrder(id){
 async function takeOrder(id){
   if(!myDriver||!supa)return;
   try{
-    const {data:upd,error}=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone}).eq('id',id).eq('status','open').select();
+    let {data:upd,error}=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone,taken_user:USER.id}).eq('id',id).eq('status','open').select();
+    if(error){const r2=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone}).eq('id',id).eq('status','open').select();upd=r2.data;error=r2.error;}
     if(error)throw error;
     if(!upd||!upd.length){alert('الطلب اتاخد من سائق تاني ⚡');loadDriverOrders(true);return;}
     const o=upd[0];
