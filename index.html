@@ -599,6 +599,11 @@
   .dr-sec-chips{display:flex;flex-wrap:wrap;gap:7px}
   .dr-area-count{font-size:.8rem;color:#3fd6cf;font-weight:700;margin-bottom:8px;min-height:1em}
   body.light .dr-area-count{color:#0a7a72!important}
+  .dv-loc-block{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+  .dv-loc-title{font-weight:800;font-size:.9rem;color:var(--tx);margin-bottom:9px}
+  .loc-row{display:flex;gap:8px;margin-bottom:8px}.loc-row .p-sel{flex:1;min-width:0}
+  .loc-ok{font-size:.8rem;font-weight:700;color:#43d68a;margin-top:7px;min-height:1em}
+  body.light .dv-loc-block{background:#f7f9fc!important}body.light .loc-ok{color:#0d8a4f!important}
   .sub-badge{border-radius:12px;padding:11px 14px;margin-bottom:10px;font-weight:700;font-size:.88rem;text-align:center}
   .sub-badge.ok{background:rgba(38,208,124,.14);border:1px solid rgba(38,208,124,.45);color:#43d68a}
   .sub-badge.no{background:rgba(226,55,68,.12);border:1px solid rgba(226,55,68,.4);color:#ff8a94}
@@ -1372,8 +1377,29 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
     </div>
     <div class="dv-card">
       <div class="dv-sec" id="dv-loc-sec">📍 مكان الاستلام والتسليم</div>
-      <div class="field"><label id="dv-from-lbl">من (مكان الاستلام)</label><input id="dv-from" placeholder="مثال: محل كذا، شارع كذا" oninput="onAddrTyped('from')"><div class="pick-row"><button type="button" class="map-pick-btn" onclick="openMapPick('from')">📍 على الخريطة</button><button type="button" class="map-pick-btn biz" id="dv-biz-btn" onclick="openBizPick()">🏪 اختر محل من الدليل</button></div></div>
-      <div class="field"><label id="dv-to-lbl">إلى (مكان التسليم)</label><input id="dv-to" placeholder="عنوانك بالتفصيل" oninput="onAddrTyped('to')"><button type="button" class="map-pick-btn" onclick="openMapPick('to')">📍 حدّد على الخريطة</button></div>
+      <div class="dv-loc-block">
+        <div class="dv-loc-title" id="dv-from-lbl">🟢 من (مكان الاستلام)</div>
+        <div class="loc-row">
+          <select id="dv-from-sector" class="p-sel" onchange="fillVillages('from')"><option value="">اختر القطاع</option></select>
+          <select id="dv-from-village" class="p-sel"><option value="">اختر القرية</option></select>
+        </div>
+        <input id="dv-from" placeholder="تفاصيل إضافية: قرب جامع / شارع (اختياري)">
+        <div class="pick-row">
+          <button type="button" class="map-pick-btn" onclick="openMapPick('from')">📍 حدّد على الخريطة (مطلوب)</button>
+          <button type="button" class="map-pick-btn biz" id="dv-biz-btn" onclick="openBizPick()">🏪 من الدليل</button>
+        </div>
+        <div class="loc-ok" id="dv-from-ok"></div>
+      </div>
+      <div class="dv-loc-block">
+        <div class="dv-loc-title" id="dv-to-lbl">🔴 إلى (مكان التسليم)</div>
+        <div class="loc-row">
+          <select id="dv-to-sector" class="p-sel" onchange="fillVillages('to')"><option value="">اختر القطاع</option></select>
+          <select id="dv-to-village" class="p-sel"><option value="">اختر القرية</option></select>
+        </div>
+        <input id="dv-to" placeholder="تفاصيل إضافية: قرب جامع / شارع (اختياري)">
+        <button type="button" class="map-pick-btn" onclick="openMapPick('to')">📍 حدّد على الخريطة (مطلوب)</button>
+        <div class="loc-ok" id="dv-to-ok"></div>
+      </div>
     </div>
     <div class="dv-card">
       <div class="dv-sec">📦 تفاصيل الطلب والسعر</div>
@@ -2784,6 +2810,25 @@ function fillAreaSelect(){
   const g=areaSectors();
   sel.innerHTML=Object.keys(g).map(sec=>`<optgroup label="${esc(sec)}">`+g[sec].map(n=>`<option>${esc(n)}</option>`).join('')+`</optgroup>`).join('');
 }
+function fillSectorSelects(){
+  const g=areaSectors(),secs=Object.keys(g);
+  ['dv-from-sector','dv-to-sector'].forEach(id=>{
+    const s=document.getElementById(id);if(!s)return;
+    s.innerHTML='<option value="">اختر القطاع</option>'+secs.map(x=>`<option>${esc(x)}</option>`).join('');
+  });
+}
+function fillVillages(which){
+  const sec=document.getElementById('dv-'+which+'-sector').value;
+  const vs=document.getElementById('dv-'+which+'-village');if(!vs)return;
+  const g=areaSectors(),items=sec?(g[sec]||[]):[];
+  vs.innerHTML='<option value="">'+(sec?'اختر القرية':'اختر القطاع الأول')+'</option>'+items.map(n=>`<option>${esc(n)}</option>`).join('');
+}
+function updateLocOk(which){
+  const ok=document.getElementById('dv-'+which+'-ok');if(!ok)return;
+  const has=which==='from'?(_pickFromLat!=null):(_pickLat!=null);
+  ok.innerHTML=has?'✅ الموقع محدّد على الخريطة':'';
+  ok.className='loc-ok'+(has?' on':'');
+}
 function renderDrAreas(q){
   const box=document.getElementById('dr-areas');if(!box)return;
   q=(q||'').trim();
@@ -2887,11 +2932,11 @@ function setDvKind(k){
   const ride=k==='ride';
   const set=(id,t)=>{const e=document.getElementById(id);if(e)e.textContent=t;};
   set('dv-loc-sec',ride?'📍 مكان الركوب والوجهة':'📍 مكان الاستلام والتسليم');
-  set('dv-from-lbl',ride?'من (مكان الركوب)':'من (مكان الاستلام)');
-  set('dv-to-lbl',ride?'إلى (وجهتك)':'إلى (مكان التسليم)');
+  set('dv-from-lbl',ride?'🟢 من (مكان الركوب)':'🟢 من (مكان الاستلام)');
+  set('dv-to-lbl',ride?'🔴 إلى (وجهتك)':'🔴 إلى (مكان التسليم)');
   const det=document.getElementById('dv-det');if(det)det.placeholder=ride?'مثال: كام راكب / معايا شنطة / ملاحظات':'مثال: أكل من مطعم / أدوية من صيدلية / أغراض';
   const bizb=document.getElementById('dv-biz-btn');if(bizb)bizb.style.display=ride?'none':'';
-  const from=document.getElementById('dv-from');if(from)from.placeholder=ride?'مكانك دلوقتي':'مثال: محل كذا، شارع كذا';
+  const fromDet=document.getElementById('dv-from');if(fromDet)fromDet.placeholder=ride?'تفاصيل مكانك (اختياري)':'تفاصيل إضافية: قرب جامع / شارع (اختياري)';
 }
 function openDeliveryReq(){
   const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
@@ -2899,15 +2944,13 @@ function openDeliveryReq(){
   setDvKind('parcel');
   ['dv-from','dv-to','dv-det','dv-price'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   const ph=document.getElementById('dv-phone');if(ph){ph.value='';ph.placeholder='01xxxxxxxxx';}
-  const hint=document.getElementById('dv-price-hint');if(hint)hint.textContent='حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.';
+  const hint=document.getElementById('dv-price-hint');if(hint)hint.textContent='حدّد النقطتين على الخريطة عشان نقترح سعر تلقائي.';
   const hd=document.querySelector('#deliveryOverlay .page-bar h2');if(hd)hd.textContent='🛵 اطلب توصيلة';
-  const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn)sbtn.textContent='أرسل الطلب للسواقين';
-  const ff=document.getElementById('dv-from');if(ff)ff.placeholder='مثال: محل كذا، شارع كذا';
-  const tt=document.getElementById('dv-to');if(tt)tt.placeholder='عنوانك بالتفصيل';
-  const dd=document.getElementById('dv-det');if(dd)dd.placeholder='مثال: أكل من مطعم / أدوية من صيدلية / أغراض';
-  const area=document.getElementById("dv-area");if(area&&!area.options.length)fillAreaSelect();
+  const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn)sbtn.textContent='🛵 أرسل الطلب للسواقين';
+  fillSectorSelects();
+  ['from','to'].forEach(w=>{const s=document.getElementById('dv-'+w+'-sector');if(s)s.value='';fillVillages(w);updateLocOk(w);});
   const adv=document.getElementById('dv-adv');if(adv)adv.style.display='none';
-  const advb=document.getElementById('dv-adv-btn');if(advb)advb.textContent='⚙️ خيارات متقدمة (المنطقة والمركبة)';
+  const advb=document.getElementById('dv-adv-btn');if(advb)advb.textContent='⚙️ خيارات متقدمة (نوع المركبة)';
   const veh=document.getElementById('dv-veh');if(veh&&veh.options.length<=1)veh.innerHTML='<option value="any">أي مركبة</option>'+VEHICLES.map(v=>`<option value="${v.k}">${v.e} ${v.t}</option>`).join('');
   renderDirectDrivers();
   document.getElementById('deliveryOverlay').classList.add('open');
@@ -2924,9 +2967,13 @@ function renderDirectDrivers(){
 }
 function closeDeliveryReq(){document.getElementById('deliveryOverlay').classList.remove('open');}
 async function sendDeliveryReq(){
-  const from=v('dv-from'),to=v('dv-to'),det=v('dv-det'),phone=v('dv-phone'),area=v('dv-area')||areaNames()[0],veh=v('dv-veh')||'any',err=document.getElementById('dv-err');err.textContent='';
-  if(!from||!to){err.textContent='اكتب مكان الاستلام والتسليم';return;}
+  const fromV=v('dv-from-village'),toV=v('dv-to-village'),fromDet=v('dv-from'),toDet=v('dv-to'),det=v('dv-det'),phone=v('dv-phone'),veh=v('dv-veh')||'any',err=document.getElementById('dv-err');err.textContent='';
+  if(!fromV){err.textContent='اختر قطاع وقرية الاستلام';return;}
+  if(!toV){err.textContent='اختر قطاع وقرية التسليم';return;}
+  if(_pickFromLat==null){err.textContent='📍 حدّد مكان الاستلام على الخريطة (مطلوب للدقة)';return;}
+  if(_pickLat==null){err.textContent='📍 حدّد مكان التسليم على الخريطة (مطلوب للدقة)';return;}
   if(!/^01[0125]\d{8}$/.test(phone)){err.textContent='رقم الموبايل غير صحيح (لازم 11 رقم يبدأ بـ 01)';return;}
+  const from=fromV+(fromDet?(' - '+fromDet):''),to=toV+(toDet?(' - '+toDet):''),area=fromV;
   const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn){sbtn.disabled=true;sbtn.textContent='جاري الإرسال...';}
   let saved=false;
   if(supa){
@@ -2945,7 +2992,7 @@ async function sendDeliveryReq(){
       if(r.error)throw r.error;saved=true;_pickLat=_pickLng=_pickFromLat=_pickFromLng=null;window._pickAddr='';
     }catch(e){}
   }
-  if(sbtn){sbtn.disabled=false;sbtn.textContent='أرسل الطلب للسواقين';}
+  if(sbtn){sbtn.disabled=false;sbtn.textContent='🛵 أرسل الطلب للسواقين';}
   closeDeliveryReq();
   if(saved){alert('تم إرسال الطلب ✓ هيوصل للسواقين المتاحين في «'+area+'».\nتابع حالة طلبك من: حسابك ← «طلبات التوصيل بتاعتي».');}
   else{const msg=`🛵 طلب توصيلة - دليل إدفو\n\nمن: ${from}\nإلى: ${to}\nالمنطقة: ${area}\nالمركبة: ${veh==='any'?'أي مركبة':vehName(veh)}\nالتفاصيل: ${det||'-'}\nرقمي: ${phone}`;window.open('https://wa.me/'+DELIV_LINE+'?text='+encodeURIComponent(msg),'_blank');}
@@ -3044,7 +3091,7 @@ function pickBizFrom(i){
   const b=BIZ[i];if(!b)return;
   const f=document.getElementById('dv-from');if(f)f.value=b.name+(b.addr?(' - '+b.addr):'');
   _pickFromPhone=b.phone||null;
-  if(b.lat!=null&&b.lng!=null){_pickFromLat=b.lat;_pickFromLng=b.lng;computeSuggested();}
+  if(b.lat!=null&&b.lng!=null){_pickFromLat=b.lat;_pickFromLng=b.lng;computeSuggested();updateLocOk('from');}
   else{_pickFromLat=_pickFromLng=null;}
   closeBizPick();
 }
@@ -3086,9 +3133,8 @@ function setPick(lat,lng){
 }
 function confirmMapPick(){
   if(_tmpLat==null){alert('دوس على الخريطة لتحديد المكان الأول');return;}
-  const label=(window._pickAddr&&window._pickAddr.split(',').slice(0,3).join('،'))||('موقع على الخريطة ('+_tmpLat.toFixed(4)+', '+_tmpLng.toFixed(4)+')');
-  if(_pickTarget==='from'){_pickFromLat=_tmpLat;_pickFromLng=_tmpLng;const f=document.getElementById('dv-from');if(f)f.value=label;}
-  else{_pickLat=_tmpLat;_pickLng=_tmpLng;const to=document.getElementById('dv-to');if(to)to.value=label;}
+  if(_pickTarget==='from'){_pickFromLat=_tmpLat;_pickFromLng=_tmpLng;updateLocOk('from');}
+  else{_pickLat=_tmpLat;_pickLng=_tmpLng;updateLocOk('to');}
   computeSuggested();
   window._pickAddr='';closeMapPick();
 }
@@ -3952,8 +3998,7 @@ function editMyBiz(id){const i=BIZ.findIndex(b=>b.id===id);if(i>=0)openAdd(i);el
 function openShopDelivery(name){
   openDeliveryReq();
   const hd=document.querySelector('#deliveryOverlay .page-bar h2');if(hd)hd.textContent='🛵 اطلب سائق لتوصيل طلب';
-  const f=document.getElementById('dv-from');if(f)f.value=name?('محل '+name):'';
-  const to=document.getElementById('dv-to');if(to){to.value='';to.placeholder='عنوان الزبون بالتفصيل';}
+  const f=document.getElementById('dv-from');if(f){f.value=name?('محل '+name):'';f.placeholder='تفاصيل محلك (قرب جامع/شارع)';}
   const det=document.getElementById('dv-det');if(det){det.value='';det.placeholder='الطلب اللي هيتوصّل (مثال: وجبة، دواء، أوردر)';}
   const ph=document.getElementById('dv-phone');if(ph){ph.value='';ph.placeholder='رقم الزبون';}
   const btn=document.querySelector('#deliveryOverlay .save');if(btn)btn.textContent='ابعت الطلب للسواقين';
