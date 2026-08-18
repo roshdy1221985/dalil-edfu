@@ -574,6 +574,20 @@
   body.light .map-pick-btn{color:#1c66c9!important}
   .leaflet-container{font-family:inherit}
   #mapPickOverlay{z-index:130!important}
+  #bizPickOverlay{z-index:130!important}
+  .dv-page{max-width:640px;margin:0 auto}
+  .dv-card{background:var(--pnl);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
+  .dv-sec{font-weight:800;color:var(--tx);font-size:.98rem;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+  .dv-send{font-size:1.02rem;padding:15px}
+  .dv-direct-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:9px}
+  .dv-direct-row .dic{font-size:1.5rem;flex:0 0 auto}
+  .dv-direct-row .dinfo{flex:1;min-width:0}
+  .dv-direct-row .dinfo b{display:block;color:var(--tx);font-size:.92rem}
+  .dv-direct-row .dinfo small{color:var(--txd);font-size:.78rem}
+  .dv-direct-row a{flex:0 0 auto;border-radius:9px;padding:8px 13px;font-size:.8rem;font-weight:700;white-space:nowrap;text-decoration:none}
+  .dv-direct-row a.c{background:rgba(46,123,228,.15);border:1px solid rgba(46,123,228,.4);color:#6bb0ff}
+  .dv-direct-row a.w{background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.4);color:#4ee089}
+  body.light .dv-direct-row{background:#f4f6fa!important}body.light .dv-direct-row a.c{color:#1c66c9!important}body.light .dv-direct-row a.w{color:#128a3e!important}
   .sub-badge{border-radius:12px;padding:11px 14px;margin-bottom:10px;font-weight:700;font-size:.88rem;text-align:center}
   .sub-badge.ok{background:rgba(38,208,124,.14);border:1px solid rgba(38,208,124,.45);color:#43d68a}
   .sub-badge.no{background:rgba(226,55,68,.12);border:1px solid rgba(226,55,68,.4);color:#ff8a94}
@@ -1338,24 +1352,36 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
   </div>
 </div>
 
-<div class="overlay" id="deliveryOverlay">
-  <div class="modal">
-    <div class="modal-head"><h3>🛵 اطلب توصيلة</h3><button class="x" onclick="closeDeliveryReq()">&times;</button></div>
-    <div class="modal-body">
+<div class="page" id="deliveryOverlay">
+  <div class="page-bar"><button class="backb" onclick="closeDeliveryReq()">&#x2192;</button><h2>🛵 اطلب توصيلة</h2></div>
+  <div class="page-body dv-page">
+    <div class="dv-card">
+      <div class="dv-sec">📍 مكان الاستلام والتسليم</div>
       <div class="field"><label>من (مكان الاستلام)</label><input id="dv-from" placeholder="مثال: محل كذا، شارع كذا" oninput="onAddrTyped('from')"><div class="pick-row"><button type="button" class="map-pick-btn" onclick="openMapPick('from')">📍 على الخريطة</button><button type="button" class="map-pick-btn biz" onclick="openBizPick()">🏪 اختر محل من الدليل</button></div></div>
       <div class="field"><label>إلى (مكان التسليم)</label><input id="dv-to" placeholder="عنوانك بالتفصيل" oninput="onAddrTyped('to')"><button type="button" class="map-pick-btn" onclick="openMapPick('to')">📍 حدّد على الخريطة</button></div>
+    </div>
+    <div class="dv-card">
+      <div class="dv-sec">📦 تفاصيل الطلب والسعر</div>
       <div class="field"><label>تفاصيل الطلب</label><textarea id="dv-det" rows="2" placeholder="مثال: أكل من مطعم / أدوية من صيدلية / أغراض"></textarea></div>
+      <div class="field"><label>السعر اللي مستعد تدفعه (ج)</label><input id="dv-price" inputmode="numeric" placeholder="مثال: 20"><div class="price-hint" id="dv-price-hint">حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.</div></div>
+    </div>
+    <div class="dv-card">
+      <div class="dv-sec">👤 بياناتك</div>
+      <div class="field"><label>اسمك</label><input id="dv-name" placeholder="اسمك"></div>
+      <div class="field"><label>رقم موبايلك</label><input id="dv-phone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
       <button type="button" class="adv-toggle" id="dv-adv-btn" onclick="toggleDeliveryAdv()">⚙️ خيارات متقدمة (المنطقة والمركبة)</button>
       <div id="dv-adv" style="display:none">
         <div class="field"><label>المنطقة</label><select id="dv-area" class="p-sel"></select></div>
         <div class="field"><label>نوع المركبة المطلوبة</label><select id="dv-veh" class="p-sel"><option value="any">أي مركبة</option></select></div>
       </div>
-      <div class="field"><label>اسمك</label><input id="dv-name" placeholder="اسمك"></div>
-      <div class="field"><label>رقم موبايلك</label><input id="dv-phone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
-      <div class="field"><label>السعر اللي مستعد تدفعه (ج)</label><input id="dv-price" inputmode="numeric" placeholder="مثال: 20"><div class="price-hint" id="dv-price-hint">حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.</div></div>
-      <div class="err" id="dv-err"></div>
-      <button class="save" onclick="sendDeliveryReq()">أرسل الطلب للسواقين</button>
-      <p style="color:var(--txd);font-size:.78rem;text-align:center;margin:8px 0 0">هيوصل السواقين المتاحين في منطقتك، وأول واحد يقبل هيتواصل معاك.</p>
+    </div>
+    <div class="err" id="dv-err"></div>
+    <button class="save dv-send" onclick="sendDeliveryReq()">🛵 أرسل الطلب للسواقين</button>
+    <p style="color:var(--txd);font-size:.78rem;text-align:center;margin:8px 0 18px">هيوصل السواقين المتاحين في منطقتك، وأول واحد يقبل هيتواصل معاك.</p>
+    <div class="dv-card" id="dv-direct-card" style="display:none">
+      <div class="dv-sec">📞 أو كلّم سائق مباشرة</div>
+      <p style="color:var(--txd);font-size:.8rem;margin:0 0 10px">لو عارف سائق معيّن، اتواصل معاه على طول من غير ما تبعت طلب.</p>
+      <div id="dv-direct-list"></div>
     </div>
   </div>
 </div>
@@ -2814,7 +2840,7 @@ function openDeliveryReq(){
   const nm=document.getElementById('dv-name');if(nm)nm.value=(typeof USER!=='undefined'&&USER&&USER.name)?USER.name:'';
   const ph=document.getElementById('dv-phone');if(ph){ph.value='';ph.placeholder='01xxxxxxxxx';}
   const hint=document.getElementById('dv-price-hint');if(hint)hint.textContent='حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.';
-  const hd=document.querySelector('#deliveryOverlay .modal-head h3');if(hd)hd.textContent='🛵 اطلب توصيلة';
+  const hd=document.querySelector('#deliveryOverlay .page-bar h2');if(hd)hd.textContent='🛵 اطلب توصيلة';
   const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn)sbtn.textContent='أرسل الطلب للسواقين';
   const ff=document.getElementById('dv-from');if(ff)ff.placeholder='مثال: محل كذا، شارع كذا';
   const tt=document.getElementById('dv-to');if(tt)tt.placeholder='عنوانك بالتفصيل';
@@ -2823,7 +2849,18 @@ function openDeliveryReq(){
   const adv=document.getElementById('dv-adv');if(adv)adv.style.display='none';
   const advb=document.getElementById('dv-adv-btn');if(advb)advb.textContent='⚙️ خيارات متقدمة (المنطقة والمركبة)';
   const veh=document.getElementById('dv-veh');if(veh&&veh.options.length<=1)veh.innerHTML='<option value="any">أي مركبة</option>'+VEHICLES.map(v=>`<option value="${v.k}">${v.e} ${v.t}</option>`).join('');
+  renderDirectDrivers();
   document.getElementById('deliveryOverlay').classList.add('open');
+}
+function renderDirectDrivers(){
+  const card=document.getElementById('dv-direct-card'),box=document.getElementById('dv-direct-list');if(!card||!box)return;
+  const ds=(DRIVERS_LIVE||[]).filter(d=>d.status==='approved');
+  if(!ds.length){card.style.display='none';return;}
+  card.style.display='block';
+  box.innerHTML=ds.slice(0,20).map(c=>{
+    const waNum=(c.wa&&c.wa!=='—')?c.wa:c.phone;const has=c.phone&&c.phone!=='—';
+    return `<div class="dv-direct-row"><div class="dic">${(VEHICLES.find(v=>v.k===c.vehicle)||{}).e||'🛵'}</div><div class="dinfo"><b>${esc(c.name)}</b><small>${esc(vehName(c.vehicle))}${c.plate?' · لوحة '+esc(c.plate):''} · ${esc((c.areas||[]).join('، ')||'إدفو')}</small></div>${has?`<a class="c" href="tel:${c.phone}">اتصال</a>`:''}${waNum?`<a class="w" href="https://wa.me/2${(''+waNum).replace(/^0/,'')}" target="_blank">واتساب</a>`:''}</div>`;
+  }).join('');
 }
 function closeDeliveryReq(){document.getElementById('deliveryOverlay').classList.remove('open');}
 async function sendDeliveryReq(){
@@ -3853,7 +3890,7 @@ async function loadMyStore(){
 function editMyBiz(id){const i=BIZ.findIndex(b=>b.id===id);if(i>=0)openAdd(i);else openAdd();}
 function openShopDelivery(name){
   openDeliveryReq();
-  const hd=document.querySelector('#deliveryOverlay .modal-head h3');if(hd)hd.textContent='🛵 اطلب سائق لتوصيل طلب';
+  const hd=document.querySelector('#deliveryOverlay .page-bar h2');if(hd)hd.textContent='🛵 اطلب سائق لتوصيل طلب';
   const f=document.getElementById('dv-from');if(f)f.value=name?('محل '+name):'';
   const to=document.getElementById('dv-to');if(to){to.value='';to.placeholder='عنوان الزبون بالتفصيل';}
   const det=document.getElementById('dv-det');if(det){det.value='';det.placeholder='الطلب اللي هيتوصّل (مثال: وجبة، دواء، أوردر)';}
