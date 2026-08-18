@@ -594,6 +594,11 @@
   .ord-kind{display:inline-block;background:rgba(14,165,160,.14);border:1px solid rgba(14,165,160,.4);color:#3fd6cf;border-radius:8px;padding:3px 11px;font-size:.78rem;font-weight:700;margin-bottom:8px}
   .ord-kind.ride{background:rgba(159,122,234,.16);border-color:rgba(159,122,234,.45);color:#c4a8f0}
   body.light .ord-kind{color:#0a7a72!important}body.light .ord-kind.ride{color:#6b3fb5!important}
+  .dr-sec-group{margin-bottom:12px}
+  .dr-sec-h{font-size:.82rem;font-weight:800;color:var(--gold,#d4af37);margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
+  .dr-sec-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .dr-area-count{font-size:.8rem;color:#3fd6cf;font-weight:700;margin-bottom:8px;min-height:1em}
+  body.light .dr-area-count{color:#0a7a72!important}
   .sub-badge{border-radius:12px;padding:11px 14px;margin-bottom:10px;font-weight:700;font-size:.88rem;text-align:center}
   .sub-badge.ok{background:rgba(38,208,124,.14);border:1px solid rgba(38,208,124,.45);color:#43d68a}
   .sub-badge.no{background:rgba(226,55,68,.12);border:1px solid rgba(226,55,68,.4);color:#ff8a94}
@@ -1404,7 +1409,7 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
       <div class="field"><label>رقم واتساب (اختياري)</label><input id="dr-wa" inputmode="tel" placeholder="لو مختلف عن الموبايل"></div>
       <div class="field"><label>رقم لوحة المركبة (اختياري)</label><input id="dr-plate" placeholder="مثال: أ ب ج 1234"></div>
       <div class="field"><label>نوع مركبتك</label><div class="veh-pick" id="dr-veh"></div></div>
-      <div class="field"><label>المناطق اللي بتوصّلها (اختَر واحدة أو أكتر)</label><div class="area-pick" id="dr-areas"></div></div>
+      <div class="field"><label>المناطق اللي بتوصّلها (اختَر واحدة أو أكتر)</label><input id="dr-area-q" placeholder="🔍 دوّر على منطقة..." oninput="renderDrAreas(this.value)" style="margin-bottom:8px"><div class="dr-area-count" id="dr-area-count"></div><div class="area-pick" id="dr-areas"></div></div>
       <div class="err" id="dr-err"></div>
       <button class="save" onclick="saveDriver()">تسجيل / تحديث بياناتي</button>
     </div>
@@ -2759,6 +2764,38 @@ function renderEmg(){
 const DELIV_LINE='201151107993';
 const VEHICLES=[{k:'motorcycle',t:'موتوسيكل',e:'🏍️'},{k:'tuktuk',t:'تكاتك',e:'🛺'},{k:'trosikl',t:'تروسيكل',e:'🚚'},{k:'suzuki',t:'سوزوكي ٧ راكب',e:'🚐'},{k:'car',t:'عربية',e:'🚗'}];
 const DV_AREAS=['وسط البلد','شرق إدفو','غرب إدفو','شمال إدفو','جنوب إدفو','القرى المجاورة'];
+let AREAS_DB=[],AREAS_LOADED=false;
+async function loadAreas(){
+  if(!supa)return;
+  try{
+    const {data,error}=await supa.from('areas').select('name,sector,sort').eq('active',true).order('sort').limit(500);
+    if(error)throw error;
+    if(data&&data.length){AREAS_DB=data;AREAS_LOADED=true;}
+  }catch(e){}
+}
+function areaNames(){return AREAS_LOADED?AREAS_DB.map(a=>a.name):DV_AREAS;}
+function areaSectors(){
+  const g={},src=AREAS_LOADED?AREAS_DB:DV_AREAS.map(n=>({name:n,sector:'مناطق إدفو'}));
+  src.forEach(a=>{const s=a.sector||'أخرى';(g[s]=g[s]||[]).push(a.name);});
+  return g;
+}
+function fillAreaSelect(){
+  const sel=document.getElementById('dv-area');if(!sel)return;
+  const g=areaSectors();
+  sel.innerHTML=Object.keys(g).map(sec=>`<optgroup label="${esc(sec)}">`+g[sec].map(n=>`<option>${esc(n)}</option>`).join('')+`</optgroup>`).join('');
+}
+function renderDrAreas(q){
+  const box=document.getElementById('dr-areas');if(!box)return;
+  q=(q||'').trim();
+  const g=areaSectors();
+  box.innerHTML=Object.keys(g).map(sec=>{
+    const items=g[sec].filter(n=>!q||n.indexOf(q)>=0);
+    if(!items.length)return '';
+    return `<div class="dr-sec-group"><div class="dr-sec-h">${esc(sec)}</div><div class="dr-sec-chips">`+items.map(n=>`<button type="button" class="area-b${_drAreas.indexOf(n)>=0?' on':''}" onclick="pickArea('${n.replace(/'/g,"\\'")}',this)">${esc(n)}</button>`).join('')+`</div></div>`;
+  }).join('');
+  updateDrAreaCount();
+}
+function updateDrAreaCount(){const c=document.getElementById('dr-area-count');if(c)c.textContent=_drAreas.length?('اخترت '+_drAreas.length+' منطقة'):'';}
 const vehName=k=>{const v=VEHICLES.find(x=>x.k===k);return v?v.e+' '+v.t:'مركبة';};
 let DRIVERS_LIVE=[],myDriver=null,_drVeh='',_drAreas=[];
 const COURIERS=[]; /* السواقين الحقيقيين بيتسجّلوا من التطبيق */
@@ -2868,7 +2905,7 @@ function openDeliveryReq(){
   const ff=document.getElementById('dv-from');if(ff)ff.placeholder='مثال: محل كذا، شارع كذا';
   const tt=document.getElementById('dv-to');if(tt)tt.placeholder='عنوانك بالتفصيل';
   const dd=document.getElementById('dv-det');if(dd)dd.placeholder='مثال: أكل من مطعم / أدوية من صيدلية / أغراض';
-  const area=document.getElementById("dv-area");if(area&&!area.options.length)area.innerHTML=DV_AREAS.map(a=>`<option>${a}</option>`).join('');
+  const area=document.getElementById("dv-area");if(area&&!area.options.length)fillAreaSelect();
   const adv=document.getElementById('dv-adv');if(adv)adv.style.display='none';
   const advb=document.getElementById('dv-adv-btn');if(advb)advb.textContent='⚙️ خيارات متقدمة (المنطقة والمركبة)';
   const veh=document.getElementById('dv-veh');if(veh&&veh.options.length<=1)veh.innerHTML='<option value="any">أي مركبة</option>'+VEHICLES.map(v=>`<option value="${v.k}">${v.e} ${v.t}</option>`).join('');
@@ -2887,7 +2924,7 @@ function renderDirectDrivers(){
 }
 function closeDeliveryReq(){document.getElementById('deliveryOverlay').classList.remove('open');}
 async function sendDeliveryReq(){
-  const from=v('dv-from'),to=v('dv-to'),det=v('dv-det'),phone=v('dv-phone'),area=v('dv-area')||DV_AREAS[0],veh=v('dv-veh')||'any',err=document.getElementById('dv-err');err.textContent='';
+  const from=v('dv-from'),to=v('dv-to'),det=v('dv-det'),phone=v('dv-phone'),area=v('dv-area')||areaNames()[0],veh=v('dv-veh')||'any',err=document.getElementById('dv-err');err.textContent='';
   if(!from||!to){err.textContent='اكتب مكان الاستلام والتسليم';return;}
   if(!/^01[0125]\d{8}$/.test(phone)){err.textContent='رقم الموبايل غير صحيح (لازم 11 رقم يبدأ بـ 01)';return;}
   const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn){sbtn.disabled=true;sbtn.textContent='جاري الإرسال...';}
@@ -2924,13 +2961,13 @@ function openDriverReg(){
   document.getElementById('dr-wa').value=myDriver?(myDriver.wa||''):'';
   const pl=document.getElementById('dr-plate');if(pl)pl.value=myDriver?(myDriver.plate||''):'';
   document.getElementById('dr-veh').innerHTML=VEHICLES.map(x=>`<button type="button" class="veh-b${_drVeh===x.k?' on':''}" data-k="${x.k}" onclick="pickVeh('${x.k}',this)">${x.e} ${x.t}</button>`).join('');
-  document.getElementById('dr-areas').innerHTML=DV_AREAS.map(a=>`<button type="button" class="area-b${_drAreas.indexOf(a)>=0?' on':''}" onclick="pickArea('${a.replace(/'/g,"\\'")}',this)">${a}</button>`).join('');
+  const drq=document.getElementById('dr-area-q');if(drq)drq.value='';renderDrAreas('');
   document.getElementById('dr-err').textContent='';
   document.getElementById('driverRegOverlay').classList.add('open');
 }
 function closeDriverReg(){document.getElementById('driverRegOverlay').classList.remove('open');}
 function pickVeh(k,btn){_drVeh=k;document.querySelectorAll('#dr-veh .veh-b').forEach(b=>b.classList.toggle('on',b.dataset.k===k));}
-function pickArea(a,btn){const i=_drAreas.indexOf(a);if(i>=0){_drAreas.splice(i,1);if(btn)btn.classList.remove('on');}else{_drAreas.push(a);if(btn)btn.classList.add('on');}}
+function pickArea(a,btn){const i=_drAreas.indexOf(a);if(i>=0){_drAreas.splice(i,1);if(btn)btn.classList.remove('on');}else{_drAreas.push(a);if(btn)btn.classList.add('on');}updateDrAreaCount();}
 async function saveDriver(){
   const name=v('dr-name'),phone=v('dr-phone'),wa=v('dr-wa'),err=document.getElementById('dr-err');err.textContent='';
   if(!name){err.textContent='اكتب اسمك';return;}
@@ -3838,7 +3875,7 @@ async function loadData(){
       OFFERS_LIVE=(offers||[]).map(o=>({id:o.id,disc:o.discount||'',shop:(o.businesses&&o.businesses.name)||'',txt:o.title,ends:o.ends_note||'',code:o.code||''}));
     }catch(e){OFFERS_LIVE=[];}
     if(SHOW_DEMO)OFFERS_LIVE=OFFERS_LIVE.concat(SEED_OFFERS);
-    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();applyDeepLink();checkExpiredAds();checkSavedSearches();checkFollowedOffers();loadDrivers().then(()=>{renderDelivery();checkDriverOrders();});
+    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();applyDeepLink();checkExpiredAds();checkSavedSearches();checkFollowedOffers();loadAreas();loadDrivers().then(()=>{renderDelivery();checkDriverOrders();});
   }catch(e){console.error('loadData',e);}
 }
 
