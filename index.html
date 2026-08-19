@@ -604,6 +604,7 @@
   .loc-row{display:flex;gap:8px;margin-bottom:8px}.loc-row .p-sel{flex:1;min-width:0}
   .loc-ok{font-size:.8rem;font-weight:700;color:#43d68a;margin-top:7px;min-height:1em}
   body.light .dv-loc-block{background:#f7f9fc!important}body.light .loc-ok{color:#0d8a4f!important}
+  .dv-loc-tip{font-size:.78rem;color:var(--txd);background:rgba(14,165,160,.08);border:1px solid rgba(14,165,160,.25);border-radius:10px;padding:9px 12px;margin-bottom:12px;line-height:1.5}
   .deliv-hero{position:relative;overflow:hidden;border-radius:20px;padding:26px 20px;margin:6px 0 18px;background:linear-gradient(135deg,#0b3d3a,#0ea5a0 60%,#12a15c);box-shadow:0 14px 34px rgba(14,165,160,.32)}
   .deliv-hero::after{content:'🛵';position:absolute;left:-6px;bottom:-18px;font-size:6rem;opacity:.14;transform:rotate(-8deg)}
   .deliv-hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-weight:800;padding:5px 12px;border-radius:20px;margin-bottom:10px;backdrop-filter:blur(4px)}
@@ -1408,6 +1409,7 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
     </div>
     <div class="dv-card">
       <div class="dv-sec" id="dv-loc-sec">📍 مكان الاستلام والتسليم</div>
+      <div class="dv-loc-tip">القطاع والقرية كفاية. لو حددت على الخريطة، الطلب هيبقى أدق للسائق.</div>
       <div class="dv-loc-block">
         <div class="dv-loc-title" id="dv-from-lbl">🟢 من (مكان الاستلام)</div>
         <div class="loc-row">
@@ -1416,7 +1418,7 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
         </div>
         <input id="dv-from" placeholder="تفاصيل إضافية: قرب جامع / شارع (اختياري)">
         <div class="pick-row">
-          <button type="button" class="map-pick-btn" onclick="openMapPick('from')">📍 حدّد على الخريطة (مطلوب)</button>
+          <button type="button" class="map-pick-btn" onclick="openMapPick('from')">📍 حدّد على الخريطة (اختياري)</button>
           <button type="button" class="map-pick-btn biz" id="dv-biz-btn" onclick="openBizPick()">🏪 من الدليل</button>
         </div>
         <div class="loc-ok" id="dv-from-ok"></div>
@@ -1428,7 +1430,7 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
           <select id="dv-to-village" class="p-sel"><option value="">اختر القرية</option></select>
         </div>
         <input id="dv-to" placeholder="تفاصيل إضافية: قرب جامع / شارع (اختياري)">
-        <button type="button" class="map-pick-btn" onclick="openMapPick('to')">📍 حدّد على الخريطة (مطلوب)</button>
+        <button type="button" class="map-pick-btn" onclick="openMapPick('to')">📍 حدّد على الخريطة (اختياري)</button>
         <div class="loc-ok" id="dv-to-ok"></div>
       </div>
     </div>
@@ -2996,8 +2998,6 @@ async function sendDeliveryReq(){
   const fromV=v('dv-from-village'),toV=v('dv-to-village'),fromDet=v('dv-from'),toDet=v('dv-to'),det=v('dv-det'),phone=v('dv-phone'),veh=v('dv-veh')||'any',err=document.getElementById('dv-err');err.textContent='';
   if(!fromV){err.textContent='اختر قطاع وقرية الاستلام';return;}
   if(!toV){err.textContent='اختر قطاع وقرية التسليم';return;}
-  if(_pickFromLat==null){err.textContent='📍 حدّد مكان الاستلام على الخريطة (مطلوب للدقة)';return;}
-  if(_pickLat==null){err.textContent='📍 حدّد مكان التسليم على الخريطة (مطلوب للدقة)';return;}
   if(!/^01[0125]\d{8}$/.test(phone)){err.textContent='رقم الموبايل غير صحيح (لازم 11 رقم يبدأ بـ 01)';return;}
   const from=fromV+(fromDet?(' - '+fromDet):''),to=toV+(toDet?(' - '+toDet):''),area=fromV;
   const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn){sbtn.disabled=true;sbtn.textContent='جاري الإرسال...';}
@@ -3145,8 +3145,20 @@ function openMapPick(which){
       _pmap.on('click',(e)=>{_pmarker.setLatLng(e.latlng);setPick(e.latlng.lat,e.latlng.lng);});
     }
     _pmap.invalidateSize();
-    const c=cur[0]!=null?cur:[24.9781,32.8730];_pmap.setView(c,cur[0]!=null?15:14);_pmarker.setLatLng(c);
-    document.getElementById('pick-addr').textContent='';
+    if(cur[0]!=null){_pmap.setView(cur,15);_pmarker.setLatLng(cur);document.getElementById('pick-addr').textContent='';}
+    else{
+      _pmap.setView([24.9781,32.8730],14);_pmarker.setLatLng([24.9781,32.8730]);
+      const vv=document.getElementById('dv-'+_pickTarget+'-village');const vname=vv?vv.value:'';
+      const ad=document.getElementById('pick-addr');
+      if(vname){
+        if(ad)ad.textContent='📍 بنروح لـ'+vname+'...';
+        fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=ar&q='+encodeURIComponent(vname+' إدفو أسوان مصر'))
+          .then(r=>r.json()).then(a=>{
+            if(a&&a[0]&&_pmap){const la=parseFloat(a[0].lat),lo=parseFloat(a[0].lon);_pmap.setView([la,lo],15);_pmarker.setLatLng([la,lo]);setPick(la,lo);}
+            else if(ad)ad.textContent='دوس على مكانك في الخريطة';
+          }).catch(()=>{if(ad)ad.textContent='دوس على مكانك في الخريطة';});
+      }else if(ad)ad.textContent='دوس على مكانك في الخريطة';
+    }
   },250);
 }
 function setPick(lat,lng){
