@@ -668,6 +668,35 @@
   .avail-b.bz.on{background:rgba(212,175,55,.18);border-color:#d4af37;color:#e8c34a}
   .avail-b.of.on{background:rgba(226,55,68,.15);border-color:#e23744;color:#ff8a94}
   body.light .drv-chip.hit{color:#0a7a72!important}
+  .drv-rate{color:#e8c34a;font-weight:700}
+  .rate-box{background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.3);border-radius:12px;padding:12px;margin:10px 0;text-align:center}
+  .rate-lbl{font-size:.85rem;color:var(--tx);font-weight:700;margin-bottom:8px}
+  .rate-stars{display:flex;justify-content:center;gap:4px}
+  .rate-star{background:none;border:none;font-size:1.9rem;color:#e8c34a;cursor:pointer;padding:0 3px;line-height:1;transition:transform .1s}
+  .rate-star:hover{transform:scale(1.2)}
+  .rate-done{background:rgba(38,208,124,.1);border:1px solid rgba(38,208,124,.3);color:#43d68a;border-radius:10px;padding:9px;text-align:center;font-size:.85rem;font-weight:700;margin:10px 0}
+  body.light .drv-rate{color:#a8801a!important}body.light .rate-done{color:#0d8a4f!important}
+  /* بانر متابعة الرحلة */
+  .track-banner{display:none;align-items:center;gap:11px;background:linear-gradient(135deg,#0ea5a0,#12a15c);color:#fff;padding:11px 15px;cursor:pointer;box-shadow:0 4px 16px rgba(14,165,160,.35);position:relative;z-index:60}
+  .track-banner.show{display:flex}
+  .tb-pulse{width:11px;height:11px;border-radius:50%;background:#fff;flex:0 0 auto;animation:tbPulse 1.3s infinite}
+  @keyframes tbPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%{box-shadow:0 0 0 8px rgba(255,255,255,0)}}
+  .tb-txt{flex:1;min-width:0}.tb-txt b{display:block;font-size:.9rem;font-weight:800}.tb-txt small{opacity:.9;font-size:.74rem}
+  .tb-prog{background:rgba(255,255,255,.22);border-radius:20px;padding:3px 11px;font-weight:800;font-size:.8rem;flex:0 0 auto}
+  .tb-arrow{font-size:1.4rem;font-weight:800;flex:0 0 auto;transform:scaleX(-1)}
+  /* stepper عمودي مفصّل */
+  .trip-vert{display:flex;flex-direction:column;gap:0;margin:10px 0;padding-inline-start:4px}
+  .tv-step{display:flex;align-items:center;gap:11px;position:relative;padding:7px 0}
+  .tv-step:not(:last-child)::before{content:'';position:absolute;right:15px;top:32px;width:2px;height:calc(100% - 16px);background:var(--bd)}
+  .tv-step.done:not(:last-child)::before{background:#0ea5a0}
+  .tv-ic{width:32px;height:32px;flex:0 0 auto;border-radius:50%;background:rgba(255,255,255,.06);border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:.95rem;filter:grayscale(1);opacity:.5;z-index:1}
+  .tv-lbl{font-size:.88rem;color:var(--txd);font-weight:600}
+  .tv-step.done .tv-ic{background:rgba(14,165,160,.2);border-color:#0ea5a0;filter:none;opacity:1;color:#3fd6cf}
+  .tv-step.done .tv-lbl{color:var(--tx);font-weight:700}
+  .tv-step.now .tv-ic{box-shadow:0 0 0 4px rgba(14,165,160,.18);animation:pulseNow 1.4s infinite}
+  .tv-step.now .tv-lbl{color:#3fd6cf;font-weight:800}
+  .ord-take.stage{background:linear-gradient(135deg,#e8a53f,#d4831f)}
+  body.light .tv-step.now .tv-lbl{color:#0a7a72!important}
   .deliv-hero{position:relative;overflow:hidden;border-radius:20px;padding:26px 20px;margin:6px 0 18px;background:linear-gradient(135deg,#0b3d3a,#0ea5a0 60%,#12a15c);box-shadow:0 14px 34px rgba(14,165,160,.32)}
   .deliv-hero::after{content:'🛵';position:absolute;left:-6px;bottom:-18px;font-size:6rem;opacity:.14;transform:rotate(-8deg)}
   .deliv-hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-weight:800;padding:5px 12px;border-radius:20px;margin-bottom:10px;backdrop-filter:blur(4px)}
@@ -1101,6 +1130,7 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
 <div id="offlineBar">⚠️ مفيش اتصال بالإنترنت — بتشوف نسخة محفوظة</div>
 <div class="aura"></div>
 
+<div class="track-banner" id="trackBanner" onclick="openMyDeliveries()"></div>
 <div class="app-scroll">
 <header>
   <div class="bar">
@@ -3036,7 +3066,7 @@ function renderDriversList(){
         <div class="drv-avatar">${veh.e||'🛵'}</div>
         <div class="drv-hd-info">
           <h4>${esc(c.name)} <span class="drv-verify">✓ موثّق</span></h4>
-          <div class="drv-veh">${esc(vehName(c.vehicle))}${c.plate?' · <span class="drv-plate">'+esc(c.plate)+'</span>':''}</div>
+          <div class="drv-veh">${esc(vehName(c.vehicle))}${c.plate?' · <span class="drv-plate">'+esc(c.plate)+'</span>':''}${(c.rating_count>0)?' · <span class="drv-rate">⭐ '+(c.rating_sum/c.rating_count).toFixed(1)+' ('+c.rating_count+')</span>':''}</div>
         </div>
         <div class="drv-status ${st[1]}">${st[0]}</div>
       </div>
@@ -3047,12 +3077,52 @@ function renderDriversList(){
 }
 
 /* ---- طلب توصيلة (العميل) ---- */
-const ORD_ST={open:['🕐 مستني سائق','wait'],taken:['🛵 سائق في الطريق','go'],completed:['✅ اتسلّم','done'],cancelled:['❌ اتلغى','cx']};
-function tripStepper(status){
-  const steps=[['📤','الطلب','sent'],['🛵','سائق قبل','taken'],['✅','اتسلّم','done']];
-  let active=0;if(status==='taken')active=1;else if(status==='completed')active=2;else if(status==='cancelled')active=-1;
+const ORD_ST={open:['🕐 مستني سائق','wait'],taken:['🛵 سائق في الطريق','go'],arrived:['📍 السائق وصل','go'],started:['🚗 الرحلة بدأت','go'],completed:['✅ خلصت','done'],cancelled:['❌ اتلغى','cx']};
+const TRIP_STAGES=[
+  {ic:'📤',lbl:'تم الطلب'},
+  {ic:'🛵',lbl:'سائق قبل الطلب'},
+  {ic:'🚗',lbl:'في الطريق إليك'},
+  {ic:'📍',lbl:'في انتظارك'},
+  {ic:'🏁',lbl:'الرحلة بدأت'},
+  {ic:'✅',lbl:'نهاية الرحلة'}
+];
+function stageIndex(status){const m={open:0,taken:2,arrived:3,started:4,completed:5,cancelled:-1};return (status in m)?m[status]:0;}
+function tripStepper(status,vertical){
+  const active=stageIndex(status);
   if(active<0)return '<div class="trip-cancel">❌ الطلب اتلغى</div>';
-  return `<div class="trip-steps">`+steps.map((s,i)=>`<div class="trip-step${i<=active?' done':''}${i===active?' now':''}"><div class="ts-ic">${s[0]}</div><div class="ts-lbl">${s[1]}</div></div>${i<2?`<div class="trip-line${i<active?' done':''}"></div>`:''}`).join('')+`</div>`;
+  if(vertical){
+    return `<div class="trip-vert">`+TRIP_STAGES.map((s,i)=>`<div class="tv-step${i<=active?' done':''}${i===active?' now':''}"><div class="tv-ic">${i<active?'✓':s.ic}</div><div class="tv-lbl">${s.lbl}</div></div>`).join('')+`</div>`;
+  }
+  return `<div class="trip-steps">`+TRIP_STAGES.map((s,i)=>`<div class="trip-step${i<=active?' done':''}${i===active?' now':''}"><div class="ts-ic">${s.ic}</div><div class="ts-lbl">${s.lbl}</div></div>${i<TRIP_STAGES.length-1?`<div class="trip-line${i<active?' done':''}"></div>`:''}`).join('')+`</div>`;
+}
+async function checkActiveTrip(){
+  const b=document.getElementById('trackBanner');if(!b)return;
+  if(!supa||!USER){b.classList.remove('show');return;}
+  try{
+    const {data}=await supa.from('delivery_orders').select('*').eq('customer_id',USER.id).in('status',['open','taken','arrived','started']).order('created_at',{ascending:false}).limit(1);
+    const o=(data||[])[0];
+    if(!o){b.classList.remove('show');b.innerHTML='';return;}
+    _ordCache[o.id]=o;
+    const st=ORD_ST[o.status]||ORD_ST.open;const idx=stageIndex(o.status);const total=TRIP_STAGES.length-1;
+    b.innerHTML=`<div class="tb-pulse"></div><div class="tb-txt"><b>${TRIP_STAGES[idx]?TRIP_STAGES[idx].lbl:st[0]}</b><small>${o.kind==='ride'?'رحلتك':'طلبك'} — اضغط للمتابعة</small></div><div class="tb-prog">${idx}/${total}</div><div class="tb-arrow">‹</div>`;
+    b.classList.add('show');
+  }catch(e){b.classList.remove('show');}
+}
+function stageBtn(o){
+  if(o.status==='taken')return `<button class="ord-take stage" onclick="setOrderStage('${o.id}','arrived')">📍 وصلت الاستلام</button>`;
+  if(o.status==='arrived')return `<button class="ord-take stage" onclick="setOrderStage('${o.id}','started')">🚗 بدأت الرحلة</button>`;
+  if(o.status==='started')return `<button class="ord-take" onclick="completeOrder('${o.id}')">🏁 خلصت / تم التسليم</button>`;
+  return `<button class="ord-take" onclick="completeOrder('${o.id}')">تم التسليم ✓</button>`;
+}
+async function setOrderStage(id,status){
+  if(!supa)return;
+  try{
+    const {error}=await supa.from('delivery_orders').update({status}).eq('id',id);if(error)throw error;
+    const o=_ordCache[id];if(o){o.status=status;}
+    const labels={arrived:['📍 السائق وصل مكانك','السائق في انتظارك عند مكان الاستلام.'],started:['🚗 الرحلة بدأت','السائق بدأ رحلتك، في الطريق للوجهة.']};
+    if(o&&o.customer_id&&labels[status]){try{await supa.from('notifications').insert({user_id:o.customer_id,title:labels[status][0],body:labels[status][1]});}catch(e){}}
+    loadDriverOrders(true);
+  }catch(e){alert('خطأ، حاول تاني.');}
 }
 function driverCardHTML(o){
   const veh=VEHICLES.find(v=>v.k===o.taken_veh)||{};
@@ -3060,6 +3130,19 @@ function driverCardHTML(o){
     <div class="da-head"><div class="da-av">${veh.e||'🛵'}</div><div class="da-info"><b>${esc(o.taken_name||'السائق')}</b><small>سائقك في الطريق إليك</small></div><div class="da-badge">✓ معتمد</div></div>
     <div class="da-actions">${o.taken_phone?`<a class="da-btn call" href="tel:${o.taken_phone}">📞 اتصال</a>`:''}${o.taken_user?`<button class="da-btn chat" onclick="orderChat('${o.id}')">💬 رسالة</button>`:''}</div>
   </div>`;
+}
+function ratingHTML(o){
+  if(o.rating)return `<div class="rate-done">تقييمك للسائق: ${'⭐'.repeat(o.rating)} — شكراً!</div>`;
+  return `<div class="rate-box"><div class="rate-lbl">قيّم السائق ${esc(o.taken_name||'')}:</div><div class="rate-stars">${[1,2,3,4,5].map(n=>`<button class="rate-star" onclick="rateDriver('${o.id}','${o.taken_by||''}',${n})">☆</button>`).join('')}</div></div>`;
+}
+async function rateDriver(orderId,driverId,stars){
+  if(!supa)return;
+  try{
+    await supa.from('delivery_orders').update({rating:stars}).eq('id',orderId);
+    if(driverId){try{await supa.rpc('add_driver_rating',{d_id:driverId,stars:stars});}catch(e){}}
+    if(_ordCache[orderId])_ordCache[orderId].rating=stars;
+    openMyDeliveries();
+  }catch(e){alert('متسجّلش التقييم — شغّل drivers-sub.sql (عمود rating).');}
 }
 async function openMyDeliveries(){
   const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
@@ -3076,20 +3159,38 @@ async function openMyDeliveries(){
       return `<div class="myord">
         <div class="myord-top"><span class="myord-st ${st[1]}">${st[0]}</span><span class="myord-time">${esc(timeAgo(o.created_at))}</span></div>
         <div class="ord-kind${o.kind==='ride'?' ride':''}" style="margin-bottom:8px">${o.kind==='ride'?'🧍 رحلة ركّاب':'📦 توصيل طلب'}</div>
-        ${o.status!=='cancelled'?tripStepper(o.status):''}
+        ${(o.status!=='cancelled'&&o.status!=='completed')?tripStepper(o.status,true):(o.status==='completed'?tripStepper('completed'):'')}
         <div class="myord-route">📍 ${esc(o.from_addr||'—')} <span class="mr-arrow">←</span> 🎯 ${esc(o.to_addr||'—')}</div>
         ${o.price?`<div class="myord-price">💰 ${esc(''+o.price)} ج</div>`:'<div class="myord-price soft">💬 السعر بالاتفاق مع السائق</div>'}
         ${o.status==='taken'?driverCardHTML(o):''}
+        ${o.status==='completed'?ratingHTML(o):''}
         ${o.status==='cancelled'?'<div class="trip-cancel">❌ الطلب اتلغى</div>':''}
-        ${o.status==='open'?`<button class="myord-cancel" onclick="cancelMyOrder('${o.id}')">إلغاء الطلب</button>`:''}
+        ${(o.status==='open'||o.status==='taken')?`<button class="myord-cancel" onclick="cancelMyOrder('${o.id}')">إلغاء الرحلة</button>`:''}
       </div>`;
     }).join(''):'<div class="empty2">لسه مطلبتش أي توصيلة. من تبويب «توصيل» اطلب توصيلتك الأولى 🛵</div>';
+    checkActiveTrip();
   }catch(e){document.getElementById('user-body').innerHTML='<div class="empty2">تعذّر جلب الطلبات.</div>';}
 }
+function cancelInfo(){
+  const today=new Date().toISOString().slice(0,10);let d={date:today,count:0};
+  try{const s=JSON.parse(localStorage.getItem('dalil_cancels')||'{}');if(s.date===today)d=s;}catch(e){}
+  return d;
+}
 async function cancelMyOrder(id){
-  if(!confirm('تأكيد إلغاء الطلب؟'))return;
-  try{const {error}=await supa.from('delivery_orders').update({status:'cancelled'}).eq('id',id).eq('status','open');if(error)throw error;openMyDeliveries();}
-  catch(e){alert('مش قادر ألغي — يمكن سائق استلمه. حدّث الصفحة.');openMyDeliveries();}
+  const info=cancelInfo();
+  if(info.count>=3){alert('⛔ وصلت الحد الأقصى للإلغاء النهارده (3 مرات). حاول بكرة.');return;}
+  if(!confirm('تأكيد إلغاء الرحلة؟\nمتبقّي ليك '+(3-info.count)+' إلغاء النهارده.'))return;
+  try{
+    const {data,error}=await supa.from('delivery_orders').update({status:'cancelled'}).eq('id',id).in('status',['open','taken']).select();
+    if(error)throw error;
+    if(!data||!data.length){alert('مش قادر ألغي — يمكن الرحلة اتسلّمت خلاص.');openMyDeliveries();return;}
+    info.count++;try{localStorage.setItem('dalil_cancels',JSON.stringify(info));}catch(e){}
+    const o=_ordCache[id];
+    if(o&&o.taken_user){try{await supa.from('notifications').insert({user_id:o.taken_user,title:'❌ العميل ألغى الرحلة',body:'العميل ألغى طلب التوصيل قبل ما تبدأ.'});}catch(e){}}
+    const left=3-info.count;
+    alert(left>0?('تم الإلغاء. متبقّي ليك '+left+' إلغاء النهارده.'):'تم الإلغاء. ⚠️ استنفدت إلغاءات النهارده، مش هتقدر تلغي تاني غير بكرة.');
+    openMyDeliveries();
+  }catch(e){alert('خطأ، حاول تاني.');openMyDeliveries();}
 }
 let _dvKind='parcel';
 function setDvKind(k){
@@ -3385,7 +3486,7 @@ async function loadDriverOrders(firstLoad){
   const ordCard=(o,mode,fresh)=>{
     const isNew=mode==='open'&&!firstLoad&&fresh&&fresh.some(f=>f.id===o.id);
     const btns=mode==='active'
-      ?`<div class="ord-btns2"><button class="ord-map" onclick="orderRoute('${o.id}')">🗺️ المسار</button><button class="ord-take" onclick="completeOrder('${o.id}')">تم التسليم ✓</button></div><button class="ord-release" onclick="releaseOrder('${o.id}')">تعذّر التوصيل — رجّع الطلب</button>`
+      ?`<div class="ord-btns2"><button class="ord-map" onclick="orderRoute('${o.id}')">🗺️ المسار</button>${stageBtn(o)}</div><button class="ord-release" onclick="releaseOrder('${o.id}')">تعذّر التوصيل — رجّع الطلب</button>`
       :`<div class="ord-btns2"><button class="ord-map" onclick="orderRoute('${o.id}')">🗺️ المسار</button><button class="ord-take" onclick="takeOrder('${o.id}')">أنا هوصّلها ✋</button></div>`;
     return `<div class="ord-card${isNew?' ord-new':''}">
       ${o._dist!=null?`<div class="ord-dist">📍 ${o._dist<1?Math.round(o._dist*1000)+' متر':o._dist.toFixed(1)+' كم'} من مكانك</div>`:''}
@@ -3404,7 +3505,7 @@ async function loadDriverOrders(firstLoad){
   try{
     const [openRes,mineRes]=await Promise.all([
       supa.from('delivery_orders').select('*').eq('status','open').order('created_at',{ascending:false}).limit(50),
-      supa.from('delivery_orders').select('*').eq('status','taken').eq('taken_by',myDriver.id).order('created_at',{ascending:false}).limit(20)
+      supa.from('delivery_orders').select('*').in('status',['taken','arrived','started']).eq('taken_by',myDriver.id).order('created_at',{ascending:false}).limit(20)
     ]);
     const openList=(openRes.data||[]).filter(orderMatchesDriver);
     const active=mineRes.data||[];
@@ -3454,12 +3555,27 @@ async function takeOrder(id){
     if(error)throw error;
     if(!upd||!upd.length){alert('الطلب اتاخد من سائق تاني ⚡');loadDriverOrders(true);return;}
     const o=upd[0];
-    if(o.customer_id){try{await supa.from('notifications').insert({user_id:o.customer_id,title:'✅ سائق في الطريق إليك',body:`السائق: ${myDriver.name}\nالمركبة: ${vehName(myDriver.vehicle)}${myDriver.plate?' — لوحة '+myDriver.plate:''}\nللتواصل: ${myDriver.phone}`});}catch(e){}}
+    if(o.customer_id){try{await supa.from('notifications').insert({user_id:o.customer_id,title:'✅ سائق في الطريق إليك',body:`السائق: ${myDriver.name}\n${vehName(myDriver.vehicle)}${myDriver.plate?' — لوحة '+myDriver.plate:''}\nللتواصل: ${myDriver.phone}`});}catch(e){}}
     _ordCache[o.id]=o;
-    if(confirm('تمام ✓ الطلب بقى ليك.\nتحب تفتح مسار التوصيل على الخريطة؟'))orderRoute(o.id);
-    if(o.phone)window.open('tel:'+o.phone,'_self');
     loadDriverOrders(true);
+    if(o.customer_id&&o.taken_user){await driverAcceptChat(o);}
+    else{if(o.phone&&confirm('تمام ✓ الطلب بقى ليك. تحب تتصل بالعميل؟'))window.open('tel:'+o.phone,'_self');}
   }catch(e){alert('حصل خطأ، جرّب تاني.');loadDriverOrders(true);}
+}
+async function driverAcceptChat(o){
+  const greet='السلام عليكم ورحمة الله، تم قبول طلب توصيلك ✅ أنا في الطريق إليك.';
+  try{
+    let conv=null;
+    const {data:found}=await supa.from('conversations').select('*').eq('ad_id',o.id).eq('buyer_id',o.customer_id).maybeSingle();
+    if(found)conv=found;
+    else{const {data:ins,error}=await supa.from('conversations').insert({ad_id:o.id,ad_title:'🛵 توصيلة',buyer_id:o.customer_id,seller_id:o.taken_user,buyer_name:o.customer_name||'العميل',seller_name:o.taken_name||(myDriver&&myDriver.name)||'السائق'}).select().single();if(error)throw error;conv=ins;}
+    try{await supa.from('messages').insert({conversation_id:conv.id,sender_id:USER.id,body:greet});}catch(e){}
+    try{await supa.from('conversations').update({last_body:greet,updated_at:new Date().toISOString()}).eq('id',conv.id);}catch(e){}
+    try{await supa.from('notifications').insert({user_id:o.customer_id,title:'💬 رسالة من السائق',body:greet});}catch(e){}
+    const dd=document.getElementById('driverDashOverlay');if(dd)dd.classList.remove('open');
+    if(_driverPoll){clearInterval(_driverPoll);_driverPoll=null;}
+    openConvo(conv);
+  }catch(e){if(o.phone&&confirm('تم قبول الطلب ✓ تحب تتصل بالعميل؟'))window.open('tel:'+o.phone,'_self');}
 }
 async function checkDriverOrders(){
   if(!supa||!myDriver||(myDriver.status||'pending')!=='approved'||!driverSubActive(myDriver))return;
@@ -4097,7 +4213,7 @@ async function loadData(){
       OFFERS_LIVE=(offers||[]).map(o=>({id:o.id,disc:o.discount||'',shop:(o.businesses&&o.businesses.name)||'',txt:o.title,ends:o.ends_note||'',code:o.code||''}));
     }catch(e){OFFERS_LIVE=[];}
     if(SHOW_DEMO)OFFERS_LIVE=OFFERS_LIVE.concat(SEED_OFFERS);
-    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();applyDeepLink();checkExpiredAds();checkSavedSearches();checkFollowedOffers();loadAreas();loadDrivers().then(()=>{renderDelivery();checkDriverOrders();});
+    renderHome();renderMarketCats();renderMarket();renderOffers();if(current==='cat')renderCatList();applyDeepLink();checkExpiredAds();checkSavedSearches();checkFollowedOffers();loadAreas();checkActiveTrip();loadDrivers().then(()=>{renderDelivery();checkDriverOrders();});
   }catch(e){console.error('loadData',e);}
 }
 
