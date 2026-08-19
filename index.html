@@ -651,6 +651,23 @@
   .mr-arrow{color:#0ea5a0;font-weight:800}
   .myord-price.soft{color:var(--txd);font-weight:600}
   body.light .trip-step.done .ts-lbl{color:#0a7a72!important}
+  .drv-filter{display:flex;gap:8px;margin-bottom:8px}.drv-filter .p-sel{flex:1;min-width:0}
+  .drv-filter-note{font-size:.8rem;color:#3fd6cf;font-weight:700;margin-bottom:10px;min-height:1em}
+  body.light .drv-filter-note{color:#0a7a72!important}
+  .drv-status{font-size:.68rem;font-weight:800;padding:3px 9px;border-radius:20px;flex:0 0 auto;align-self:flex-start;white-space:nowrap}
+  .drv-status.av{color:#43d68a;background:rgba(38,208,124,.15)}
+  .drv-status.bz{color:#e8c34a;background:rgba(212,175,55,.15)}
+  .drv-status.of{color:#ff8a94;background:rgba(226,55,68,.13)}
+  .drv-card.off{opacity:.6}
+  .drv-chip.hit{background:rgba(14,165,160,.22);color:#3fd6cf;border-color:rgba(14,165,160,.5);font-weight:800}
+  .avail-ctrl{background:var(--pnl);border:1px solid var(--bd);border-radius:12px;padding:11px;margin-bottom:10px}
+  .avail-lbl{font-size:.8rem;color:var(--txd);font-weight:700;margin-bottom:8px}
+  .avail-btns{display:flex;gap:6px}
+  .avail-b{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--bd);color:var(--txd);border-radius:9px;padding:9px 4px;font-family:inherit;font-weight:700;font-size:.78rem}
+  .avail-b.av.on{background:rgba(38,208,124,.18);border-color:#26d07c;color:#43d68a}
+  .avail-b.bz.on{background:rgba(212,175,55,.18);border-color:#d4af37;color:#e8c34a}
+  .avail-b.of.on{background:rgba(226,55,68,.15);border-color:#e23744;color:#ff8a94}
+  body.light .drv-chip.hit{color:#0a7a72!important}
   .deliv-hero{position:relative;overflow:hidden;border-radius:20px;padding:26px 20px;margin:6px 0 18px;background:linear-gradient(135deg,#0b3d3a,#0ea5a0 60%,#12a15c);box-shadow:0 14px 34px rgba(14,165,160,.32)}
   .deliv-hero::after{content:'🛵';position:absolute;left:-6px;bottom:-18px;font-size:6rem;opacity:.14;transform:rotate(-8deg)}
   .deliv-hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-weight:800;padding:5px 12px;border-radius:20px;margin-bottom:10px;backdrop-filter:blur(4px)}
@@ -1189,6 +1206,11 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
     </div>
     <div id="driver-zone"></div>
     <div class="section-h"><h3>🚗 سواقين ومندوبين إدفو</h3><div class="rule"></div></div>
+    <div class="drv-filter">
+      <select id="drv-f-sector" class="p-sel" onchange="onDrvFilterSector()"><option value="">كل القطاعات</option></select>
+      <select id="drv-f-village" class="p-sel" onchange="renderDriversList()"><option value="">كل القرى</option></select>
+    </div>
+    <div class="drv-filter-note" id="drv-filter-note"></div>
     <div id="deliv-list"></div>
   </section>
 
@@ -2871,7 +2893,7 @@ async function loadAreas(){
   try{
     const {data,error}=await supa.from('areas').select('name,sector,sort').eq('active',true).order('sort').limit(500);
     if(error)throw error;
-    if(data&&data.length){AREAS_DB=data;AREAS_LOADED=true;}
+    if(data&&data.length){AREAS_DB=data;AREAS_LOADED=true;try{fillDrvFilterSectors();renderDriversList();}catch(e){}}
   }catch(e){}
 }
 function areaNames(){return AREAS_LOADED?AREAS_DB.map(a=>a.name):DV_AREAS;}
@@ -2938,6 +2960,14 @@ function renderDelivery(){
           ?`<div class="sub-badge ok">اشتراكك فعّال ✓ — متبقّي ${days} يوم</div>`
           :`<div class="sub-badge no">اشتراكك ${myDriver.sub_until?'انتهى':'مش مفعّل'} — جدّد عشان توصلك الطلبات</div>`;
         zone.innerHTML=`<div class="driver-card-me"><div><b>سائق معتمد ✓</b><small>${vehName(myDriver.vehicle)} · ${(myDriver.areas||[]).join('، ')||'—'}</small></div></div>
+        <div class="avail-ctrl">
+          <div class="avail-lbl">حالتك النهارده:</div>
+          <div class="avail-btns">
+            <button class="avail-b av${(myDriver.avail||'available')==='available'?' on':''}" onclick="setMyAvail('available')">🟢 متاح</button>
+            <button class="avail-b bz${myDriver.avail==='busy'?' on':''}" onclick="setMyAvail('busy')">🟡 مشغول</button>
+            <button class="avail-b of${myDriver.avail==='off'?' on':''}" onclick="setMyAvail('off')">🔴 مش شغّال</button>
+          </div>
+        </div>
         ${subCard}
         ${active?`<button class="deliv-cta2" onclick="openDriverDash()">🛵 شوف الطلبات المتاحة ليك</button>
         <button class="deliv-sound" id="deliv-sound-btn" onclick="enableDriverSound()">🔔 فعّل صوت التنبيه</button>
@@ -2957,26 +2987,63 @@ function renderDelivery(){
     }
   }
   if(!box)return;
-  const list=DRIVERS_LIVE.length?DRIVERS_LIVE:[];
+  fillDrvFilterSectors();
+  renderDriversList();
+}
+const DRV_STATUS={available:['🟢 متاح','av'],busy:['🟡 مشغول','bz'],off:['🔴 مش شغّال','of']};
+function drvStatusOf(c){return DRV_STATUS[c.avail]||DRV_STATUS.available;}
+async function setMyAvail(a){
+  if(!myDriver||!supa)return;
+  const prev=myDriver.avail;myDriver.avail=a;renderDelivery();
+  try{const {error}=await supa.from('drivers').update({avail:a}).eq('id',myDriver.id);if(error)throw error;}
+  catch(e){myDriver.avail=prev;renderDelivery();alert('متسجّلش — شغّل drivers-sub.sql (عمود avail).');}
+}
+function fillDrvFilterSectors(){
+  const s=document.getElementById('drv-f-sector');if(!s)return;
+  const cur=s.value;const g=areaSectors();
+  s.innerHTML='<option value="">كل القطاعات</option>'+Object.keys(g).map(x=>`<option>${esc(x)}</option>`).join('');
+  if(cur)s.value=cur;
+}
+function onDrvFilterSector(){
+  const sec=document.getElementById('drv-f-sector').value,vs=document.getElementById('drv-f-village');
+  const g=areaSectors(),items=sec?(g[sec]||[]):[];
+  vs.innerHTML='<option value="">'+(sec?'كل قرى القطاع':'كل القرى')+'</option>'+items.map(n=>`<option>${esc(n)}</option>`).join('');
+  renderDriversList();
+}
+function renderDriversList(){
+  const box=document.getElementById('deliv-list');if(!box)return;
+  const sec=(document.getElementById('drv-f-sector')||{}).value||'';
+  const vil=(document.getElementById('drv-f-village')||{}).value||'';
+  const note=document.getElementById('drv-filter-note');
+  let list=DRIVERS_LIVE.slice();
+  const g=areaSectors();
+  if(vil)list=list.filter(c=>(c.areas||[]).indexOf(vil)>=0);
+  else if(sec){const secVils=g[sec]||[];list=list.filter(c=>(c.areas||[]).some(a=>secVils.indexOf(a)>=0));}
+  // ترتيب: المتاح فوق، بعدين المشغول، بعدين مش شغّال
+  const rank={available:0,busy:1,off:2};
+  list.sort((a,b)=>(rank[a.avail]??0)-(rank[b.avail]??0));
+  if(note)note.textContent=(sec||vil)?(`${list.length} سائق${vil?(' في '+vil):(' في '+sec)}`):'';
   box.innerHTML=(list.length?list.map(c=>{
     const has=c.phone&&c.phone!=='—';const hasWa=(c.wa&&c.wa!=='—')||has;
     const waNum=(c.wa&&c.wa!=='—')?c.wa:c.phone;
     const veh=VEHICLES.find(v=>v.k===c.vehicle)||{};
     const areas=(c.areas||[]);
-    const chips=areas.slice(0,5).map(a=>`<span class="drv-chip">${esc(a)}</span>`).join('')+(areas.length>5?`<span class="drv-chip more">+${areas.length-5}</span>`:'');
-    return `<div class="drv-card">
+    const st=drvStatusOf(c);
+    const chips=areas.slice(0,6).map(a=>`<span class="drv-chip${a===vil?' hit':''}">${esc(a)}</span>`).join('')+(areas.length>6?`<span class="drv-chip more">+${areas.length-6}</span>`:'');
+    const off=c.avail==='off';
+    return `<div class="drv-card${off?' off':''}">
       <div class="drv-head">
         <div class="drv-avatar">${veh.e||'🛵'}</div>
         <div class="drv-hd-info">
           <h4>${esc(c.name)} <span class="drv-verify">✓ موثّق</span></h4>
           <div class="drv-veh">${esc(vehName(c.vehicle))}${c.plate?' · <span class="drv-plate">'+esc(c.plate)+'</span>':''}</div>
         </div>
-        <div class="drv-online">● متاح</div>
+        <div class="drv-status ${st[1]}">${st[0]}</div>
       </div>
-      ${areas.length?`<div class="drv-areas-lbl">🗺️ مناطق شغله</div><div class="drv-areas">${chips}</div>`:''}
+      ${areas.length?`<div class="drv-areas-lbl">🗺️ مناطق شغله (${areas.length})</div><div class="drv-areas">${chips}</div>`:''}
       <div class="drv-actions">${has?`<a class="drv-btn call" href="tel:${c.phone}">📞 اتصال</a>`:''}${hasWa?`<a class="drv-btn wa" href="https://wa.me/2${(''+waNum).replace(/^0/,'')}" target="_blank">واتساب</a>`:''}</div>
     </div>`;
-  }).join(''):'<div class="empty2">لسه مفيش سواقين مسجّلين. كن أول سائق — اضغط «سجّل كسائق توصيل».</div>');
+  }).join(''):`<div class="empty2">${(sec||vil)?'مفيش سواقين في المنطقة دي حالياً. جرّب قطاع تاني أو كلّم أي سائق من القائمة الكاملة.':'لسه مفيش سواقين مسجّلين. كن أول سائق — اضغط «سجّل كسائق توصيل».'}</div>`);
 }
 
 /* ---- طلب توصيلة (العميل) ---- */
