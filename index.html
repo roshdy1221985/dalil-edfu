@@ -604,6 +604,20 @@
   .loc-row{display:flex;gap:8px;margin-bottom:8px}.loc-row .p-sel{flex:1;min-width:0}
   .loc-ok{font-size:.8rem;font-weight:700;color:#43d68a;margin-top:7px;min-height:1em}
   body.light .dv-loc-block{background:#f7f9fc!important}body.light .loc-ok{color:#0d8a4f!important}
+  .deliv-hero{position:relative;overflow:hidden;border-radius:20px;padding:26px 20px;margin:6px 0 18px;background:linear-gradient(135deg,#0b3d3a,#0ea5a0 60%,#12a15c);box-shadow:0 14px 34px rgba(14,165,160,.32)}
+  .deliv-hero::after{content:'🛵';position:absolute;left:-6px;bottom:-18px;font-size:6rem;opacity:.14;transform:rotate(-8deg)}
+  .deliv-hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-weight:800;padding:5px 12px;border-radius:20px;margin-bottom:10px;backdrop-filter:blur(4px)}
+  .deliv-hero h2{color:#fff;font-size:1.7rem;margin:0 0 4px;font-family:'Amiri','Tajawal',serif}
+  .deliv-hero p{color:rgba(255,255,255,.9);font-size:.9rem;margin:0;position:relative;z-index:1}
+  .deliv-choose{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .deliv-choice{position:relative;overflow:hidden;text-align:right;border:none;border-radius:18px;padding:18px 15px;font-family:inherit;cursor:pointer;color:#fff;display:flex;flex-direction:column;gap:4px;min-height:158px;transition:transform .15s,box-shadow .15s}
+  .deliv-choice:active{transform:scale(.97)}
+  .deliv-choice.parcel{background:linear-gradient(150deg,#0ea5a0,#0b6e6a);box-shadow:0 10px 26px rgba(14,165,160,.3)}
+  .deliv-choice.ride{background:linear-gradient(150deg,#9f7ae0,#6b46c1);box-shadow:0 10px 26px rgba(139,92,246,.3)}
+  .deliv-choice .dc-ic{font-size:2.4rem;line-height:1}
+  .deliv-choice .dc-t{font-size:1.15rem;font-weight:800;margin-top:4px}
+  .deliv-choice .dc-s{font-size:.76rem;opacity:.92;line-height:1.5;flex:1}
+  .deliv-choice .dc-go{font-size:.82rem;font-weight:800;background:rgba(255,255,255,.22);border-radius:20px;padding:6px 12px;align-self:flex-start;margin-top:4px}
   .sub-badge{border-radius:12px;padding:11px 14px;margin-bottom:10px;font-weight:700;font-size:.88rem;text-align:center}
   .sub-badge.ok{background:rgba(38,208,124,.14);border:1px solid rgba(38,208,124,.45);color:#43d68a}
   .sub-badge.no{background:rgba(226,55,68,.12);border:1px solid rgba(226,55,68,.4);color:#ff8a94}
@@ -1107,10 +1121,27 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
   </section>
 
   <section class="view" id="v-delivery">
-    <div class="page-head"><h2>توصيل 🛵</h2><p>وصّل طلب أو اطلب رحلة — واشترك كسائق ووصّلك الشغل في منطقتك.</p></div>
-    <button class="deliv-cta" onclick="openDeliveryReq()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:-4px"><circle cx="6" cy="18" r="2.6"/><circle cx="17" cy="18" r="2.6"/><path d="M6 18h6l3.5-9H20M9.5 9H4M14 18h.5M13 9l1.5 6"/></svg> اطلب توصيلة (طلب أو رحلة)</button>
+    <div class="deliv-hero">
+      <div class="deliv-hero-badge">🛵 خدمة توصيل إدفو</div>
+      <h2>محتاج حاجة توصلك؟</h2>
+      <p>طلبات أو ركّاب — سواقين المدينة في خدمتك على مدار اليوم</p>
+    </div>
+    <div class="deliv-choose">
+      <button class="deliv-choice parcel" onclick="openDeliveryReq('parcel')">
+        <div class="dc-ic">📦</div>
+        <div class="dc-t">توصيل طلبات</div>
+        <div class="dc-s">أكل، دوا، أغراض من أي محل لباب بيتك</div>
+        <div class="dc-go">اطلب دلوقتي ←</div>
+      </button>
+      <button class="deliv-choice ride" onclick="openDeliveryReq('ride')">
+        <div class="dc-ic">🧍</div>
+        <div class="dc-t">وصّلني (ركّاب)</div>
+        <div class="dc-s">رحلة من مكانك لأي مكان في إدفو وقراها</div>
+        <div class="dc-go">اطلب رحلة ←</div>
+      </button>
+    </div>
     <div id="driver-zone"></div>
-    <div class="section-h"><h3>سواقين ومندوبين التوصيل</h3><div class="rule"></div></div>
+    <div class="section-h"><h3>🚗 سواقين ومندوبين إدفو</h3><div class="rule"></div></div>
     <div id="deliv-list"></div>
   </section>
 
@@ -1402,18 +1433,14 @@ body.light .admin-hdr{color:#8a5f14;background:linear-gradient(135deg,rgba(191,1
       </div>
     </div>
     <div class="dv-card">
-      <div class="dv-sec">📦 تفاصيل الطلب والسعر</div>
-      <div class="field"><label>تفاصيل الطلب</label><textarea id="dv-det" rows="2" placeholder="مثال: أكل من مطعم / أدوية من صيدلية / أغراض"></textarea></div>
-      <div class="field"><label>السعر اللي مستعد تدفعه (ج)</label><input id="dv-price" inputmode="numeric" placeholder="مثال: 20"><div class="price-hint" id="dv-price-hint">حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.</div></div>
+      <div class="dv-sec">📦 تفاصيل الطلب</div>
+      <div class="field"><label id="dv-det-lbl">تفاصيل الطلب</label><textarea id="dv-det" rows="2" placeholder="مثال: أكل من مطعم / أدوية من صيدلية / أغراض"></textarea></div>
+      <div class="field"><label>نوع المركبة</label><select id="dv-veh" class="p-sel"><option value="any">أي مركبة متاحة</option></select></div>
+      <div class="field"><label>السعر (اختياري)</label><input id="dv-price" inputmode="numeric" placeholder="سيبها فاضية لو بالاتفاق"><div class="price-hint" id="dv-price-hint">سيبها فاضية والسعر بالاتفاق مع السائق، أو اقترح مبلغ.</div></div>
     </div>
     <div class="dv-card">
       <div class="dv-sec">👤 بياناتك</div>
       <div class="field"><label>رقم موبايلك</label><input id="dv-phone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
-      <button type="button" class="adv-toggle" id="dv-adv-btn" onclick="toggleDeliveryAdv()">⚙️ خيارات متقدمة (المنطقة والمركبة)</button>
-      <div id="dv-adv" style="display:none">
-        <div class="field"><label>المنطقة</label><select id="dv-area" class="p-sel"></select></div>
-        <div class="field"><label>نوع المركبة المطلوبة</label><select id="dv-veh" class="p-sel"><option value="any">أي مركبة</option></select></div>
-      </div>
     </div>
     <div class="err" id="dv-err"></div>
     <button class="save dv-send" onclick="sendDeliveryReq()">🛵 أرسل الطلب للسواقين</button>
@@ -2935,22 +2962,21 @@ function setDvKind(k){
   set('dv-from-lbl',ride?'🟢 من (مكان الركوب)':'🟢 من (مكان الاستلام)');
   set('dv-to-lbl',ride?'🔴 إلى (وجهتك)':'🔴 إلى (مكان التسليم)');
   const det=document.getElementById('dv-det');if(det)det.placeholder=ride?'مثال: كام راكب / معايا شنطة / ملاحظات':'مثال: أكل من مطعم / أدوية من صيدلية / أغراض';
+  const detl=document.getElementById('dv-det-lbl');if(detl)detl.textContent=ride?'تفاصيل الرحلة':'تفاصيل الطلب';
   const bizb=document.getElementById('dv-biz-btn');if(bizb)bizb.style.display=ride?'none':'';
   const fromDet=document.getElementById('dv-from');if(fromDet)fromDet.placeholder=ride?'تفاصيل مكانك (اختياري)':'تفاصيل إضافية: قرب جامع / شارع (اختياري)';
 }
-function openDeliveryReq(){
+function openDeliveryReq(kind){
   const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
   _pickLat=_pickLng=_pickFromLat=_pickFromLng=null;window._pickAddr='';_pickFromPhone=null;
-  setDvKind('parcel');
+  setDvKind(kind==='ride'?'ride':'parcel');
   ['dv-from','dv-to','dv-det','dv-price'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   const ph=document.getElementById('dv-phone');if(ph){ph.value='';ph.placeholder='01xxxxxxxxx';}
-  const hint=document.getElementById('dv-price-hint');if(hint)hint.textContent='حدّد النقطتين على الخريطة عشان نقترح سعر تلقائي.';
-  const hd=document.querySelector('#deliveryOverlay .page-bar h2');if(hd)hd.textContent='🛵 اطلب توصيلة';
-  const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn)sbtn.textContent='🛵 أرسل الطلب للسواقين';
+  const hint=document.getElementById('dv-price-hint');if(hint)hint.textContent='سيبها فاضية والسعر بالاتفاق مع السائق، أو اقترح مبلغ.';
+  const hd=document.querySelector('#deliveryOverlay .page-bar h2');if(hd)hd.textContent=(kind==='ride')?'🧍 اطلب رحلة':'📦 اطلب توصيلة';
+  const sbtn=document.querySelector('#deliveryOverlay .save');if(sbtn)sbtn.textContent=(kind==='ride')?'🧍 اطلب رحلة دلوقتي':'📦 أرسل الطلب للسواقين';
   fillSectorSelects();
   ['from','to'].forEach(w=>{const s=document.getElementById('dv-'+w+'-sector');if(s)s.value='';fillVillages(w);updateLocOk(w);});
-  const adv=document.getElementById('dv-adv');if(adv)adv.style.display='none';
-  const advb=document.getElementById('dv-adv-btn');if(advb)advb.textContent='⚙️ خيارات متقدمة (نوع المركبة)';
   const veh=document.getElementById('dv-veh');if(veh&&veh.options.length<=1)veh.innerHTML='<option value="any">أي مركبة</option>'+VEHICLES.map(v=>`<option value="${v.k}">${v.e} ${v.t}</option>`).join('');
   renderDirectDrivers();
   document.getElementById('deliveryOverlay').classList.add('open');
@@ -3101,9 +3127,8 @@ function computeSuggested(){
     const straight=haversineKm(_pickFromLat,_pickFromLng,_pickLat,_pickLng);
     const km=straight*1.4; /* عامل الطرق: المسافة الحقيقية أطول من الخط المستقيم */
     const price=Math.max(FARE_MIN,Math.round((FARE_BASE+km*FARE_PERKM)/5)*5);
-    if(hint)hint.innerHTML='المسافة ~<b>'+km.toFixed(1)+' كم</b> · سعر مقترح: <b>'+price+' ج</b> (تقدر تعدّله)';
-    if(pr&&!pr.value)pr.value=price;
-  }else{if(hint)hint.textContent='حدّد الاستلام والتسليم على الخريطة عشان نقترح سعر تلقائي.';}
+    if(hint)hint.innerHTML='المسافة ~<b>'+km.toFixed(1)+' كم</b> · لو تحب تقترح سعر، حوالي <b>'+price+' ج</b> — أو سيبها بالاتفاق.';
+  }else{if(hint)hint.textContent='سيبها فاضية والسعر بالاتفاق مع السائق، أو اقترح مبلغ.';}
 }
 function openMapPick(which){
   _pickTarget=which||'to';_tmpLat=null;_tmpLng=null;
