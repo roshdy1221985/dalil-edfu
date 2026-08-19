@@ -697,6 +697,17 @@
   .tv-step.now .tv-lbl{color:#3fd6cf;font-weight:800}
   .ord-take.stage{background:linear-gradient(135deg,#e8a53f,#d4831f)}
   body.light .tv-step.now .tv-lbl{color:#0a7a72!important}
+  .notif-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-140%);z-index:200;display:flex;align-items:center;gap:11px;background:linear-gradient(135deg,#0ea5a0,#12a15c);color:#fff;border-radius:14px;padding:12px 16px;box-shadow:0 12px 34px rgba(0,0,0,.35);max-width:90vw;width:380px;cursor:pointer;transition:transform .3s cubic-bezier(.2,1.2,.4,1)}
+  .notif-toast.show{transform:translateX(-50%) translateY(0)}
+  .nt-ic{font-size:1.7rem;flex:0 0 auto}
+  .nt-txt{flex:1;min-width:0}.nt-txt b{display:block;font-size:.9rem}.nt-txt small{opacity:.92;font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .myord-del{width:100%;background:transparent;border:2px solid var(--bd);color:var(--txd);border-radius:9px;padding:9px;font-family:inherit;font-size:.82rem;margin-top:8px}
+  .etrip{display:flex;align-items:center;gap:10px;background:var(--pnl);border:2px solid var(--bd);border-radius:12px;padding:11px;margin-bottom:8px}
+  .etrip-info{flex:1;min-width:0}.etrip-info small{color:var(--tx);font-size:.85rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .etrip-meta{color:var(--txd);font-size:.76rem;margin-top:3px}
+  .etrip-del{flex:0 0 auto;background:rgba(226,55,68,.12);border:1px solid rgba(226,55,68,.35);color:#ff8a94;border-radius:9px;padding:8px 11px;font-size:1rem}
+  .earn-note-top{background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);color:#e8c34a;border-radius:10px;padding:9px 12px;font-size:.8rem;line-height:1.5;margin-bottom:12px}
+  body.light .earn-note-top{color:#8a5f14!important}
   .deliv-hero{position:relative;overflow:hidden;border-radius:20px;padding:26px 20px;margin:6px 0 18px;background:linear-gradient(135deg,#0b3d3a,#0ea5a0 60%,#12a15c);box-shadow:0 14px 34px rgba(14,165,160,.32)}
   .deliv-hero::after{content:'🛵';position:absolute;left:-6px;bottom:-18px;font-size:6rem;opacity:.14;transform:rotate(-8deg)}
   .deliv-hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-weight:800;padding:5px 12px;border-radius:20px;margin-bottom:10px;backdrop-filter:blur(4px)}
@@ -3001,8 +3012,8 @@ function renderDelivery(){
         ${subCard}
         ${active?`<button class="deliv-cta2" onclick="openDriverDash()">🛵 شوف الطلبات المتاحة ليك</button>
         <button class="deliv-sound" id="deliv-sound-btn" onclick="enableDriverSound()">🔔 فعّل صوت التنبيه</button>
-        <button class="deliv-earn" onclick="openDriverEarnings()">💰 أرباحي</button>`:`<button class="deliv-cta2" onclick="openDriverSub()">💳 جدّد اشتراكك (${DRIVER_FEE}ج/شهر)</button>
-        <button class="deliv-earn" onclick="openDriverEarnings()">💰 أرباحي</button>`}
+        <button class="deliv-earn" onclick="openDriverEarnings()">💰 أرباحي (تقديري)</button>`:`<button class="deliv-cta2" onclick="openDriverSub()">💳 جدّد اشتراكك (${DRIVER_FEE}ج/شهر)</button>
+        <button class="deliv-earn" onclick="openDriverEarnings()">💰 أرباحي (تقديري)</button>`}
         <button class="deliv-reg" onclick="openDriverReg()">تعديل بياناتي كسائق</button>
         <div class="net-note">💡 بتاخد <b>كل سعر التوصيلة</b> كامل — مفيش عمولة على المشاوير. الاشتراك الشهري بس.</div>`;
       }else if(dst==='rejected'){
@@ -3109,8 +3120,20 @@ function subscribeTrip(){
         }
       })
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'delivery_orders',filter:'customer_id=eq.'+USER.id},()=>{checkActiveTrip();})
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:'user_id=eq.'+USER.id},p=>{
+        if(p.new){loadNotifs();showNotifToast(p.new);try{playDing();}catch(e){}}
+      })
       .subscribe();
   }catch(e){}
+}
+function showNotifToast(n){
+  let t=document.getElementById('notifToast');
+  if(!t){t=document.createElement('div');t.id='notifToast';t.className='notif-toast';document.body.appendChild(t);}
+  const isChat=(n.title||'').indexOf('رسالة')>=0;
+  t.innerHTML=`<div class="nt-ic">${isChat?'💬':'🔔'}</div><div class="nt-txt"><b>${esc(n.title||'إشعار')}</b><small>${esc((n.body||'').split('\n')[0])}</small></div>`;
+  t.onclick=()=>{t.classList.remove('show');if(isChat){openMyDeliveries();}else{openNotifs();}};
+  t.classList.add('show');
+  clearTimeout(window._ntTimer);window._ntTimer=setTimeout(()=>t.classList.remove('show'),5000);
 }
 async function checkActiveTrip(){
   const b=document.getElementById('trackBanner');if(!b)return;
@@ -3169,7 +3192,8 @@ async function openMyDeliveries(){
   if(!supa||!USER){document.getElementById('user-body').innerHTML='<div class="empty2">سجّل دخول عشان تشوف طلباتك.</div>';return;}
   try{
     const {data}=await supa.from('delivery_orders').select('*').eq('customer_id',USER.id).order('created_at',{ascending:false}).limit(30);
-    const list=data||[];
+    const hid=hiddenOrders();
+    const list=(data||[]).filter(o=>hid.indexOf(o.id)<0);
     list.forEach(o=>{_ordCache[o.id]=o;});
     document.getElementById('user-body').innerHTML=list.length?list.map(o=>{
       const st=ORD_ST[o.status]||ORD_ST.open;
@@ -3183,10 +3207,18 @@ async function openMyDeliveries(){
         ${o.status==='completed'?ratingHTML(o):''}
         ${o.status==='cancelled'?'<div class="trip-cancel">❌ الطلب اتلغى</div>':''}
         ${(o.status==='open'||o.status==='taken')?`<button class="myord-cancel" onclick="cancelMyOrder('${o.id}')">إلغاء الرحلة</button>`:''}
+        ${(o.status==='completed'||o.status==='cancelled')?`<button class="myord-del" onclick="hideMyOrder('${o.id}')">🗑️ حذف من القائمة</button>`:''}
       </div>`;
     }).join(''):'<div class="empty2">لسه مطلبتش أي توصيلة. من تبويب «توصيل» اطلب توصيلتك الأولى 🛵</div>';
     checkActiveTrip();
   }catch(e){document.getElementById('user-body').innerHTML='<div class="empty2">تعذّر جلب الطلبات.</div>';}
+}
+function hiddenOrders(){try{return JSON.parse(localStorage.getItem('dalil_hidden_orders')||'[]');}catch(e){return [];}}
+function hideMyOrder(id){
+  if(!confirm('حذف الرحلة من قائمتك؟ (مش هتظهر تاني عندك)'))return;
+  const h=hiddenOrders();if(h.indexOf(id)<0)h.push(id);
+  try{localStorage.setItem('dalil_hidden_orders',JSON.stringify(h));}catch(e){}
+  openMyDeliveries();
 }
 function cancelInfo(){
   const today=new Date().toISOString().slice(0,10);let d={date:today,count:0};
@@ -3465,21 +3497,29 @@ async function openDriverEarnings(){
   const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
   document.getElementById('userOverlay').classList.add('open');
   try{
-    const {data}=await supa.from('delivery_orders').select('price,created_at,status').eq('taken_by',myDriver.id).eq('status','completed').limit(500);
+    const {data}=await supa.from('delivery_orders').select('id,price,created_at,status,from_addr,to_addr,kind,from_lat,from_lng,to_lat,to_lng').eq('taken_by',myDriver.id).eq('status','completed').order('created_at',{ascending:false}).limit(500);
     const list=data||[];
+    const estOf=o=>{
+      if(o.price)return parseInt(o.price,10)||0;
+      if(o.from_lat!=null&&o.to_lat!=null){const km=haversineKm(o.from_lat,o.from_lng,o.to_lat,o.to_lng)*1.4;return Math.max(FARE_MIN,Math.round((FARE_BASE+km*FARE_PERKM)/5)*5);}
+      return null;
+    };
     const now=Date.now(),day0=new Date();day0.setHours(0,0,0,0);const wk=now-7*864e5;
-    const sum=arr=>arr.reduce((s,o)=>s+(parseInt(o.price,10)||0),0);
+    const sum=arr=>arr.reduce((s,o)=>s+(estOf(o)||0),0);
     const today=list.filter(o=>new Date(o.created_at).getTime()>=day0.getTime());
     const week=list.filter(o=>new Date(o.created_at).getTime()>=wk);
+    const hid=hiddenOrders();const shown=list.filter(o=>hid.indexOf(o.id)<0).slice(0,30);
     document.getElementById('user-body').innerHTML=`
+      <div class="earn-note-top">💡 دي أرقام <b>تقديرية</b> بالمسافة — السعر الفعلي بالاتفاق بينك وبين العميل.</div>
       <div class="earn-grid">
-        <div class="earn-box"><b>${today.length}</b><span>توصيلة النهارده</span><div class="earn-val">${sum(today)} ج</div></div>
-        <div class="earn-box"><b>${week.length}</b><span>آخر 7 أيام</span><div class="earn-val">${sum(week)} ج</div></div>
-        <div class="earn-box wide"><b>${list.length}</b><span>إجمالي التوصيلات</span><div class="earn-val">${sum(list)} ج</div></div>
+        <div class="earn-box"><b>${today.length}</b><span>توصيلة النهارده</span><div class="earn-val">~${sum(today)} ج</div></div>
+        <div class="earn-box"><b>${week.length}</b><span>آخر 7 أيام</span><div class="earn-val">~${sum(week)} ج</div></div>
+        <div class="earn-box wide"><b>${list.length}</b><span>إجمالي التوصيلات</span><div class="earn-val">~${sum(list)} ج</div></div>
       </div>
-      <p style="color:var(--txd);font-size:.8rem;text-align:center;margin-top:10px">دي أرباحك <b>الصافية</b> — كل سعر توصيلة بتاخده كامل. الأرقام من الطلبات اللي دوست عليها «تم التسليم».</p>`;
+      ${shown.length?`<div class="ord-sec" style="margin-top:14px">🚚 رحلاتك المكتملة</div>`+shown.map(o=>{const e=estOf(o);return `<div class="etrip"><div class="etrip-info"><div class="ord-kind${o.kind==='ride'?' ride':''}" style="margin:0 0 5px">${o.kind==='ride'?'🧍 رحلة':'📦 طلب'}</div><small>${esc(o.from_addr||'')} ← ${esc(o.to_addr||'')}</small><div class="etrip-meta">${esc(timeAgo(o.created_at))} · ${e!=null?(o.price?esc(''+e)+' ج':'~'+e+' ج تقديري'):'بالاتفاق'}</div></div><button class="etrip-del" onclick="hideDriverTrip('${o.id}')">🗑️</button></div>`;}).join(''):''}`;
   }catch(e){document.getElementById('user-body').innerHTML='<div class="empty2">تعذّر جلب الأرباح.</div>';}
 }
+function hideDriverTrip(id){if(!confirm('حذف الرحلة من القائمة؟ (أرباحك مش هتتأثر)'))return;const h=hiddenOrders();if(h.indexOf(id)<0)h.push(id);try{localStorage.setItem('dalil_hidden_orders',JSON.stringify(h));}catch(e){}openDriverEarnings();}
 let _driverLoc=null;
 function updateDriverLoc(cb){
   if(!navigator.geolocation){if(cb)cb(false);return;}
