@@ -605,6 +605,52 @@
   .loc-ok{font-size:.8rem;font-weight:700;color:#43d68a;margin-top:7px;min-height:1em}
   body.light .dv-loc-block{background:#f7f9fc!important}body.light .loc-ok{color:#0d8a4f!important}
   .dv-loc-tip{font-size:.78rem;color:var(--txd);background:rgba(14,165,160,.08);border:1px solid rgba(14,165,160,.25);border-radius:10px;padding:9px 12px;margin-bottom:12px;line-height:1.5}
+  /* كارت السائق في الدليل */
+  .drv-card{background:var(--pnl);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+  .drv-card::before{content:'';position:absolute;top:0;right:0;width:4px;height:100%;background:linear-gradient(180deg,#0ea5a0,#12a15c)}
+  .drv-head{display:flex;align-items:center;gap:12px}
+  .drv-avatar{width:52px;height:52px;flex:0 0 auto;border-radius:14px;background:linear-gradient(135deg,rgba(14,165,160,.2),rgba(18,161,92,.12));display:flex;align-items:center;justify-content:center;font-size:1.8rem;border:1px solid rgba(14,165,160,.3)}
+  .drv-hd-info{flex:1;min-width:0}
+  .drv-hd-info h4{margin:0;font-size:1.05rem;color:var(--tx);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .drv-verify{font-size:.65rem;font-weight:800;color:#3fd6cf;background:rgba(14,165,160,.15);padding:2px 7px;border-radius:20px}
+  .drv-veh{font-size:.82rem;color:var(--txd);margin-top:3px}
+  .drv-plate{background:rgba(212,175,55,.15);color:#e8d59a;padding:1px 7px;border-radius:5px;font-weight:700;font-size:.76rem}
+  .drv-online{font-size:.7rem;font-weight:800;color:#43d68a;flex:0 0 auto;align-self:flex-start}
+  .drv-areas-lbl{font-size:.75rem;color:var(--txd);margin:11px 0 6px;font-weight:700}
+  .drv-areas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .drv-chip{background:rgba(255,255,255,.06);border:1px solid var(--bd);color:var(--tx);font-size:.73rem;padding:3px 10px;border-radius:20px}
+  .drv-chip.more{background:rgba(14,165,160,.14);color:#3fd6cf;border-color:rgba(14,165,160,.3)}
+  .drv-actions{display:flex;gap:8px}
+  .drv-btn{flex:1;text-align:center;border-radius:11px;padding:10px;font-weight:800;font-size:.85rem;text-decoration:none;border:none;font-family:inherit}
+  .drv-btn.call{background:rgba(46,123,228,.15);border:1px solid rgba(46,123,228,.4);color:#6bb0ff}
+  .drv-btn.wa{background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.4);color:#4ee089}
+  body.light .drv-plate,body.light .drv-verify{color:#8a5f14!important}body.light .drv-btn.call{color:#1c66c9!important}body.light .drv-btn.wa{color:#128a3e!important}body.light .drv-chip.more{color:#0a7a72!important}
+  /* كارت السائق المعتمَد للعميل */
+  .drv-assigned{background:linear-gradient(135deg,rgba(14,165,160,.14),rgba(18,161,92,.08));border:1px solid rgba(14,165,160,.4);border-radius:14px;padding:13px;margin:10px 0}
+  .da-head{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+  .da-av{width:46px;height:46px;flex:0 0 auto;border-radius:12px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+  .da-info{flex:1;min-width:0}.da-info b{color:var(--tx);font-size:1rem;display:block}.da-info small{color:var(--txd);font-size:.78rem}
+  .da-badge{font-size:.68rem;font-weight:800;color:#43d68a;background:rgba(38,208,124,.15);padding:3px 9px;border-radius:20px;flex:0 0 auto}
+  .da-actions{display:flex;gap:8px}
+  .da-btn{flex:1;text-align:center;border-radius:10px;padding:10px;font-weight:800;font-size:.85rem;text-decoration:none;border:none;font-family:inherit}
+  .da-btn.call{background:rgba(46,123,228,.18);border:1px solid rgba(46,123,228,.45);color:#6bb0ff}
+  .da-btn.chat{background:rgba(159,122,234,.18);border:1px solid rgba(159,122,234,.45);color:#c4a8f0}
+  body.light .da-btn.call{color:#1c66c9!important}body.light .da-btn.chat{color:#6b3fb5!important}
+  /* متابعة الرحلة — stepper */
+  .trip-steps{display:flex;align-items:center;margin:12px 0;padding:2px}
+  .trip-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:0 0 auto}
+  .ts-ic{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:1.05rem;filter:grayscale(1);opacity:.5;transition:.2s}
+  .ts-lbl{font-size:.68rem;color:var(--txd);font-weight:700}
+  .trip-step.done .ts-ic{background:rgba(14,165,160,.18);border-color:#0ea5a0;filter:none;opacity:1}
+  .trip-step.done .ts-lbl{color:#3fd6cf}
+  .trip-step.now .ts-ic{box-shadow:0 0 0 4px rgba(14,165,160,.18);animation:pulseNow 1.4s infinite}
+  @keyframes pulseNow{0%,100%{box-shadow:0 0 0 4px rgba(14,165,160,.18)}50%{box-shadow:0 0 0 7px rgba(14,165,160,.06)}}
+  .trip-line{flex:1;height:3px;background:var(--bd);margin:0 4px;margin-bottom:20px;border-radius:2px}
+  .trip-line.done{background:linear-gradient(90deg,#0ea5a0,#12a15c)}
+  .trip-cancel{background:rgba(226,55,68,.12);border:1px solid rgba(226,55,68,.35);color:#ff8a94;border-radius:10px;padding:9px;text-align:center;font-weight:700;font-size:.85rem;margin:8px 0}
+  .mr-arrow{color:#0ea5a0;font-weight:800}
+  .myord-price.soft{color:var(--txd);font-weight:600}
+  body.light .trip-step.done .ts-lbl{color:#0a7a72!important}
   .deliv-hero{position:relative;overflow:hidden;border-radius:20px;padding:26px 20px;margin:6px 0 18px;background:linear-gradient(135deg,#0b3d3a,#0ea5a0 60%,#12a15c);box-shadow:0 14px 34px rgba(14,165,160,.32)}
   .deliv-hero::after{content:'🛵';position:absolute;left:-6px;bottom:-18px;font-size:6rem;opacity:.14;transform:rotate(-8deg)}
   .deliv-hero-badge{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-weight:800;padding:5px 12px;border-radius:20px;margin-bottom:10px;backdrop-filter:blur(4px)}
@@ -2915,16 +2961,39 @@ function renderDelivery(){
   box.innerHTML=(list.length?list.map(c=>{
     const has=c.phone&&c.phone!=='—';const hasWa=(c.wa&&c.wa!=='—')||has;
     const waNum=(c.wa&&c.wa!=='—')?c.wa:c.phone;
-    return `<div class="deliv-card">
-      <div class="deliv-ic">${(VEHICLES.find(v=>v.k===c.vehicle)||{}).e||'🛵'}</div>
-      <div class="deliv-info"><h4>${esc(c.name)}</h4><div class="deliv-meta">${esc(vehName(c.vehicle))}${c.plate?' · لوحة '+esc(c.plate):''} · ${esc((c.areas||[]).join('، ')||'إدفو')}</div></div>
-      <div class="deliv-btns">${has?`<a class="deliv-call" href="tel:${c.phone}">اتصال</a>`:''}${hasWa?`<a class="deliv-wa" href="https://wa.me/2${(''+waNum).replace(/^0/,'')}" target="_blank">واتساب</a>`:''}</div>
+    const veh=VEHICLES.find(v=>v.k===c.vehicle)||{};
+    const areas=(c.areas||[]);
+    const chips=areas.slice(0,5).map(a=>`<span class="drv-chip">${esc(a)}</span>`).join('')+(areas.length>5?`<span class="drv-chip more">+${areas.length-5}</span>`:'');
+    return `<div class="drv-card">
+      <div class="drv-head">
+        <div class="drv-avatar">${veh.e||'🛵'}</div>
+        <div class="drv-hd-info">
+          <h4>${esc(c.name)} <span class="drv-verify">✓ موثّق</span></h4>
+          <div class="drv-veh">${esc(vehName(c.vehicle))}${c.plate?' · <span class="drv-plate">'+esc(c.plate)+'</span>':''}</div>
+        </div>
+        <div class="drv-online">● متاح</div>
+      </div>
+      ${areas.length?`<div class="drv-areas-lbl">🗺️ مناطق شغله</div><div class="drv-areas">${chips}</div>`:''}
+      <div class="drv-actions">${has?`<a class="drv-btn call" href="tel:${c.phone}">📞 اتصال</a>`:''}${hasWa?`<a class="drv-btn wa" href="https://wa.me/2${(''+waNum).replace(/^0/,'')}" target="_blank">واتساب</a>`:''}</div>
     </div>`;
   }).join(''):'<div class="empty2">لسه مفيش سواقين مسجّلين. كن أول سائق — اضغط «سجّل كسائق توصيل».</div>');
 }
 
 /* ---- طلب توصيلة (العميل) ---- */
 const ORD_ST={open:['🕐 مستني سائق','wait'],taken:['🛵 سائق في الطريق','go'],completed:['✅ اتسلّم','done'],cancelled:['❌ اتلغى','cx']};
+function tripStepper(status){
+  const steps=[['📤','الطلب','sent'],['🛵','سائق قبل','taken'],['✅','اتسلّم','done']];
+  let active=0;if(status==='taken')active=1;else if(status==='completed')active=2;else if(status==='cancelled')active=-1;
+  if(active<0)return '<div class="trip-cancel">❌ الطلب اتلغى</div>';
+  return `<div class="trip-steps">`+steps.map((s,i)=>`<div class="trip-step${i<=active?' done':''}${i===active?' now':''}"><div class="ts-ic">${s[0]}</div><div class="ts-lbl">${s[1]}</div></div>${i<2?`<div class="trip-line${i<active?' done':''}"></div>`:''}`).join('')+`</div>`;
+}
+function driverCardHTML(o){
+  const veh=VEHICLES.find(v=>v.k===o.taken_veh)||{};
+  return `<div class="drv-assigned">
+    <div class="da-head"><div class="da-av">${veh.e||'🛵'}</div><div class="da-info"><b>${esc(o.taken_name||'السائق')}</b><small>سائقك في الطريق إليك</small></div><div class="da-badge">✓ معتمد</div></div>
+    <div class="da-actions">${o.taken_phone?`<a class="da-btn call" href="tel:${o.taken_phone}">📞 اتصال</a>`:''}${o.taken_user?`<button class="da-btn chat" onclick="orderChat('${o.id}')">💬 رسالة</button>`:''}</div>
+  </div>`;
+}
 async function openMyDeliveries(){
   const am=document.getElementById('acctMenu');if(am)am.classList.remove('open');
   document.getElementById('user-title').textContent='🛵 طلبات التوصيل بتاعتي';
@@ -2939,11 +3008,12 @@ async function openMyDeliveries(){
       const st=ORD_ST[o.status]||ORD_ST.open;
       return `<div class="myord">
         <div class="myord-top"><span class="myord-st ${st[1]}">${st[0]}</span><span class="myord-time">${esc(timeAgo(o.created_at))}</span></div>
-        <div class="ord-kind${o.kind==='ride'?' ride':''}" style="margin-bottom:6px">${o.kind==='ride'?'🧍 رحلة ركّاب':'📦 توصيل طلب'}</div>
-        <div class="myord-route">من ${esc(o.from_addr||'—')} ← إلى ${esc(o.to_addr||'—')}</div>
-        ${o.price?`<div class="myord-price">💰 ${esc(''+o.price)} ج</div>`:''}
-        ${o.status==='taken'&&o.taken_name?`<div class="myord-driver">🚗 السائق: ${esc(o.taken_name)}${o.taken_phone?' · '+esc(o.taken_phone):''}${o.taken_phone?` <a href="tel:${o.taken_phone}" class="myord-call">اتصل</a>`:''}</div>`:''}
-        ${o.status==='taken'&&o.taken_user?`<button class="ord-chat" onclick="orderChat('${o.id}')">💬 راسل السائق</button>`:''}
+        <div class="ord-kind${o.kind==='ride'?' ride':''}" style="margin-bottom:8px">${o.kind==='ride'?'🧍 رحلة ركّاب':'📦 توصيل طلب'}</div>
+        ${o.status!=='cancelled'?tripStepper(o.status):''}
+        <div class="myord-route">📍 ${esc(o.from_addr||'—')} <span class="mr-arrow">←</span> 🎯 ${esc(o.to_addr||'—')}</div>
+        ${o.price?`<div class="myord-price">💰 ${esc(''+o.price)} ج</div>`:'<div class="myord-price soft">💬 السعر بالاتفاق مع السائق</div>'}
+        ${o.status==='taken'?driverCardHTML(o):''}
+        ${o.status==='cancelled'?'<div class="trip-cancel">❌ الطلب اتلغى</div>':''}
         ${o.status==='open'?`<button class="myord-cancel" onclick="cancelMyOrder('${o.id}')">إلغاء الطلب</button>`:''}
       </div>`;
     }).join(''):'<div class="empty2">لسه مطلبتش أي توصيلة. من تبويب «توصيل» اطلب توصيلتك الأولى 🛵</div>';
@@ -3253,6 +3323,7 @@ async function loadDriverOrders(firstLoad){
     return `<div class="ord-card${isNew?' ord-new':''}">
       ${o._dist!=null?`<div class="ord-dist">📍 ${o._dist<1?Math.round(o._dist*1000)+' متر':o._dist.toFixed(1)+' كم'} من مكانك</div>`:''}
       <div class="ord-kind${o.kind==='ride'?' ride':''}">${o.kind==='ride'?'🧍 رحلة ركّاب':'📦 توصيل طلب'}</div>
+      ${mode==='active'?tripStepper(o.status):''}
       <div class="ord-route"><span>📍 من:</span> ${esc(o.from_addr)}${o.from_phone?` <a href="tel:${o.from_phone}" class="ord-callp">📞 اتصل بالاستلام</a>`:''}</div>
       <div class="ord-route"><span>🎯 إلى:</span> ${esc(o.to_addr)}</div>
       <div class="ord-meta">${esc(o.area)} · ${o.vehicle_pref&&o.vehicle_pref!=='any'?esc(vehName(o.vehicle_pref))+' · ':''}${esc(timeAgo(o.created_at))}</div>
@@ -3310,7 +3381,8 @@ async function releaseOrder(id){
 async function takeOrder(id){
   if(!myDriver||!supa)return;
   try{
-    let {data:upd,error}=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone,taken_user:USER.id}).eq('id',id).eq('status','open').select();
+    let {data:upd,error}=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone,taken_user:USER.id,taken_veh:myDriver.vehicle}).eq('id',id).eq('status','open').select();
+    if(error){const r3=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone,taken_user:USER.id}).eq('id',id).eq('status','open').select();upd=r3.data;error=r3.error;}
     if(error){const r2=await supa.from('delivery_orders').update({status:'taken',taken_by:myDriver.id,taken_name:myDriver.name,taken_phone:myDriver.phone}).eq('id',id).eq('status','open').select();upd=r2.data;error=r2.error;}
     if(error)throw error;
     if(!upd||!upd.length){alert('الطلب اتاخد من سائق تاني ⚡');loadDriverOrders(true);return;}
